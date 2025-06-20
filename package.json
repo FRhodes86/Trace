@@ -1,0 +1,16 @@
+{
+  "name": "trace-engine-apex",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "firebase": "^9.6.1",
+    "next": "12.1.6",
+    "react": "17.0.2",
+    "react-dom": "17.0.2",
+    "openai": "^4.0.0"
+  }
+}
