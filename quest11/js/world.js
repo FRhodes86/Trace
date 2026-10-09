@@ -47,9 +47,49 @@
     if (r.armour) { if (!s.ownedArmour.includes(r.armour)) s.ownedArmour.push(r.armour); const A = K.ARMOUR.find(x => x.id === r.armour); steps.push(n => FX.itemGet(`<span class="emo big">${A.emoji}</span>`, `You got the ${A.name}!`, A.desc + ' Equip it in Beedle\'s shop.', n)); }
     if (r.saddle) { if (!s.ownedSaddles.includes(r.saddle)) s.ownedSaddles.push(r.saddle); const A = K.SADDLES.find(x => x.id === r.saddle); steps.push(n => FX.itemGet('<span class="emo big">🐎</span>', `You got the ${A.name}!`, 'Put it on a horse at the stable.', n)); }
     if (r.pet) { if (!s.ownedPets.includes(r.pet)) s.ownedPets.push(r.pet); const A = K.PETS.find(x => x.id === r.pet); steps.push(n => FX.itemGet(`<div class="pet-get">${ART.pet(r.pet)}</div>`, `New companion: ${A.name}!`, (A.desc || '') + ' Choose companions in the shop\'s Style tab.', n)); }
-    if (r.theme) { if (!s.ownedThemes.includes(r.theme)) s.ownedThemes.push(r.theme); const A = K.THEMES.find(x => x.id === r.theme); steps.push(n => FX.itemGet(`<span class="emo big">${A.emoji}</span>`, `New Sheikah Slate colour: ${A.name}!`, 'Choose it in the shop\'s Style tab.', n)); }
+    if (r.theme) { if (!s.ownedThemes.includes(r.theme)) s.ownedThemes.push(r.theme); if (r.theme === 'triforce') { s.theme = 'triforce'; applyTheme(); } const A = K.THEMES.find(x => x.id === r.theme); steps.push(n => FX.itemGet(`<span class="emo big">${A.emoji}</span>`, `New Sheikah Slate colour: ${A.name}!`, 'Choose it in the shop\'s Style tab.', n)); }
+    if (r.weapon) { if (!s.ownedWeapons.includes(r.weapon)) s.ownedWeapons.push(r.weapon); s.weapon = r.weapon; const A = K.WEAPONS.find(x => x.id === r.weapon); steps.push(n => FX.itemGet(`<div class="pet-get">${ART.hero({ armour: s.armour, shield: s.shield, weapon: r.weapon })}</div>`, `You got the ${A.name}!`, `${A.desc} Boss damage: ${A.dmg}.`, n)); }
+    if (r.shield) { if (!s.ownedShields.includes(r.shield)) s.ownedShields.push(r.shield); s.shield = r.shield; const A = K.SHIELDS.find(x => x.id === r.shield); steps.push(n => FX.itemGet(`<div class="pet-get">${ART.hero({ armour: s.armour, shield: r.shield, weapon: s.weapon })}</div>`, `You got the ${A.name}!`, A.desc, n)); }
+    if (r.relic) { const A = K.RELICS[r.relic]; steps.push(n => FX.itemGet(`<span class="emo big">${A.emoji}</span>`, `You got the ${A.name}!`, A.desc, n)); }
+    if (r.glider) { if (!s.ownedGliders.includes(r.glider)) s.ownedGliders.push(r.glider); s.glider = r.glider; const A = K.GLIDERS.find(x => x.id === r.glider); steps.push(n => FX.itemGet(`<div class="pet-get wide">${ART.glider(r.glider)}</div>`, `You got ${A.name}!`, 'You\'ll see it every time you fly across the map.', n)); }
     if (r.decor) { if (!s.house.decor.includes(r.decor)) s.house.decor.push(r.decor); const A = K.DECOR.find(x => x.id === r.decor); steps.push(n => FX.itemGet(`<span class="emo big">${A.emoji}</span>`, `${A.name} for your house!`, s.house.owned ? '' : 'It will appear once you own the Hateno house.', n)); }
     State.save(); return steps;
+  }
+
+  /* ---------------- REGION MASTERY ---------------- */
+  // 3 stars in every shrine of a region earns that Champion's one-of-a-kind reward; all four regions earn the Triforce.
+  function masteryProgress(subject) { const ts = CONTENT[subject]; return { done: ts.filter(t => (S().stars[t.id] || 0) >= 3).length, total: ts.length }; }
+  function rewardNames(r) {
+    return [r.weapon && K.WEAPONS.find(x => x.id === r.weapon).name, r.shield && K.SHIELDS.find(x => x.id === r.shield).name, r.relic && K.RELICS[r.relic].name,
+      r.glider && K.GLIDERS.find(x => x.id === r.glider).name, r.theme && K.THEMES.find(x => x.id === r.theme).name + ' slate colour', r.decor && K.DECOR.find(x => x.id === r.decor).name + ' (house trophy)', r.rupees && `${fmt(r.rupees)} rupees`].filter(Boolean);
+  }
+  function ceremony(key, next) {
+    const M = K.MASTERY[key]; const { dialogue, confetti } = UI();
+    FX.flash('#fff6c8', 1); U.sfx.fanfare(); confetti(160);
+    FX.banner(`${M.title}!<small>${key === 'all' ? 'Every shrine in Hyrule mastered' : '3 ★ in every shrine'}</small>`, 'rankup');
+    setTimeout(() => dialogue(M.lines, () => UI().sequence(grant(M.reward), next)), 1600);
+  }
+  // returns reward steps for any newly mastered regions (call after stars change)
+  function checkMastery() {
+    const s = S(); const steps = [];
+    for (const r of STORY.regions) {
+      if (s.mastered[r.id]) continue;
+      const p = masteryProgress(r.subject);
+      if (p.done === p.total) { s.mastered[r.id] = true; steps.push(n => ceremony(r.id, n)); }
+    }
+    if (!s.mastered.all && STORY.regions.every(r => s.mastered[r.id])) { s.mastered.all = true; steps.push(n => ceremony('all', n)); }
+    State.save(); return steps;
+  }
+  function masteryPanel(r) {
+    const s = S(); const M = K.MASTERY[r.id]; const p = masteryProgress(r.subject); const won = s.mastered[r.id];
+    const names = rewardNames(M.reward);
+    const previewWeapon = M.reward.weapon ? ART.hero({ armour: s.armour, shield: M.reward.shield || s.shield, weapon: M.reward.weapon }) : ART.glider(M.reward.glider);
+    return `<div class="mastery slate ${won ? 'won' : ''}">
+      <div class="m-art ${won ? '' : 'locked'}">${previewWeapon}</div>
+      <div><h3>🏆 ${won ? M.title : 'Champion\'s Challenge'}</h3>
+        <p>${won ? `You earned ${M.champion}'s one-of-a-kind reward!` : `Get <b>★★★ in every shrine</b> here to earn ${M.champion}'s one-of-a-kind reward. It can't be bought anywhere!`}</p>
+        <div class="bar"><i style="width:${(p.done / p.total) * 100}%"></i></div>
+        <small class="muted">${p.done}/${p.total} shrines with ★★★ · Reward: ${names.join(' · ')}</small></div></div>`;
   }
 
   /* ---------------- SHOP ---------------- */
@@ -61,7 +101,7 @@
     const row = (emo, name, desc, right, cls = '') => `<div class="shop-row slate ${cls}"><span class="si">${emo}</span><div><b>${name}</b><p class="muted">${desc}</p></div>${right}</div>`;
     const gearRow = (list, kind, ownedKey, eqKey, descFn) => list.map(it => {
       const owned = s[ownedKey].includes(it.id), eq = s[eqKey] === it.id;
-      const right = eq ? '<span class="tag ok">Equipped</span>' : owned ? `<button class="btn small" data-equip="${it.id}" data-kind="${eqKey}">Equip</button>` : it.price === null ? `<span class="muted small-note">${it.quest ? '📜 Side-quest reward' : 'Not for sale'}</span>` : buyBtn(kind, it.id, it.price);
+      const right = eq ? '<span class="tag ok">Equipped</span>' : owned ? `<button class="btn small" data-equip="${it.id}" data-kind="${eqKey}">Equip</button>` : it.price === null ? `<span class="muted small-note">${it.mastery ? `🏆 ${it.mastery === 'all' ? '★★★ in every shrine in Hyrule' : `★★★ in every ${STORY.regions.find(x => x.id === it.mastery).name} shrine`}` : it.quest ? '📜 Side-quest reward' : 'Not for sale'}</span>` : buyBtn(kind, it.id, it.price);
       return row(it.emoji, it.name, descFn(it), right, it.price >= 5000 ? 'legend' : '');
     }).join('');
     let body = '';
@@ -425,7 +465,7 @@
       </div>
       <div class="row center">${has('bed') ? `<button class="btn ${rested ? '' : 'primary'}" id="sleep" ${rested ? 'disabled' : ''}>🛏️ ${rested ? 'Rested today' : 'Sleep (+10% XP next trial)'}</button>` : ''}${has('pot') ? '<button class="btn" id="cook">🍲 Cook</button>' : ''}</div>
       <h3>Bolson Construction: furniture</h3>
-      <div class="shop">${K.DECOR.map(d => `<div class="shop-row slate"><span class="si">${d.emoji}</span><div><b>${d.name}</b><p class="muted">${d.desc || 'Makes your house cosier.'}</p></div>${has(d.id) ? '<span class="tag ok">Placed</span>' : `<button class="btn small ${s.rupees >= d.price ? 'primary' : ''}" data-decor="${d.id}" ${s.rupees >= d.price ? '' : 'disabled'}>${price(d.price)}</button>`}</div>`).join('')}</div></div>`, 'plateau', 'home');
+      <div class="shop">${K.DECOR.filter(d => d.price !== null).map(d => `<div class="shop-row slate"><span class="si">${d.emoji}</span><div><b>${d.name}</b><p class="muted">${d.desc || 'Makes your house cosier.'}</p></div>${has(d.id) ? '<span class="tag ok">Placed</span>' : `<button class="btn small ${s.rupees >= d.price ? 'primary' : ''}" data-decor="${d.id}" ${s.rupees >= d.price ? '' : 'disabled'}>${price(d.price)}</button>`}</div>`).join('')}</div></div>`, 'plateau', 'home');
     on('#back', Game.map);
     on('#sleep', () => { s.rested = today(); s.restedBonus = true; State.save(); FX.flash('#0a0a30', 0.9); FX.banner('Zzz… Well rested!', 'grace'); setTimeout(house, 1200); });
     on('#cook', () => kitchen('house'));
@@ -475,6 +515,6 @@
     });
   }
 
-  window.World = { applyTheme, shop, bag, kitchen, stable, wildField, archeryIntro, kassIntro, leafIntro, house, quests, fairy, trialDrops, grant, mealInfo };
+  window.World = { checkMastery, masteryPanel, masteryProgress, applyTheme, shop, bag, kitchen, stable, wildField, archeryIntro, kassIntro, leafIntro, house, quests, fairy, trialDrops, grant, mealInfo };
   if (S()) applyTheme();
 })();

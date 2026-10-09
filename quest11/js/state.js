@@ -25,7 +25,7 @@
       house: { owned: false, decor: [] }, rested: '',
       theme: 'sheikah', glider: 'hylian', pet: 'none', ownedThemes: ['sheikah'], ownedGliders: ['hylian'], ownedPets: ['none'], ownedSaddles: ['stable'],
       fairy: { open: false, levels: {} },
-      quests: {}, counters: {},
+      quests: {}, counters: {}, mastered: {},
       plateau: {}, // subject -> true
       stars: {}, // topicId -> 0..3 (highest trial cleared)
       bosses: {}, // regionId -> true

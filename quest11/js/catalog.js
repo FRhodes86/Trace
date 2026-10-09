@@ -8,7 +8,7 @@
     { id: 'traveler', name: 'Traveller\'s Sword', emoji: '🗡️', dmg: 10, price: 0, trail: '#ffffff', blade: '#d7dde4', hilt: '#7a5230' },
     { id: 'boko', name: 'Boko Club', emoji: '🏏', dmg: 11, price: 80, trail: '#c8a06a', blade: '#a8794a', hilt: '#5a3a22', desc: 'Made from a Bokoblin\'s favourite tree branch.' },
     { id: 'soldier', name: 'Soldier\'s Broadsword', emoji: '⚔️', dmg: 13, price: 250, trail: '#e8f0ff', blade: '#dfe6ee', hilt: '#4a5a7a' },
-    { id: 'knight', name: 'Knight\'s Claymore', emoji: '🔱', dmg: 15, price: 600, trail: '#e8f0ff', blade: '#e6ecf2', hilt: '#2f4a8a' },
+    { id: 'knight', name: 'Knight\'s Claymore', emoji: '⚜️', dmg: 15, price: 600, trail: '#e8f0ff', blade: '#e6ecf2', hilt: '#2f4a8a' },
     { id: 'flame', name: 'Flameblade', emoji: '🔥', dmg: 16, price: 1100, trail: '#ff7a2a', blade: '#ff9a5a', hilt: '#7a2010', weak: 'wind', desc: 'Leaves a trail of fire. Super effective (+25% damage) against Windblight Ganon!' },
     { id: 'frost', name: 'Frostblade', emoji: '❄️', dmg: 16, price: 1100, trail: '#9fe8ff', blade: '#c8f4ff', hilt: '#1f4f8a', weak: 'fire', desc: 'Leaves a trail of ice. Super effective (+25% damage) against Fireblight Ganon!' },
     { id: 'thunder', name: 'Thunderblade', emoji: '⚡', dmg: 16, price: 1100, trail: '#ffe866', blade: '#fff3a0', hilt: '#8a6a10', weak: 'water', desc: 'Crackles with lightning. Super effective (+25% damage) against Waterblight Ganon!' },
@@ -17,6 +17,10 @@
     { id: 'lynel', name: 'Savage Lynel Sword', emoji: '🦁', dmg: 20, price: 4000, trail: '#ff5a5a', blade: '#e8c8b0', hilt: '#6a2a1a', desc: 'Taken from the fiercest monster in Hyrule.' },
     { id: 'biggoron', name: 'Biggoron\'s Sword', emoji: '🗻', dmg: 22, price: 7500, trail: '#b8ffb0', blade: '#eef4f8', hilt: '#4a3a8a', desc: 'A gigantic blade forged by the greatest Goron smith.' },
     { id: 'goddess', name: 'Goddess Sword', emoji: '🌟', dmg: 23, price: 14000, trail: '#fff6c8', blade: '#ffffff', hilt: '#3fe0ff', desc: 'Glows with sacred light. The finest blade money can buy.' },
+    // Champions' weapons: never sold. Each one is earned by getting 3 stars in every shrine of its region.
+    { id: 'boulder', name: 'Boulder Breaker', emoji: '🪨', dmg: 25, price: null, mastery: 'maths', shape: 'great', trail: '#ff9a2e', blade: '#9a9488', hilt: '#c2381c', desc: 'Daruk\'s colossal two-handed blade. The strongest weapon a hero can carry, after the Master Sword.' },
+    { id: 'trident', name: 'Lightscale Trident', emoji: '🔱', dmg: 24, price: null, mastery: 'english', shape: 'trident', weak: 'fire', trail: '#7fe8ff', blade: '#c8f4ff', hilt: '#c9302c', desc: 'Mipha\'s graceful spear. Super effective (+25% damage) against Fireblight Ganon.' },
+    { id: 'scimitar', name: 'Scimitar of the Seven', emoji: '🌙', dmg: 24, price: null, mastery: 'nonverbal', shape: 'scimitar', weak: 'water', trail: '#ffe866', blade: '#f6ecc0', hilt: '#c9a227', desc: 'Urbosa\'s golden curved sword. Super effective (+25% damage) against Waterblight Ganon.' },
     { id: 'master', name: 'Master Sword', emoji: '✨', dmg: 26, price: null, trail: '#bff6ff', blade: '#e9f4ff', hilt: '#3159c9', desc: 'Earned, not bought. Draw it in the Lost Woods.' },
   ];
 
@@ -29,6 +33,7 @@
     { id: 'hylian', name: 'Hylian Shield', emoji: '🔰', blocks: 2, price: 1300, look: 'hylian' },
     { id: 'royal', name: 'Royal Shield', emoji: '🏰', blocks: 2, price: 2500, look: 'royal', desc: 'Blocks 2 hits. Perfect guards earn 25 rupees.', bonus: 25 },
     { id: 'lynel', name: 'Savage Lynel Shield', emoji: '🦁', blocks: 3, price: 6000, look: 'lynel' },
+    { id: 'daybreaker', name: 'Daybreaker', emoji: '☀️', blocks: 3, price: null, mastery: 'nonverbal', look: 'daybreaker', bonus: 30, reflect: 10, desc: 'Urbosa\'s golden shield. Blocks 3 hits, earns 30 rupees per perfect guard and reflects 10 damage.' },
     { id: 'mirror', name: 'Mirror Shield', emoji: '🪞', blocks: 3, price: 11000, look: 'mirror', desc: 'Blocks 3 hits and reflects light back at the Blight for 15 damage!', reflect: 15 },
   ];
 
@@ -162,6 +167,7 @@
     { id: 'gerudo', name: 'Gerudo Crimson', emoji: '🔴', color: '#ff5a6e', price: 500 },
     { id: 'twilight', name: 'Twilight Purple', emoji: '🟣', color: '#b48bff', price: 1200 },
     { id: 'royal', name: 'Royal Gold', emoji: '🟡', color: '#ffd23d', price: 2000 },
+    { id: 'triforce', name: 'Triforce Radiance', emoji: '🔺', color: '#fff0a0', price: null, mastery: 'all' },
   ];
   C.GLIDERS = [
     { id: 'hylian', name: 'Hylian Paraglider', emoji: '🪂', hue: 0, price: 0 },
@@ -169,6 +175,8 @@
     { id: 'goron', name: 'Goron Fabric', emoji: '🪂', hue: 330, price: 300 },
     { id: 'rito', name: 'Rito Fabric', emoji: '🪂', hue: 90, price: 300 },
     { id: 'royal', name: 'Royal Fabric', emoji: '🪂', hue: 200, price: 900 },
+    { id: 'revali', name: 'Revali\'s Fabric', emoji: '🪂', hue: 0, price: null, mastery: 'verbal' },
+    { id: 'golden', name: 'Hero\'s Golden Fabric', emoji: '🪂', hue: 0, price: null, mastery: 'all' },
   ];
   C.PETS = [
     { id: 'none', name: 'No companion', emoji: '—', price: 0 },
@@ -203,6 +211,12 @@
     { id: 'fire', name: 'Fireplace', emoji: '🔥', price: 800, x: 22, y: 56 },
     { id: 'korokstatue', name: 'Korok Statue', emoji: '🗿', price: 1500, x: 70, y: 60 },
     { id: 'aquarium', name: 'Zora Aquarium', emoji: '🐠', price: 2000, x: 30, y: 46 },
+    // Champion trophies: only from mastering a region (3 stars in every shrine)
+    { id: 'm-rudania', name: 'Vah Rudania Model', emoji: '🦎', price: null, mastery: 'maths', x: 24, y: 16 },
+    { id: 'm-ruta', name: 'Vah Ruta Model', emoji: '🐘', price: null, mastery: 'english', x: 76, y: 14 },
+    { id: 'm-medoh', name: 'Vah Medoh Model', emoji: '🦅', price: null, mastery: 'verbal', x: 8, y: 20 },
+    { id: 'm-naboris', name: 'Vah Naboris Model', emoji: '🐪', price: null, mastery: 'nonverbal', x: 92, y: 18 },
+    { id: 'm-triforce', name: 'The Triforce', emoji: '🔺', price: null, mastery: 'all', x: 60, y: 50 },
     { id: 'goldstatue', name: 'Golden Hero Statue', emoji: '🏅', price: 6000, x: 50, y: 46, desc: 'A shining statue of you. Only true heroes can afford it!' },
   ];
 
@@ -218,6 +232,23 @@
     { id: 'golden', name: 'Golden (rare)', body: '#f0c850', mane: '#fff3c4', rare: true },
   ];
   C.STABLE_CAP = 5;
+
+  /* ---------- Region mastery: 3 stars in every shrine of a region. One-of-a-kind rewards that can't be bought. ---------- */
+  C.MASTERY = {
+    maths: { champion: 'Daruk', title: 'Champion of Death Mountain', reward: { weapon: 'boulder', decor: 'm-rudania', rupees: 1000 },
+      lines: [['Daruk', 'Whoa, whoa, WHOA! Three stars in every single shrine on my mountain? Little guy, that\'s the stuff of legends!'], ['Daruk', 'Here, take my Boulder Breaker. Nobody else in all of Hyrule gets to swing this beauty. Hah!']] },
+    english: { champion: 'Mipha', title: 'Champion of Zora\'s Domain', reward: { weapon: 'trident', decor: 'm-ruta', rupees: 1000 },
+      lines: [['Mipha', 'Every shrine in Zora\'s Domain, mastered with three stars… I\'m so proud of you.'], ['Mipha', 'Please take my Lightscale Trident. I made it myself, and I want you to have it. There is no other like it.']] },
+    verbal: { champion: 'Revali', title: 'Champion of Rito Village', reward: { relic: 'eaglebow', glider: 'revali', decor: 'm-medoh', rupees: 1000 },
+      lines: [['Revali', 'Three stars in every shrine around Rito Village? Hmph. I suppose even I must admit… that\'s impressive.'], ['Revali', 'Take my Great Eagle Bow, and a paraglider made with my colours. Try not to embarrass me.']] },
+    nonverbal: { champion: 'Urbosa', title: 'Champion of the Gerudo Desert', reward: { weapon: 'scimitar', shield: 'daybreaker', decor: 'm-naboris', rupees: 1000 },
+      lines: [['Urbosa', 'Every shrine in the desert, all three stars. Now THAT is the mark of a true warrior, little one.'], ['Urbosa', 'The Scimitar of the Seven and the Daybreaker are the pride of the Gerudo. Today, they are yours.']] },
+    all: { champion: 'Zelda', title: 'Hero of Hyrule', reward: { theme: 'triforce', glider: 'golden', decor: 'm-triforce', rupees: 5000 },
+      lines: [['Zelda', 'You did it… three stars in every shrine, in every corner of Hyrule. No hero has ever done this before.'], ['Zelda', 'The goddess has chosen to reward you with the Triforce itself. Wear its light with pride!']] },
+  };
+  C.RELICS = {
+    eaglebow: { name: 'Great Eagle Bow', emoji: '🏹', desc: 'Revali\'s bow. Every boss battle starts with 3 free Bomb Arrows.' },
+  };
 
   /* ---------- Side quests ---------- */
   // goal: counter key + target. reward: { rupees, tickets, item, ingredient:{id:n}, armour, saddle, decor, pet, theme }

@@ -173,7 +173,7 @@
       const [x, y] = PINS[r.id];
       return `<button class="pin region ${freed(r.id) ? 'freed' : ''} ${s.fog[r.id] ? '' : 'unexplored'}" style="left:${x}%;top:${y}%;--c:${r.color}" data-region="${r.id}">
         <span class="pin-art">${ART.beast(r.subject, freed(r.id))}</span>
-        <span class="pin-lbl"><b>${r.name}</b><small>${State.SUBJECT_NAMES[r.subject]}</small><i class="pbar"><i style="width:${pct}%"></i></i></span></button>`;
+        <span class="pin-lbl"><b>${s.mastered[r.id] ? '🏆 ' : ''}${r.name}</b><small>${State.SUBJECT_NAMES[r.subject]}</small><i class="pbar"><i style="width:${pct}%"></i></i></span></button>`;
     };
     const beams = R().filter(r => freed(r.id)).map(r => `<line x1="${PINS[r.id][0]}" y1="${PINS[r.id][1]}" x2="50" y2="44" class="beam"/>`).join('');
     const daily = s.daily; const goal = State.DAILY_GOAL;
@@ -325,6 +325,7 @@
     const unlocked = State.bossUnlocked(r); const beaten = s.bosses[r.id];
     screen(`${hud()}<div class="page region-page" style="--c:${r.color}">
       <div class="page-head"><button class="btn ghost" id="back">◀ Map</button><h2>${r.name}</h2><span class="pill">${State.SUBJECT_NAMES[r.subject]} · ★ ${stars}/${n * 3}</span></div>
+      ${s.mastered[r.id] ? '' : `<p class="mastery-hint">🏆 Champion's Challenge: ★★★ in every shrine here = ${STORY.regions.length ? CATALOG.MASTERY[r.id].champion : ''}'s one-of-a-kind reward (${World.masteryProgress(r.subject).done}/${n})</p>`}
       <div class="saga" style="height:${H}px">
         <svg class="saga-path" viewBox="0 0 400 ${H}" preserveAspectRatio="none"><path d="${path}" /></svg>
         <button class="beast-node ${beaten ? 'freed' : unlocked ? 'ready' : 'locked'}" id="boss" style="top:10px">
@@ -334,7 +335,7 @@
           <small>${beaten ? `✔ ${r.champion} is free! Rematch?` : unlocked ? `${r.boss} awaits!` : `🔒 Clear Trial 1 everywhere and earn ${need} ★ (${Math.min(stars, need)}/${need})`}</small>
         </button>
         ${nodes}
-      </div></div>`, id, id);
+      </div>${World.masteryPanel(r)}</div>`, id, id);
     on('#back', map);
     on('[data-t]', (e, el) => shrineScreen(el.dataset.t));
     on('#boss', () => (unlocked ? bossPrep(r) : toast(`Earn ${need} ★ in ${r.name} to board the Divine Beast.`)));
@@ -344,6 +345,9 @@
       s.fog[id] = true; State.save();
       setTimeout(() => { FX.flash('#3fe0ff', 0.4); FX.banner(`Sheikah Tower activated<small>${r.name} map data updated</small>`, 'tower'); U.sfx.orb(); }, 250);
       setTimeout(() => dialogue(r.intro), 1500);
+    } else {
+      // award any Champion's reward already earned (e.g. stars from before this feature existed)
+      const ms = World.checkMastery(); if (ms.length) setTimeout(() => sequence(ms, () => regionScreen(id)), 700);
     }
   }
 
@@ -411,6 +415,7 @@
             if (lv === 3) { const it = U.pick(['hearty', 'fairy', 'bombarrow', 'hasty']); s.items[it]++; const I = State.ITEMS.find(i => i.id === it); loot.push({ icon: `<span class="emo">${I.emoji}</span>`, label: I.name }); }
             loot.push({ icon: '⭐', label: `${'★'.repeat(lv)} star${lv > 1 ? 's' : ''}` });
             rewards.push(n => FX.chest(loot, n, 'Shrine treasure!'));
+            if (lv === 3) rewards.push(...World.checkMastery());
           }
           const drops = World.trialDrops(subj, foe.name, lv, false);
           if (r.B.wrong === 0) { s.tickets++; drops.push({ icon: '<span class="emo">🎫</span>', label: 'Perfect run: +1 ticket' }); }
@@ -444,7 +449,7 @@
       cfg, idx: 0, hearts: maxHearts, maxHearts, correct: 0, wrong: 0, streak: 0, best: 0, rupees: 0, seeds: 0, xp: 0, log: [],
       hp: foeHp, maxHp: foeHp, phase: 0, kills: 0,
       runes: {}, champ: {}, blocks: isBoss ? State.shield().blocks : 0, bombNext: false, furyNext: false,
-      arrows: isBoss ? s.items.bombarrow : 0, fairy: s.items.fairy > 0 && !exam && !sword,
+      arrows: isBoss ? s.items.bombarrow + (s.mastered.verbal ? 3 : 0) : 0, freeArrows: isBoss && s.mastered.verbal ? 3 : 0, fairy: s.items.fairy > 0 && !exam && !sword,
       timeLeft: 0, frozen: false, q: null, cur: null, answered: false, revaliUsed: false,
       examLeft: cfg.examTime || 0, done: false, seen: new Set(),
     };
@@ -510,7 +515,7 @@
       $('#runebar').innerHTML = rb.join('');
       on('[data-rune]', (e, el) => useRune(el.dataset.rune, el), $('#runebar'));
       on('[data-champ]', (e, el) => { if (!B.champ.urbosa || B.answered) return; B.champ.urbosa = false; B.furyNext = true; FX.flash('#ffe866', 0.5); FX.banner('Urbosa\'s Fury!', 'fury'); runeBar(); }, $('#runebar'));
-      on('[data-arrow]', () => { if (B.answered || B.bombNext || !B.arrows) return; B.arrows--; s.items.bombarrow--; State.save(); B.bombNext = true; toast('🏹 Bomb arrow nocked!'); runeBar(); }, $('#runebar'));
+      on('[data-arrow]', () => { if (B.answered || B.bombNext || !B.arrows) return; B.arrows--; if (B.freeArrows > 0) B.freeArrows--; else s.items.bombarrow--; State.save(); B.bombNext = true; toast('🏹 Bomb arrow nocked!'); runeBar(); }, $('#runebar'));
       on('#speak', () => speak(plain(B.q.prompt) + '. ' + (B.q.figs ? '' : B.q.options.map((o, i) => `${'ABCDE'[i]}: ${plain(o)}`).join('. '))), $('#runebar'));
       on('#quit', () => modal('<h3>Leave the battle?</h3><p>Progress in this trial will be lost.</p>', [{ label: 'Stay' }, { label: 'Leave', cls: 'danger', fn: () => cfg.onEnd({ won: false, quit: true, B }) }]), $('#runebar'));
     };

@@ -90,6 +90,13 @@ The hero (named by the player, default "Link") wakes on the Great Plateau and ha
   - The bed gives a daily XP boost.
   - The weapon rack and trophy shelf show off what you've earned.
   - The Golden Hero Statue (6,000 rupees) is for true heroes.
+- **Champion's Challenge:** get ★★★ in every shrine of a region to earn that Champion's one-of-a-kind reward. These can't be bought anywhere:
+  - **Death Mountain:** Daruk's Boulder Breaker (the strongest weapon after the Master Sword) and a Vah Rudania model for the house.
+  - **Zora's Domain:** Mipha's Lightscale Trident and a Vah Ruta model.
+  - **Rito Village:** Revali's Great Eagle Bow (3 free Bomb Arrows in every boss battle), Revali's paraglider fabric and a Vah Medoh model.
+  - **Gerudo Desert:** Urbosa's Scimitar of the Seven, the Daybreaker shield and a Vah Naboris model.
+  - **All four regions:** the Triforce for the house, the Triforce Radiance slate colour and the Hero's Golden paraglider.
+  - Each region also gives a 1,000-rupee bonus, and the full set gives 5,000.
 - **22 side quests** from Hudson, Sidon, Yunobo, Teba, Riju, Kass, Purah, Beedle and others. Rewards include armour sets, companions, saddles, colour themes and decor.
 - **Great Fairy Fountain** (next to the Goddess Statue): upgrade armour up to ★★★★ with rupees and monster parts, which boosts its perks.
 - **Spirit Orbs** (first clear of each shrine) can be swapped at the Goddess Statue: 4 orbs make a Heart Container or a Stamina Vessel.
