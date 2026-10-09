@@ -13,6 +13,10 @@
   const subjectOf = id => State.SUBJECTS.find(s => CONTENT[s].some(t => t.id === id));
   const regionOfSubject = subj => R().find(r => r.subject === subj);
   const shrineName = (subject, idx) => regionOfSubject(subject).shrines[idx] + ' Shrine';
+  const IC = ART.icons;
+  const heroArt = () => ART.hero({ armour: S().armour, shield: S().shield, weapon: S().weapon });
+  const wait = ms => new Promise(r => setTimeout(r, FX.reduce ? 0 : ms));
+  const ELEMENT = { maths: 'fire', english: 'water', verbal: 'wind', nonverbal: 'thunder' };
 
   let intervals = [];
   let keyHandler = null;
@@ -22,7 +26,12 @@
     try { window.speechSynthesis && speechSynthesis.cancel(); } catch (e) { /* no speech */ }
     $('#overlay').innerHTML = ''; $('#overlay').className = '';
   }
-  function screen(html, cls = '') { clearScreen(); app.className = cls; app.innerHTML = html; window.scrollTo(0, 0); }
+  // theme = background scene; music = ambient track
+  function screen(html, theme = 'map', music = null) {
+    clearScreen(); FX.theme(theme); if (music) FX.Music.play(music);
+    app.className = 'scr-' + theme; app.innerHTML = html; window.scrollTo(0, 0);
+    app.classList.remove('enter'); void app.offsetWidth; app.classList.add('enter');
+  }
   function on(sel, fn, root = app) { $$(sel, root).forEach(el => el.addEventListener('click', e => { U.sfx.click(); fn(e, el); })); }
   function onKey(fn) { keyHandler = fn; document.addEventListener('keydown', fn); }
 
@@ -38,18 +47,23 @@
   }
 
   /* ---------------- HUD ---------------- */
-  function heartsHtml(n, max) {
-    let h = ''; for (let i = 0; i < max; i++) h += `<span class="heart ${i < n ? 'full' : 'empty'}">${i < n ? '❤' : '♡'}</span>`; return `<span class="hearts">${h}</span>`;
+  function heartsHtml(n, max, breaking = []) {
+    let h = ''; for (let i = 0; i < max; i++) h += `<span class="hslot ${breaking.includes(i) ? 'breaking' : ''}">${IC.heart(i < n || breaking.includes(i))}</span>`;
+    return `<span class="hearts">${h}</span>`;
+  }
+  function rankBadge() {
+    const r = State.rank(); const pct = Math.round((r.into / r.need) * 100);
+    return `<div class="rank" id="rank" title="${r.title}"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="17" class="rk-bg"/><circle cx="20" cy="20" r="17" class="rk-fg" style="stroke-dasharray:${(pct / 100) * 106.8} 107"/></svg><b>${r.level}</b><span>${r.title}</span></div>`;
   }
   function hud() {
     const s = S();
     return `<div class="hud">
-      <div class="hud-l">${heartsHtml(s.hearts, s.hearts)}${s.stamina ? `<span class="pill" title="Stamina">🟢 ${s.stamina}</span>` : ''}</div>
+      <div class="hud-l">${rankBadge()}${heartsHtml(s.hearts, s.hearts)}</div>
       <div class="hud-r">
-        <span class="pill" title="Rupees"><b class="rupee">◆</b> ${s.rupees}</span>
-        <span class="pill" title="Korok Seeds">🌰 ${s.seeds}</span>
-        <span class="pill" title="Spirit Orbs">🔮 ${s.orbs}</span>
-        <span class="pill" title="Days in a row">🔥 ${s.streak.days}</span>
+        <span class="pill" id="hud-rupees" title="Rupees">${IC.rupee('green')} <b>${s.rupees}</b></span>
+        <span class="pill" id="hud-seeds" title="Korok Seeds">${IC.seed()} <b>${s.seeds}</b></span>
+        <span class="pill" id="hud-orbs" title="Spirit Orbs">${IC.orb()} <b>${s.orbs}</b></span>
+        <span class="pill" title="Days in a row">🔥 <b>${s.streak.days}</b></span>
       </div></div>`;
   }
   function toast(msg, kind = '') {
@@ -58,19 +72,19 @@
     setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 400); }, 2600);
   }
   function confetti(n = 60) {
-    const box = document.createElement('div'); box.className = 'confetti';
-    for (let i = 0; i < n; i++) { const p = document.createElement('i'); p.style.left = Math.random() * 100 + '%'; p.style.animationDelay = Math.random() * 0.8 + 's'; p.style.background = U.pick(['#3fe0ff', '#ffd23d', '#7ad97a', '#ff6a3d', '#c78bff']); box.appendChild(p); }
-    document.body.appendChild(box); setTimeout(() => box.remove(), 3500);
+    FX.burst(window.innerWidth / 2, window.innerHeight * 0.35, { n, colors: ['#3fe0ff', '#ffd23d', '#7ad97a', '#ff6a3d', '#c78bff', '#fff'], kind: 'star', speed: 520, size: 5, life: 1.6, gravity: 380 });
   }
 
-  /* ---------------- Dialogue (typewriter, click to advance) ---------------- */
+  /* ---------------- Dialogue (BotW-style box with portrait) ---------------- */
+  const PORTRAIT = { Zelda: ART.zelda, 'Old Man': ART.oldMan, Monk: ART.monk, Hestu: ART.hestu, Beedle: ART.beedle, Korok: ART.korok };
   function dialogue(lines, done) {
     const ov = $('#overlay'); ov.className = 'dlg-wrap'; let i = 0; let typing = null; let full = '';
     const show = () => {
       const [who, text] = lines[i]; full = fillName(text);
-      ov.innerHTML = `<div class="dlg" role="dialog"><div class="who">${U.esc(fillName(who))}</div><p class="txt"></p><div class="more">${i < lines.length - 1 ? '▼' : '✔'}</div></div>`;
+      const pf = PORTRAIT[who];
+      ov.innerHTML = `<div class="dlg ${pf ? 'has-p' : ''}" role="dialog">${pf ? `<div class="portrait">${pf()}</div>` : ''}<div class="dlg-body"><div class="who">${U.esc(fillName(who))}</div><p class="txt"></p><div class="more">${i < lines.length - 1 ? '▼' : '✔'}</div></div></div>`;
       const p = $('.txt', ov); let k = 0; clearInterval(typing);
-      typing = setInterval(() => { k += 2; p.textContent = full.slice(0, k); if (k >= full.length) { clearInterval(typing); typing = null; } }, 18);
+      typing = setInterval(() => { k += 2; p.textContent = full.slice(0, k); if (k % 6 === 0) U.sfx.tick(); if (k >= full.length) { clearInterval(typing); typing = null; } }, 22);
       if (S() && S().settings.speech && S().settings.autoRead) speak(full);
     };
     const adv = () => {
@@ -85,129 +99,162 @@
   }
   function modal(html, buttons) { // buttons: [{label, cls, fn}]
     const ov = $('#overlay'); ov.className = 'modal-wrap';
-    ov.innerHTML = `<div class="modal">${html}<div class="row">${buttons.map((b, i) => `<button class="btn ${b.cls || ''}" data-i="${i}">${b.label}</button>`).join('')}</div></div>`;
+    ov.innerHTML = `<div class="modal slate">${html}<div class="row">${buttons.map((b, i) => `<button class="btn ${b.cls || ''}" data-i="${i}">${b.label}</button>`).join('')}</div></div>`;
     ov.onclick = null;
     $$('button[data-i]', ov).forEach(b => b.addEventListener('click', e => { e.stopPropagation(); U.sfx.click(); ov.innerHTML = ''; ov.className = ''; const fn = buttons[+b.dataset.i].fn; fn && fn(); }));
   }
+  // run reward overlays one after another
+  function sequence(steps, done) { const next = () => { const st = steps.shift(); if (!st) return done && done(); st(next); }; next(); }
+  const gainXp = (n, el) => {
+    const up = State.addXp(n);
+    if (el) FX.floatText(el, `+${n} XP`, 'xp');
+    if (up) { const r = State.rank(); setTimeout(() => { FX.banner(`Hero Rank ${r.level}! <small>${r.title}</small>`, 'rankup'); U.sfx.fanfare(); confetti(40); }, 500); }
+    const rb = $('#rank'); if (rb) rb.outerHTML = rankBadge();
+  };
 
   /* =========================================================== TITLE */
   function title() {
     const has = State.load();
     screen(`<div class="title-screen">
-      <div class="title-glow"></div>
-      <div class="triforce">▲<br>▲▲</div>
-      <h1>${STORY.gameTitle}</h1>
-      <h2>${STORY.gameSubtitle}</h2>
-      <div class="menu">
-        ${has ? `<button class="btn big primary" id="cont">▶ Continue — ${U.esc(S().hero)}</button>` : ''}
-        <button class="btn big ${has ? '' : 'primary'}" id="new">✦ New Adventure</button>
+      <div class="logo">
+        <svg class="triforce" viewBox="0 0 100 88"><defs><linearGradient id="tfg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff3b0"/><stop offset="1" stop-color="#e0a420"/></linearGradient></defs><path d="M50,0 L75,44 H25Z M25,44 L50,88 H0Z M75,44 L100,88 H50Z" fill="url(#tfg)" stroke="#8a5a10" stroke-width="2"/></svg>
+        <h1><small>The Legend of the Eleven</small>${STORY.gameTitle}</h1>
+        <h2>${STORY.gameSubtitle}</h2>
       </div>
-      <p class="fine">A fan-made learning game for the GL Assessment 11+ — English · Maths · Verbal Reasoning · Non-Verbal Reasoning.<br>Not affiliated with or endorsed by Nintendo.</p>
-    </div>`, 'bg-title');
-    on('#cont', () => { State.touchDay(); U.soundOn = S().settings.sound; map(); });
+      <div class="title-hero">${S() ? heroArt() : ART.hero({})}</div>
+      <div class="menu">
+        ${has ? `<button class="btn big primary glow" id="cont">▶ Continue: ${U.esc(S().hero)} <small>Rank ${State.rank().level}</small></button>` : ''}
+        <button class="btn big ${has ? '' : 'primary glow'}" id="new">✦ New Adventure</button>
+      </div>
+      <p class="fine">A fan-made learning game for the GL Assessment 11+: English · Maths · Verbal Reasoning · Non-Verbal Reasoning.<br>Not affiliated with or endorsed by Nintendo.</p>
+    </div>`, 'title');
+    const start = () => { FX.Music.unlock(); if (S()) FX.Music.set(S().settings.music !== false); FX.Music.play('field'); };
+    on('#cont', () => { start(); State.touchDay(); U.soundOn = S().settings.sound; FX.flash('#fff', 0.7); map(); });
     on('#new', () => {
+      start();
       if (has) modal('<h3>Start a new adventure?</h3><p>This will replace your current save.</p>', [{ label: 'Cancel' }, { label: 'Start over', cls: 'danger', fn: newGame }]);
       else newGame();
     });
   }
 
   function newGame() {
-    screen(`<div class="center-card">
+    screen(`<div class="center-card slate">
+      <div class="nm-hero">${ART.hero({})}</div>
       <h2>What is your hero's name?</h2>
       <input id="nm" maxlength="14" value="${STORY.defaultHero}" autocomplete="off">
       <p class="muted">You can be Link, or use your own name!</p>
-      <button class="btn big primary" id="go">Begin ▶</button></div>`, 'bg-dark');
+      <button class="btn big primary" id="go">Begin ▶</button></div>`, 'shrine', 'shrine');
     const go = () => { const n = $('#nm').value.trim() || STORY.defaultHero; State.newGame(n); State.touchDay(); U.soundOn = true; intro(); };
     on('#go', go); $('#nm').focus(); $('#nm').select();
     $('#nm').addEventListener('keydown', e => { if (e.key === 'Enter') go(); });
   }
 
   function intro() {
-    screen(`<div class="shrine-of-resurrection"><div class="pod"></div></div>`, 'bg-dark');
-    dialogue(STORY.intro, () => { S().flags.introSeen = true; State.save(); plateau(true); });
+    screen(`<div class="resurrection"><div class="pod"></div><div class="sleeper">${heroArt()}</div></div>`, 'shrine', 'shrine');
+    dialogue(STORY.intro, () => {
+      S().flags.introSeen = true; State.save();
+      FX.flash('#ffffff', 1); U.sfx.solved();
+      setTimeout(() => plateau(true), 300);
+    });
   }
 
   /* =========================================================== MAP */
+  const PINS = { maths: [77, 21], english: [86, 52], verbal: [20, 26], nonverbal: [20, 80], castle: [50, 44], woods: [49, 17], plateau: [50, 79], hateno: [76, 79], blood: [33, 62] };
   function map() {
     const s = S();
     if (!s.flags.introSeen) return intro();
     if (!State.plateauDone()) return plateau();
+    // daily treasure chest
+    const today = new Date().toISOString().slice(0, 10);
     const freed = id => s.bosses[id];
-    const pos = { maths: [76, 20], english: [84, 50], verbal: [17, 22], nonverbal: [18, 78] };
-    const beams = R().filter(r => freed(r.id)).map(r => `<line x1="${pos[r.id][0]}" y1="${pos[r.id][1]}" x2="50" y2="46" class="beam"/>`).join('');
-    const node = (r) => {
-      const stars = State.regionStars(r), max = topicsOf(r.subject).length * 3;
-      return `<button class="node region ${freed(r.id) ? 'freed' : ''}" style="left:${pos[r.id][0]}%;top:${pos[r.id][1]}%;--c:${r.color}" data-region="${r.id}">
-        <span class="ico">${r.emoji}</span><span class="lbl">${r.name}</span><span class="sub">${State.SUBJECT_NAMES[r.subject]}</span>
-        <span class="bar"><i style="width:${Math.round((stars / max) * 100)}%"></i></span>${freed(r.id) ? '<span class="tag">FREED</span>' : ''}</button>`;
+    const pin = (r) => {
+      const stars = State.regionStars(r), max = topicsOf(r.subject).length * 3; const pct = Math.round((stars / max) * 100);
+      const [x, y] = PINS[r.id];
+      return `<button class="pin region ${freed(r.id) ? 'freed' : ''} ${s.fog[r.id] ? '' : 'unexplored'}" style="left:${x}%;top:${y}%;--c:${r.color}" data-region="${r.id}">
+        <span class="pin-art">${ART.beast(r.subject, freed(r.id))}</span>
+        <span class="pin-lbl"><b>${r.name}</b><small>${State.SUBJECT_NAMES[r.subject]}</small><i class="pbar"><i style="width:${pct}%"></i></i></span></button>`;
     };
+    const beams = R().filter(r => freed(r.id)).map(r => `<line x1="${PINS[r.id][0]}" y1="${PINS[r.id][1]}" x2="50" y2="44" class="beam"/>`).join('');
     const daily = s.daily; const goal = State.DAILY_GOAL;
     const bloodMoon = s.mistakes.length >= 6;
+    const here = PINS[s.lastRegion] || PINS.plateau;
     screen(`${hud()}
-      <div class="map-wrap ${s.calamity ? 'peace' : ''}">
-        <svg class="map-art" viewBox="0 0 100 100" preserveAspectRatio="none">
-          <defs><radialGradient id="mg" cx="50%" cy="50%"><stop offset="0" stop-color="#5a8f4e"/><stop offset="1" stop-color="#3c6b3a"/></radialGradient></defs>
-          <path class="land" d="M8,12 C20,2 40,6 55,4 C72,2 90,6 95,18 C99,30 94,44 97,58 C99,72 92,90 78,95 C60,99 40,97 25,95 C10,93 3,80 4,64 C5,48 1,30 8,12Z"/>
-          <path class="snow" d="M8,12 C16,6 26,6 32,10 C34,20 30,34 22,38 C12,40 5,32 6,22Z"/>
-          <path class="desert" d="M4,64 C10,58 22,60 30,66 C34,76 32,90 25,95 C12,94 4,82 4,64Z"/>
-          <path class="volcano" d="M62,6 C74,3 88,6 93,16 C92,28 82,32 72,30 C64,26 60,16 62,6Z"/>
-          <path class="water" d="M80,36 C90,36 96,44 96,56 C94,64 86,66 80,62 C76,54 76,42 80,36Z"/>
-          <path class="river" d="M50,46 C58,52 66,50 74,56 C80,60 86,58 92,64" />
-          <path class="river" d="M50,46 C44,56 36,60 30,70" />
-          ${beams}
-          <circle cx="50" cy="46" r="7" class="${s.calamity ? 'castle-clear' : 'malice'}"/>
-        </svg>
-        ${R().map(node).join('')}
-        <button class="node castle ${State.calamityUnlocked() ? '' : 'locked'} ${s.calamity ? 'freed' : ''}" style="left:50%;top:46%" id="castle"><span class="ico">🏰</span><span class="lbl">Hyrule Castle</span><span class="sub">${s.calamity ? 'Peace restored' : State.calamityUnlocked() ? 'Face Calamity Ganon!' : `${State.bossesBeaten()}/4 Champions freed`}</span></button>
-        <button class="node small" style="left:44%;top:10%" id="woods"><span class="ico">🌲</span><span class="lbl">Lost Woods</span></button>
-        <button class="node small" style="left:52%;top:80%" id="plat"><span class="ico">⛰️</span><span class="lbl">Great Plateau</span></button>
-        <button class="node small" style="left:70%;top:72%" id="hateno"><span class="ico">🏚️</span><span class="lbl">Hateno Lab</span><span class="sub">Practice Papers</span></button>
-        ${bloodMoon ? `<button class="node bloodmoon" style="left:27%;top:60%" id="blood"><span class="ico">🌕</span><span class="lbl">Blood Moon!</span><span class="sub">${s.mistakes.length} mistakes return</span></button>` : ''}
+      <div class="slate-frame">
+        <div class="map-scroll" id="mapscroll"><div class="map-wrap">
+          ${ART.worldMap(s)}
+          <svg class="beams" viewBox="0 0 100 100" preserveAspectRatio="none">${beams}</svg>
+          ${R().map(pin).join('')}
+          <button class="pin castle ${State.calamityUnlocked() ? 'ready' : 'locked'} ${s.calamity ? 'freed' : ''}" style="left:${PINS.castle[0]}%;top:${PINS.castle[1]}%" id="castle"><span class="pin-lbl"><b>Hyrule Castle</b><small>${s.calamity ? 'Peace restored' : State.calamityUnlocked() ? 'Face Calamity Ganon!' : `${State.bossesBeaten()}/4 Champions freed`}</small></span></button>
+          <button class="pin small" style="left:${PINS.woods[0]}%;top:${PINS.woods[1]}%" id="woods"><span class="pin-art sm">${IC.sword()}</span><span class="pin-lbl"><b>Lost Woods</b></span></button>
+          <button class="pin small" style="left:${PINS.plateau[0]}%;top:${PINS.plateau[1]}%" id="plat"><span class="pin-art sm">${IC.tower(true)}</span><span class="pin-lbl"><b>Great Plateau</b></span></button>
+          <button class="pin small" style="left:${PINS.hateno[0]}%;top:${PINS.hateno[1]}%" id="hateno"><span class="pin-art sm">📜</span><span class="pin-lbl"><b>Hateno Lab</b><small>Practice papers</small></span></button>
+          ${bloodMoon ? `<button class="pin bloodmoon" style="left:${PINS.blood[0]}%;top:${PINS.blood[1]}%" id="blood"><span class="pin-art sm">🌕</span><span class="pin-lbl"><b>Blood Moon!</b><small>${s.mistakes.length} mistakes return</small></span></button>` : ''}
+          <div class="me" id="me" style="left:${here[0]}%;top:${here[1]}%">${ART.hero({ armour: s.armour, shield: s.shield, weapon: s.weapon })}</div>
+        </div></div>
       </div>
-      <div class="daily">
-        <div><b>Daily Quest:</b> answer ${goal} questions correctly today <span class="muted">(${Math.min(daily.correct, goal)}/${goal})</span></div>
-        <div class="bar"><i style="width:${Math.min(100, (daily.correct / goal) * 100)}%"></i></div>
-        ${daily.correct >= goal && !daily.claimed ? '<button class="btn primary" id="claim">Claim reward!</button>' : daily.claimed ? '<span class="tag ok">Complete ✓</span>' : ''}
+      <p class="map-hint">👆 Drag the map to explore Hyrule</p>
+      <div class="daily slate">
+        <div class="dq">${IC.chest()}<div><b>Daily Quest:</b> answer ${goal} questions correctly today <span class="muted">(${Math.min(daily.correct, goal)}/${goal})</span><div class="bar"><i style="width:${Math.min(100, (daily.correct / goal) * 100)}%"></i></div></div></div>
+        ${daily.correct >= goal && !daily.claimed ? '<button class="btn primary glow" id="claim">Claim reward!</button>' : daily.claimed ? '<span class="tag ok">Complete ✓</span>' : ''}
       </div>
       <nav class="dock">
-        <button class="dock-b" id="shop"><span>🎒</span>Beedle's Shop</button>
-        <button class="dock-b" id="statue"><span>🗿</span>Goddess Statue</button>
-        <button class="dock-b" id="hestu"><span>🪇</span>Hestu</button>
-        <button class="dock-b" id="log"><span>📒</span>Adventure Log</button>
-        <button class="dock-b" id="gear"><span>⚙️</span>Settings</button>
-      </nav>`, 'bg-map');
-    on('[data-region]', (e, el) => regionScreen(el.dataset.region));
-    on('#castle', () => (State.calamityUnlocked() ? calamityIntro() : toast('Free all four Divine Beasts to reach Hyrule Castle.')));
-    on('#woods', masterSword);
-    on('#plat', () => plateau());
-    on('#hateno', mockMenu);
+        <button class="dock-b" id="shop">${ART.beedle()}<span>Shop</span></button>
+        <button class="dock-b" id="statue">${ART.goddess()}<span>Goddess</span></button>
+        <button class="dock-b" id="hestu">${ART.hestu()}<span>Hestu</span></button>
+        <button class="dock-b" id="log"><span class="dock-ic">📒</span><span>Log</span></button>
+        <button class="dock-b" id="gear"><span class="dock-ic">⚙️</span><span>Settings</span></button>
+      </nav>`, 'map', 'field');
+    // centre the map on the hero on small screens
+    const sc = $('#mapscroll'); if (sc) sc.scrollLeft = (sc.scrollWidth - sc.clientWidth) * (here[0] / 100);
+    const travel = (to, go) => {
+      const me = $('#me'); const [x, y] = PINS[to];
+      if (!me || FX.reduce) return go();
+      me.classList.add('flying'); U.sfx.korok();
+      me.animate([{ left: me.style.left, top: me.style.top }, { left: `${(parseFloat(me.style.left) + x) / 2}%`, top: `${Math.min(parseFloat(me.style.top), y) - 12}%`, offset: 0.5 }, { left: x + '%', top: y + '%' }], { duration: 750, easing: 'ease-in-out' }).onfinish = () => { s.lastRegion = to; State.save(); go(); };
+    };
+    on('[data-region]', (e, el) => travel(el.dataset.region, () => regionScreen(el.dataset.region)));
+    on('#castle', () => (State.calamityUnlocked() ? travel('castle', calamityIntro) : toast('Free all four Divine Beasts to reach Hyrule Castle.')));
+    on('#woods', () => travel('woods', masterSword));
+    on('#plat', () => travel('plateau', () => plateau()));
+    on('#hateno', () => travel('hateno', mockMenu));
     on('#blood', bloodMoonIntro);
     on('#claim', () => {
       const bonus = 50 + Math.min(50, s.streak.days * 5);
-      s.rupees += bonus; s.seeds++; s.seedsTotal++; s.daily.claimed = true; State.save(); U.sfx.fanfare(); confetti();
-      toast(`Daily Quest complete! +${bonus} rupees, +1 Korok Seed 🌰`, 'good'); map();
+      s.rupees += bonus; s.seeds++; s.seedsTotal++; s.daily.claimed = true; State.save();
+      FX.chest([{ icon: IC.rupee('red'), label: `${bonus} rupees` }, { icon: IC.seed(), label: 'Korok seed' }], map, 'Daily Quest complete!');
     });
-    on('#shop', shop); on('#statue', statue); on('#hestu', hestu); on('#log', () => adventureLog()); on('#gear', settings);
-    if (!s.flags.mapSeen) { s.flags.mapSeen = true; State.save(); dialogue([['Old Man', 'This is Hyrule. Each region holds shrines for one subject, and a Divine Beast controlled by a Blight.'], ['Old Man', 'Clear shrines to earn stars. Earn enough stars and you can challenge the Blight. Free all four Champions and you can face Calamity Ganon himself!']]); }
+    on('#shop', () => shop()); on('#statue', () => statue()); on('#hestu', () => hestu()); on('#log', () => adventureLog()); on('#gear', settings);
+    if (!s.flags.mapSeen) {
+      s.flags.mapSeen = true; State.save();
+      dialogue([['Old Man', 'This is Hyrule. Each region holds shrines for one subject, and a Divine Beast controlled by a Blight.'], ['Old Man', 'Clouds hide the regions you haven\'t explored yet. Travel there to reveal them!'], ['Old Man', 'Clear shrines to earn stars. Earn enough stars and you can challenge the Blight. Free all four Champions and you can face Calamity Ganon himself!']]);
+    } else if (s.dailyChest !== today) {
+      s.dailyChest = today; const r = U.pick([['rupee', 30], ['rupee', 50], ['seed', 1], ['item', 'hearty'], ['item', 'hasty'], ['rupee', 80]]);
+      let label, icon;
+      if (r[0] === 'rupee') { s.rupees += r[1]; label = `${r[1]} rupees`; icon = IC.rupee(r[1] >= 80 ? 'purple' : r[1] >= 50 ? 'red' : 'blue'); }
+      else if (r[0] === 'seed') { s.seeds++; s.seedsTotal++; label = 'Korok seed'; icon = IC.seed(); }
+      else { s.items[r[1]]++; const it = State.ITEMS.find(x => x.id === r[1]); label = it.name; icon = `<span class="emo">${it.emoji}</span>`; }
+      State.save();
+      setTimeout(() => FX.chest([{ icon, label }, { icon: '🔥', label: `Day streak: ${s.streak.days}` }], map, 'Daily treasure!'), 500);
+    }
   }
 
   /* =========================================================== GREAT PLATEAU (tutorial) */
   function plateau(first) {
     const s = S();
     const done = State.plateauDone();
-    const cards = STORY.plateauShrines.map(p => {
+    const cards = STORY.plateauShrines.map((p, i) => {
       const ok = s.plateau[p.subject]; const rune = STORY.runes[p.rune];
-      return `<button class="card shrine ${ok ? 'done' : ''}" data-sub="${p.subject}">
-        <div class="shrine-ico">${ok ? rune.emoji : '◈'}</div>
-        <div><h3>${p.name} Shrine</h3><p>${State.SUBJECT_NAMES[p.subject]} · Rune: <b>${rune.name}</b></p><p class="muted">${rune.desc}</p></div>
-        <div class="stars">${ok ? '✔' : 'Enter ▶'}</div></button>`;
+      return `<button class="shrine-node ${ok ? 'done' : 'new'}" style="--d:${i * 0.12}s" data-sub="${p.subject}">
+        ${IC.shrine(ok ? 'done' : 'new')}
+        <b>${p.name} Shrine</b><small>${State.SUBJECT_NAMES[p.subject]}</small>
+        <span class="rune-get ${ok ? '' : 'dim'}">${IC.rune(p.rune)} ${rune.name}</span></button>`;
     }).join('');
     screen(`${hud()}<div class="page">
-      <div class="page-head"><button class="btn ghost" id="back">◀ Map</button><h2>⛰️ The Great Plateau</h2></div>
-      <p class="intro">Four tutorial shrines — one for each 11+ subject. Each one teaches you a Sheikah Rune.</p>
-      <div class="cards">${cards}</div>
+      <div class="page-head"><button class="btn ghost" id="back">◀ Map</button><h2>The Great Plateau</h2></div>
+      <div class="plateau-scene"><div class="npc-stand">${ART.oldMan()}</div><p class="intro slate">Four tutorial shrines, one for each 11+ subject. Each one gives you a <b>Sheikah Rune</b>.</p></div>
+      <div class="shrine-grid">${cards}</div>
       ${done ? '<p class="ok-note">✔ You have the paraglider! The whole of Hyrule is open to you.</p>' : ''}
-    </div>`, 'bg-plateau');
+    </div>`, 'plateau', 'field');
     on('#back', () => (done ? map() : toast('Complete all four shrines to get the paraglider!')));
     on('[data-sub]', (e, el) => plateauShrine(el.dataset.sub));
     if (first) dialogue(STORY.plateauIntro);
@@ -217,21 +264,27 @@
     const rune = STORY.runes[p.rune];
     const ts = topicsOf(subject);
     battle({
-      kind: 'tutorial', title: `${p.name} Shrine`, subtitle: `Tutorial · ${State.SUBJECT_NAMES[subject]}`, total: 6, hearts: 3,
+      kind: 'tutorial', title: `${p.name} Shrine`, subtitle: `Tutorial · ${State.SUBJECT_NAMES[subject]}`, total: 6, hearts: 3, theme: 'shrine',
+      foe: { name: 'Training Chuchu', art: ART.chuchu('plain'), attack: 'water' },
       next: B => { const t = ts[B.idx % ts.length]; return { topic: t, lv: 1 }; },
-      intro: [['Monk', `Welcome, ${S().hero}. This shrine tests ${State.SUBJECT_NAMES[subject]}. Answer the questions — six of them — without losing all of your hearts.`], ['Monk', 'If you get one wrong, read the explanation carefully. That is how heroes learn!']],
+      intro: [['Monk', `Welcome, ${S().hero}. This shrine tests ${State.SUBJECT_NAMES[subject]}. A Chuchu blocks the way!`], ['Monk', 'Each right answer is a sword strike. Land 4 hits before it hits you 3 times. If you get one wrong, read the explanation — that is how heroes learn!']],
       onEnd: r => {
         const s = S();
         if (r.won) {
           const firstTime = !s.plateau[subject];
           s.plateau[subject] = true;
-          if (firstTime) { s.runes[p.rune] = true; s.orbs++; s.orbsTotal++; }
+          const rewards = [];
+          if (firstTime) {
+            s.runes[p.rune] = true; s.orbs++; s.orbsTotal++;
+            rewards.push(n => FX.itemGet(`<div class="rune-big">${IC.rune(p.rune)}</div>`, `You got the ${rune.name} rune!`, rune.desc, n));
+            rewards.push(n => FX.itemGet(IC.orb(), 'You got a Spirit Orb!', 'Collect four and offer them at a Goddess Statue.', n));
+          }
           State.save();
-          results(r, { extra: firstTime ? `<div class="reward big">${rune.emoji} You learned the <b>${rune.name}</b> rune!<br><small>${rune.desc}</small></div><div class="reward">🔮 You received a Spirit Orb!</div>` : '', next: () => {
+          results(r, { rewards, next: () => {
             if (State.plateauDone() && !s.flags.paraglider) {
               s.flags.paraglider = true; State.addMemory('m-plateau'); State.save();
-              screen('<div class="paraglider">🪂</div>', 'bg-plateau');
-              dialogue(STORY.plateauDone, () => { U.sfx.fanfare(); confetti(); memoryScreen('m-plateau', map); });
+              screen(`<div class="cutscene"><div class="npc-stand big">${ART.oldMan()}</div></div>`, 'plateau', 'field');
+              dialogue(STORY.plateauDone, () => FX.itemGet('<div class="glider">🪂</div>', 'You got the Paraglider!', 'Now you can fly anywhere in Hyrule.', () => memoryScreen('m-plateau', map)));
             } else plateau();
           } });
         } else results(r, { retry: () => plateauShrine(subject), next: plateau });
@@ -239,82 +292,115 @@
     });
   }
 
-  /* =========================================================== REGION */
+  /* =========================================================== REGION (saga-style path of shrines) */
   function regionScreen(id) {
     const r = region(id); const s = S(); const ts = topicsOf(r.subject);
-    const cards = ts.map((t, i) => {
-      const st = s.stars[t.id] || 0; const open = State.shrineUnlocked(r, i);
-      return `<button class="card shrine ${open ? '' : 'locked'} ${st === 3 ? 'gold' : ''}" data-t="${t.id}" ${open ? '' : 'disabled'}>
-        <div class="shrine-ico">${open ? t.icon : '🔒'}</div>
-        <div><h3>${r.shrines[i]} Shrine</h3><p>${t.name}</p>${open ? `<div class="mbar" title="Mastery"><i style="width:${State.mastery(t.id)}%"></i></div>` : '<p class="muted">Earn a star in the previous shrine to unlock</p>'}</div>
-        <div class="stars">${'★'.repeat(st)}<span class="dim">${'★'.repeat(3 - st)}</span></div></button>`;
+    const firstVisit = !s.fog[id];
+    const n = ts.length; const narrow = window.innerWidth < 600; const rowH = narrow ? 150 : 118;
+    const pos = i => { const y = (n - i) * rowH + 40; const x = 50 + Math.sin(i * 1.15) * (narrow ? 24 : 30); return [x, y]; };
+    const H = (n + 1) * rowH + 140;
+    let current = ts.findIndex((t, i) => State.shrineUnlocked(r, i) && (s.stars[t.id] || 0) < 3); if (current < 0) current = n - 1;
+    const pts = []; for (let i = 0; i < n; i++) pts.push(pos(i));
+    const path = `M${pts.map(([x, y]) => `${x * 4},${y}`).join(' L')} L200,70`;
+    const nodes = ts.map((t, i) => {
+      const st = s.stars[t.id] || 0; const open = State.shrineUnlocked(r, i); const [x, y] = pos(i);
+      const state = !open ? 'locked' : st >= 1 ? 'done' : 'new';
+      return `<button class="shrine-node path-node ${state} ${st === 3 ? 'gold' : ''} ${i === current ? 'current' : ''}" style="left:${x}%;top:${y}px;--d:${i * 0.06}s" data-t="${t.id}" ${open ? '' : 'disabled'}>
+        ${IC.shrine(state)}
+        <span class="sn-stars">${'★'.repeat(st)}<span class="dim">${'★'.repeat(3 - st)}</span></span>
+        <b>${r.shrines[i]}</b><small>${t.icon} ${t.name}</small>
+        ${i === current ? `<span class="you">${heroArt()}</span>` : ''}</button>`;
     }).join('');
     const stars = State.regionStars(r), need = State.bossNeed(r);
     const unlocked = State.bossUnlocked(r); const beaten = s.bosses[r.id];
-    screen(`${hud()}<div class="page" style="--c:${r.color}">
-      <div class="page-head"><button class="btn ghost" id="back">◀ Map</button><h2>${r.emoji} ${r.name}</h2><span class="pill">${State.SUBJECT_NAMES[r.subject]} · ★ ${stars}</span></div>
-      <div class="cards">${cards}</div>
-      <div class="card beast ${beaten ? 'done' : unlocked ? 'ready' : 'locked'}">
-        <div class="beast-ico">${r.beastEmoji}</div>
-        <div><h3>${r.beast}</h3>
-          <p>${beaten ? `✔ ${r.champion} is free! You have <b>${STORY.champions[r.ability].name}</b>.` : unlocked ? `${r.boss} awaits…` : `To challenge ${r.boss}: clear Trial 1 of every shrine and collect <b>${need} ★</b> (you have ${stars}).`}</p></div>
-        <div>${unlocked ? `<button class="btn ${beaten ? '' : 'danger pulse'}" id="boss">${beaten ? 'Rematch' : 'Board the Beast ⚔'}</button>` : `<span class="lock">🔒 ${Math.min(stars, need)}/${need} ★</span>`}</div>
-      </div></div>`, `bg-${r.id}`);
+    screen(`${hud()}<div class="page region-page" style="--c:${r.color}">
+      <div class="page-head"><button class="btn ghost" id="back">◀ Map</button><h2>${r.name}</h2><span class="pill">${State.SUBJECT_NAMES[r.subject]} · ★ ${stars}/${n * 3}</span></div>
+      <div class="saga" style="height:${H}px">
+        <svg class="saga-path" viewBox="0 0 400 ${H}" preserveAspectRatio="none"><path d="${path}" /></svg>
+        <button class="beast-node ${beaten ? 'freed' : unlocked ? 'ready' : 'locked'}" id="boss" style="top:10px">
+          <span class="bn-art">${ART.beast(r.subject, beaten)}</span>
+          <span class="bn-boss">${beaten ? '' : ART.blight(r.element)}</span>
+          <b>${r.beast}</b>
+          <small>${beaten ? `✔ ${r.champion} is free! Rematch?` : unlocked ? `${r.boss} awaits!` : `🔒 Clear Trial 1 everywhere and earn ${need} ★ (${Math.min(stars, need)}/${need})`}</small>
+        </button>
+        ${nodes}
+      </div></div>`, id, id);
     on('#back', map);
     on('[data-t]', (e, el) => shrineScreen(el.dataset.t));
-    on('#boss', () => bossPrep(r));
-    if (!s.flags['visit-' + id]) { s.flags['visit-' + id] = true; State.save(); dialogue(r.intro); }
+    on('#boss', () => (unlocked ? bossPrep(r) : toast(`Earn ${need} ★ in ${r.name} to board the Divine Beast.`)));
+    // scroll to current shrine
+    const cur = $('.path-node.current'); if (cur) setTimeout(() => cur.scrollIntoView({ block: 'center', behavior: FX.reduce ? 'auto' : 'smooth' }), 150);
+    if (firstVisit) {
+      s.fog[id] = true; State.save();
+      setTimeout(() => { FX.flash('#3fe0ff', 0.4); FX.banner(`Sheikah Tower activated<small>${r.name} map data updated</small>`, 'tower'); U.sfx.orb(); }, 250);
+      setTimeout(() => dialogue(r.intro), 1500);
+    }
   }
 
   /* =========================================================== SHRINE (lesson + trials) */
   const TRIALS = [
     { lv: 1, name: 'Trial of Beginnings', label: 'Novice' },
     { lv: 2, name: 'Trial of Wisdom', label: 'Adept' },
-    { lv: 3, name: 'Trial of the 11+', label: 'Master' },
+    { lv: 3, name: 'Test of Strength', label: 'Master' },
   ];
+  const ELNAME = { fire: 'Fire', water: '', wind: 'Ice', thunder: 'Electric', plain: '' };
+  function trialFoe(subject, lv, idx) {
+    const el = ELEMENT[subject];
+    const opts = [
+      [{ name: `${ELNAME[el]} Chuchu`.trim(), art: () => ART.chuchu(el), attack: el }, { name: `${ELNAME[el]} Keese`.trim(), art: () => ART.keese(el), attack: el }],
+      [{ name: 'Red Bokoblin', art: () => ART.bokoblin('red'), attack: 'melee' }, { name: `${ELNAME[el]} Lizalfos`.trim(), art: () => ART.lizalfos(el), attack: el }, { name: 'Blue Moblin', art: () => ART.moblin(), attack: 'melee' }, { name: 'Blue Bokoblin', art: () => ART.bokoblin('blue'), attack: 'melee' }],
+      [{ name: 'Guardian Scout', art: () => ART.guardianScout(), attack: 'laser' }, { name: 'Lynel', art: () => ART.lynel(), attack: 'fire' }, { name: 'Silver Bokoblin', art: () => ART.bokoblin('silver'), attack: 'melee' }],
+    ][lv - 1];
+    const f = opts[idx % opts.length]; return { name: f.name, art: f.art(), attack: f.attack };
+  }
   function shrineScreen(topicId) {
     const t = topicById(topicId); const subj = subjectOf(topicId); const r = regionOfSubject(subj); const idx = topicsOf(subj).indexOf(t); const s = S();
     const st = s.stars[topicId] || 0;
     screen(`${hud()}<div class="page shrine-page">
       <div class="page-head"><button class="btn ghost" id="back">◀ ${r.name}</button><h2>${r.shrines[idx]} Shrine</h2></div>
-      <div class="lesson">
-        <div class="monk">🧘</div>
-        <div><h3>The Monk's Teaching: ${t.icon} ${t.name}</h3>${t.lesson}
-        <button class="btn ghost small" id="read">🔊 Read to me</button></div>
+      <div class="lesson-wrap">
+        <div class="monk-seat">${ART.monk()}</div>
+        <div class="lesson scroll"><h3>The Monk's Teaching: ${t.icon} ${t.name}</h3>${t.lesson}
+          <button class="btn ghost small" id="read">${IC.rune('read')} Read to me</button></div>
       </div>
       <div class="trials">${TRIALS.map(tr => {
-        const open = st >= tr.lv - 1; const done = st >= tr.lv;
+        const open = st >= tr.lv - 1; const done = st >= tr.lv; const foe = trialFoe(subj, tr.lv, idx);
         return `<button class="trial ${done ? 'done' : ''} ${open ? '' : 'locked'}" data-lv="${tr.lv}" ${open ? '' : 'disabled'}>
-          <span class="tlv">${'★'.repeat(tr.lv)}</span><b>${tr.name}</b><span class="muted">${tr.label}${tr.lv === 3 ? ' · timed' : ''}</span>
-          <span>${done ? '✔ Cleared' : open ? 'Begin ▶' : '🔒'}</span></button>`;
+          <span class="tlv">${'★'.repeat(tr.lv)}</span>
+          <span class="t-foe">${open ? foe.art : '<span class="qm">?</span>'}</span>
+          <b>${tr.name}</b><span class="muted">${tr.label} · ${open ? foe.name : 'locked'}${tr.lv === 3 ? ' · timed' : ''}</span>
+          <span class="t-go">${done ? '✔ Cleared · replay' : open ? 'Fight ⚔' : '🔒'}</span></button>`;
       }).join('')}</div>
-      <p class="muted center">Each trial: 8 questions and 3 hearts. Don't run out of hearts! ${st === 0 ? 'Clearing the first trial earns a <b>Spirit Orb</b>.' : ''}</p>
-    </div>`, `bg-shrine`);
+      <p class="muted center">Land <b>6 hits</b> before the monster lands 3 on you. ${st === 0 ? 'Your first win here earns a <b>Spirit Orb</b>!' : ''}</p>
+    </div>`, 'shrine', 'shrine');
     on('#back', () => regionScreen(r.id));
     on('#read', () => speak(plain(t.lesson)));
-    on('[data-lv]', (e, el) => trial(topicId, +el.dataset.lv));
+    on('[data-lv]', (e, el) => { FX.flash('#3fe0ff', 0.5); trial(topicId, +el.dataset.lv); });
   }
 
   function trial(topicId, lv) {
     const t = topicById(topicId); const subj = subjectOf(topicId); const idx = topicsOf(subj).indexOf(t); const name = shrineName(subj, idx);
     const tr = TRIALS[lv - 1];
     const fixed = t.trial ? t.trial(lv) : null; // comprehension uses one passage per trial
+    const foe = trialFoe(subj, lv, idx);
     battle({
-      kind: 'trial', title: name, subtitle: `${tr.name} · ${t.name}`, total: fixed ? fixed.length : 8, hearts: 3, fixed: !!fixed,
-      timer: lv === 3 ? 75 : 0,
-      next: B => (fixed ? { topic: t, lv, q: fixed[B.idx]() } : { topic: t, lv }),
+      kind: 'trial', title: name, subtitle: `${tr.name} · ${t.name}`, total: fixed ? fixed.length : 8, hearts: 3, fixed: !!fixed, theme: 'shrine',
+      timer: lv === 3 ? 75 : 0, foe,
+      next: B => (fixed && fixed[B.idx] ? { topic: t, lv, q: fixed[B.idx]() } : { topic: t, lv }),
       onEnd: r => {
         const s = S();
         if (r.won) {
-          const prev = s.stars[topicId] || 0; let extra = '';
+          const prev = s.stars[topicId] || 0; const rewards = []; const loot = [];
           if (lv > prev) {
             s.stars[topicId] = lv;
-            if (lv === 1) { s.orbs++; s.orbsTotal++; extra += '<div class="reward big">🔮 You received a <b>Spirit Orb</b>!<br><small>Take 4 to a Goddess Statue for a Heart Container.</small></div>'; U.sfx.orb(); }
-            const chest = [0, 30, 60, 120][lv]; s.rupees += chest; extra += `<div class="reward">🎁 Treasure chest! +${chest} rupees</div>`;
-            if (lv === 3) { const it = U.pick(['hearty', 'fairy', 'bombarrow', 'hasty']); s.items[it]++; extra += `<div class="reward">${State.ITEMS.find(i => i.id === it).emoji} The chest also held a ${State.ITEMS.find(i => i.id === it).name}!</div>`; }
+            if (lv === 1) { s.orbs++; s.orbsTotal++; rewards.push(n => FX.itemGet(IC.orb(), 'You got a Spirit Orb!', 'Take four to a Goddess Statue for a Heart Container.', n)); }
+            const chestR = [0, 30, 60, 120][lv]; s.rupees += chestR; loot.push({ icon: IC.rupee(lv === 3 ? 'purple' : lv === 2 ? 'red' : 'blue'), label: `${chestR} rupees` });
+            if (lv === 3) { const it = U.pick(['hearty', 'fairy', 'bombarrow', 'hasty']); s.items[it]++; const I = State.ITEMS.find(i => i.id === it); loot.push({ icon: `<span class="emo">${I.emoji}</span>`, label: I.name }); }
+            loot.push({ icon: '⭐', label: `${'★'.repeat(lv)} star${lv > 1 ? 's' : ''}` });
+            rewards.push(n => FX.chest(loot, n, 'Shrine treasure!'));
           }
           s.stats.trials++; State.save();
-          results(r, { extra, retry: () => trial(topicId, lv), next: () => shrineScreen(topicId), nextLabel: 'Back to shrine' });
+          results(r, { rewards, retry: () => trial(topicId, lv), next: () => shrineScreen(topicId), nextLabel: 'Back to shrine' });
         } else results(r, { retry: () => trial(topicId, lv), next: () => shrineScreen(topicId) });
       },
     });
@@ -322,21 +408,23 @@
 
   /* =========================================================== BATTLE ENGINE */
   /*
-    cfg: { kind, title, subtitle, total (null = until boss defeated), hearts, timer (sec/question, 0 = none),
-           next(B) -> {topic, lv, q?}, boss: {name, emoji, hp, color, element, onPhase(B)}, intro: dialogue lines,
-           exam (no feedback), examTime (sec overall), onEnd(result) }
+    cfg: { kind, title, subtitle, total (number of questions in a trial; foe HP = total - 2), hearts, timer (sec/question, 0 = none),
+           next(B) -> {topic, lv, q?}, foe: {name, art, attack}, boss: {name, art, hp, element, onPhase(B), enrage, dmg(B)},
+           intro: dialogue lines, exam (no feedback), examTime (sec overall), theme, onEnd(result) }
+    Trials: land (total - 2) hits before losing 3 hearts — the same pass mark as "at most 2 wrong out of 8".
   */
   function battle(cfg) {
     const s = S();
     const isBoss = !!cfg.boss; const exam = !!cfg.exam; const sword = cfg.kind === 'sword';
     const useItems = cfg.items || {};
     const maxHearts = cfg.hearts + (useItems.hearty ? 3 : 0);
+    const foeHp = isBoss ? cfg.boss.hp : cfg.total ? cfg.total - 2 : 1;
     const B = {
-      cfg, idx: 0, hearts: maxHearts, maxHearts, correct: 0, wrong: 0, streak: 0, best: 0, rupees: 0, seeds: 0, log: [],
-      hp: isBoss ? cfg.boss.hp : 0, maxHp: isBoss ? cfg.boss.hp : 0, phase: 0,
+      cfg, idx: 0, hearts: maxHearts, maxHearts, correct: 0, wrong: 0, streak: 0, best: 0, rupees: 0, seeds: 0, xp: 0, log: [],
+      hp: foeHp, maxHp: foeHp, phase: 0, kills: 0,
       runes: {}, champ: {}, blocks: isBoss ? State.shield().blocks : 0, bombNext: false, furyNext: false,
       arrows: isBoss ? s.items.bombarrow : 0, fairy: s.items.fairy > 0 && !exam && !sword,
-      timeLeft: 0, frozen: false, q: null, cur: null, answered: false, revaliUsed: false, retrying: false,
+      timeLeft: 0, frozen: false, q: null, cur: null, answered: false, revaliUsed: false,
       examLeft: cfg.examTime || 0, done: false,
     };
     if (!exam && !sword) {
@@ -345,64 +433,73 @@
     }
     if (useItems.hearty) s.items.hearty--; if (useItems.hasty) s.items.hasty--; State.save();
     const timerFor = () => (s.settings.timers && cfg.timer ? cfg.timer + State.timerBonus() + (useItems.hasty ? 20 : 0) : 0);
+    const foe = isBoss ? { name: cfg.boss.name, art: cfg.boss.art, attack: cfg.boss.element } : cfg.foe || { name: 'Bokoblin', art: ART.bokoblin('red'), attack: 'melee' };
+    const theme = cfg.theme || (isBoss ? (cfg.boss.theme || 'castle') : 'shrine');
 
-    const bossHtml = isBoss ? `<div class="arena el-${cfg.boss.element || 'malice'}">
-        <div class="hero-sprite" id="hero">🧝<span class="wpn">${State.weapon().emoji}</span></div>
-        <div class="boss-sprite" id="boss" style="--c:${cfg.boss.color || '#c03'}">${cfg.boss.emoji}</div>${cfg.boss.aura ? `<div class="aura">${cfg.boss.aura}</div>` : ''}
-        <div class="boss-bar"><span class="bname" id="bname">${cfg.boss.name}</span><div class="hpbar"><i id="hpfill" style="width:100%"></i></div></div>
-      </div>` : '';
-    screen(`<div class="battle ${isBoss ? 'boss' : ''} ${exam ? 'exam' : ''}">
-      <header class="bhead">
-        <div class="bt"><b>${cfg.title}</b><span>${cfg.subtitle || ''}</span></div>
-        <div class="bstat"><span id="hearts"></span><span id="streak" class="streak"></span><span id="prog" class="prog"></span></div>
-        <div class="timer" id="timerwrap" hidden><i id="timer"></i></div>
+    const arena = exam ? '' : `<div class="arena ${isBoss ? 'boss-arena' : ''}" id="arena">
+        <div class="ground"></div>
+        <div class="fighter hero-f" id="hero">${heroArt()}<svg class="stamina" id="stamina" viewBox="0 0 40 40" hidden><circle cx="20" cy="20" r="15" class="st-bg"/><circle cx="20" cy="20" r="15" class="st-fg" id="stfg"/></svg><div class="shield-bubble"></div></div>
+        <div class="fighter foe-f ${isBoss ? 'boss' : ''}" id="foe">${foe.art}</div>
+        <div class="combo" id="combo"></div>
+      </div>`;
+    screen(`<div class="battle ${isBoss ? 'is-boss' : ''} ${exam ? 'exam' : ''}">
+      <header class="bhead slate">
+        <div class="bh-l"><span id="hearts"></span><span class="bt"><b>${cfg.title}</b><small>${cfg.subtitle || ''}</small></span></div>
+        ${exam ? '<div class="exam-clock" id="prog"></div>' : `<div class="foe-bar"><span class="fname" id="fname">${foe.name}</span><div class="hpbar ${isBoss ? 'boss' : ''}"><i id="hpfill"></i>${!isBoss ? '<span class="segs" id="segs"></span>' : ''}</div><span id="prog" class="prog"></span></div>`}
+        <div class="bh-r"><span class="pill" id="b-rupees">${IC.rupee('green')} <b>${B.rupees}</b></span></div>
       </header>
-      ${bossHtml}
+      ${arena}
       <section class="qcard" id="qcard"></section>
       <footer class="runebar" id="runebar"></footer>
-    </div>`, `bg-battle ${isBoss ? 'bg-' + (cfg.boss.element || 'malice') : ''}`);
+    </div>`, theme, isBoss ? (theme === 'castle' ? 'castle' : 'battle') : exam ? 'shrine' : 'battle');
 
-    const elHearts = $('#hearts'), elProg = $('#prog'), elStreak = $('#streak'), qcard = $('#qcard');
+    const elHearts = $('#hearts'), elProg = $('#prog'), qcard = $('#qcard');
+    let prevHearts = B.hearts;
     const updateTop = () => {
-      elHearts.innerHTML = exam ? '' : heartsHtml(B.hearts, B.maxHearts);
-      elStreak.innerHTML = B.streak >= 2 ? `🔥 ${B.streak} combo` : '';
-      if (exam) elProg.textContent = `Question ${B.idx + 1} of ${cfg.total} · ⏱ ${Math.floor(B.examLeft / 60)}:${String(B.examLeft % 60).padStart(2, '0')}`;
-      else if (sword) elProg.textContent = `Floor ${B.idx + 1}`;
-      else if (cfg.total) elProg.innerHTML = Array.from({ length: cfg.total }, (_, i) => `<i class="${i < B.log.length ? (B.log[i].ok ? 'ok' : 'no') : i === B.idx ? 'cur' : ''}"></i>`).join('');
+      const breaking = []; for (let i = B.hearts; i < prevHearts; i++) breaking.push(i);
+      elHearts.innerHTML = exam ? '' : heartsHtml(B.hearts, B.maxHearts, breaking); prevHearts = B.hearts;
+      if (exam) elProg.textContent = `Question ${Math.min(B.idx + 1, cfg.total)} of ${cfg.total} · ⏱ ${Math.floor(B.examLeft / 60)}:${String(B.examLeft % 60).padStart(2, '0')}`;
       else elProg.textContent = '';
-      if (isBoss) $('#hpfill').style.width = Math.max(0, (B.hp / B.maxHp) * 100) + '%';
+      if (!exam) {
+        $('#hpfill').style.width = Math.max(0, (B.hp / B.maxHp) * 100) + '%';
+        const sg = $('#segs'); if (sg) sg.innerHTML = Array.from({ length: B.maxHp - 1 }, () => '<i></i>').join('');
+        const c = $('#combo'); c.innerHTML = B.streak >= 2 ? `<b>${B.streak}</b><span>combo</span>` : ''; c.className = 'combo ' + (B.streak >= 5 ? 'hot' : B.streak >= 3 ? 'warm' : '');
+      }
+      const br = $('#b-rupees'); if (br) br.innerHTML = `${IC.rupee('green')} <b>${B.rupees}</b>`;
     };
     const runeBar = () => {
-      if (exam) { $('#runebar').innerHTML = `<button class="rb" id="finish">Finish paper ▶</button>`; on('#finish', () => modal('<h3>Finish now?</h3><p>Unanswered questions will be marked wrong.</p>', [{ label: 'Keep going' }, { label: 'Finish', cls: 'primary', fn: () => end(false, true) }])); return; }
+      if (exam) { $('#runebar').innerHTML = `<button class="btn" id="finish">Finish paper ▶</button>`; on('#finish', () => modal('<h3>Finish now?</h3><p>Unanswered questions will be marked wrong.</p>', [{ label: 'Keep going' }, { label: 'Finish', cls: 'primary', fn: () => end(false, true) }])); return; }
       const rb = [];
       for (const [k, n] of Object.entries(B.runes)) {
         if (k === 'stasis' && !timerFor()) continue;
-        const ru = STORY.runes[k]; rb.push(`<button class="rb ${n ? '' : 'spent'}" data-rune="${k}" title="${ru.desc}"><span>${ru.emoji}</span>${ru.name}<i>${n}</i></button>`);
+        const ru = STORY.runes[k]; rb.push(`<button class="rb ${n ? '' : 'spent'}" data-rune="${k}" title="${ru.name}: ${ru.desc}">${IC.rune(k)}<span>${ru.name}</span><i>${n}</i></button>`);
       }
-      if (B.champ.urbosa !== undefined) rb.push(`<button class="rb champ ${B.champ.urbosa ? '' : 'spent'}" data-champ="urbosa" title="${STORY.champions.urbosa.desc}"><span>⚡</span>Urbosa's Fury</button>`);
-      if (isBoss && B.arrows) rb.push(`<button class="rb" data-arrow="1" title="Next correct answer deals double damage"><span>🏹</span>Bomb Arrow<i>${B.arrows}</i></button>`);
+      if (B.champ.urbosa !== undefined) rb.push(`<button class="rb champ ${B.champ.urbosa ? '' : 'spent'}" data-champ="urbosa" title="${STORY.champions.urbosa.desc}">${IC.rune('fury')}<span>Urbosa's Fury</span></button>`);
+      if (isBoss && B.arrows) rb.push(`<button class="rb" data-arrow="1" title="Next correct answer deals double damage">${IC.rune('arrow')}<span>Bomb Arrow</span><i>${B.arrows}</i></button>`);
       const passive = [];
-      if (B.champ.daruk === true) passive.push('🛡️'); if (B.champ.mipha === true) passive.push('💧'); if (B.champ.revali && !B.revaliUsed) passive.push('🌬️'); if (B.blocks) passive.push('🔰×' + B.blocks); if (B.fairy) passive.push('🧚');
-      if (B.bombNext) passive.push('💣 ready'); if (B.furyNext) passive.push('⚡ ready');
-      rb.push(`<button class="rb" id="speak" title="Read the question aloud"><span>🔊</span>Read</button>`);
-      if (passive.length) rb.push(`<span class="passive" title="Active protections">${passive.join(' ')}</span>`);
-      if (!isBoss) rb.push(`<button class="rb quit" id="quit">✕</button>`);
+      if (B.champ.daruk === true) passive.push('<span title="Daruk\'s Protection">🛡️</span>'); if (B.champ.mipha === true) passive.push('<span title="Mipha\'s Grace">💧</span>'); if (B.champ.revali && !B.revaliUsed) passive.push('<span title="Revali\'s Gale">🌬️</span>');
+      if (B.blocks) passive.push(`<span title="Shield blocks">🔰×${B.blocks}</span>`); if (B.fairy) passive.push('<span title="Fairy">🧚</span>');
+      if (B.bombNext) passive.push('💣'); if (B.furyNext) passive.push('⚡');
+      rb.push(`<button class="rb" id="speak" title="Read the question aloud">${IC.rune('read')}<span>Read</span></button>`);
+      if (passive.length) rb.push(`<span class="passive">${passive.join(' ')}</span>`);
+      if (!isBoss) rb.push(`<button class="rb quit" id="quit" title="Leave">✕</button>`);
       $('#runebar').innerHTML = rb.join('');
-      on('[data-rune]', (e, el) => useRune(el.dataset.rune), $('#runebar'));
-      on('[data-champ]', () => { if (!B.champ.urbosa || B.answered) return; B.champ.urbosa = false; B.furyNext = true; toast('⚡ Urbosa\'s Fury charged!'); runeBar(); }, $('#runebar'));
+      on('[data-rune]', (e, el) => useRune(el.dataset.rune, el), $('#runebar'));
+      on('[data-champ]', (e, el) => { if (!B.champ.urbosa || B.answered) return; B.champ.urbosa = false; B.furyNext = true; FX.flash('#ffe866', 0.5); FX.banner('Urbosa\'s Fury!', 'fury'); runeBar(); }, $('#runebar'));
       on('[data-arrow]', () => { if (B.answered || B.bombNext || !B.arrows) return; B.arrows--; s.items.bombarrow--; State.save(); B.bombNext = true; toast('🏹 Bomb arrow nocked!'); runeBar(); }, $('#runebar'));
       on('#speak', () => speak(plain(B.q.prompt) + '. ' + (B.q.figs ? '' : B.q.options.map((o, i) => `${'ABCDE'[i]}: ${plain(o)}`).join('. '))), $('#runebar'));
-      on('#quit', () => modal('<h3>Leave the shrine?</h3><p>Progress in this trial will be lost.</p>', [{ label: 'Stay' }, { label: 'Leave', cls: 'danger', fn: () => cfg.onEnd({ won: false, quit: true, B }) }]), $('#runebar'));
+      on('#quit', () => modal('<h3>Leave the battle?</h3><p>Progress in this trial will be lost.</p>', [{ label: 'Stay' }, { label: 'Leave', cls: 'danger', fn: () => cfg.onEnd({ won: false, quit: true, B }) }]), $('#runebar'));
     };
-    function useRune(k) {
+    function useRune(k, el) {
       if (!B.runes[k] || B.answered) return;
+      const [x, y] = FX.center(el); FX.burst(x, y, { n: 16, colors: ['#3fe0ff', '#fff'], speed: 160, gravity: 0 });
       if (k === 'magnesis') {
         const wrong = $$('.opt', qcard).filter(b => +b.dataset.i !== B.q.answer && !b.disabled);
         if (wrong.length < 2) return;
         U.shuffle(wrong).slice(0, 2).forEach(b => { b.disabled = true; b.classList.add('pulled'); });
       } else if (k === 'bomb') { if (B.bombNext) return; B.bombNext = true; toast('💣 Remote Bomb set!'); }
-      else if (k === 'stasis') { if (!B.timeLeft) return; B.frozen = true; $('#timerwrap').classList.add('frozen'); toast('⏸️ Time frozen!'); }
-      else if (k === 'cryonis') { if (cfg.fixed) return toast('Cryonis can\'t freeze a reading passage question.'); B.runes[k]--; runeBar(); toast('🧊 Question frozen and replaced!'); return ask(true); }
+      else if (k === 'stasis') { if (!B.timeLeft) return; B.frozen = true; $('#stamina').classList.add('frozen'); FX.flash('#ffd23d', 0.3); toast('⏸️ Time frozen!'); }
+      else if (k === 'cryonis') { if (cfg.fixed) return toast('Cryonis can\'t freeze a reading passage question.'); B.runes[k]--; runeBar(); toast('🧊 Question frozen and replaced!'); return ask(); }
       B.runes[k]--; runeBar();
     }
 
@@ -413,39 +510,39 @@
       }
       throw new Error('No question available');
     }
-    function ask(replace) {
-      B.answered = false; B.frozen = false; B.retrying = false;
+    function ask() {
+      B.answered = false; B.frozen = false;
       B.cur = pickNext();
       const q = B.q = B.cur.q; window.__lastQ = q; // used by the automated play-test
       updateTop(); runeBar();
       const letters = 'ABCDE';
       qcard.innerHTML = `
-        ${q.passage ? `<details class="passage" ${B.idx === 0 || exam ? 'open' : 'open'}><summary>📜 Read the passage</summary><div>${q.passage}</div></details>` : ''}
+        ${q.passage ? `<details class="passage" open><summary>📜 Read the passage</summary><div>${q.passage}</div></details>` : ''}
         <div class="prompt">${q.prompt}</div>
         ${q.visual ? `<div class="visual">${q.visual}</div>` : ''}
         ${q.alphabet ? `<div class="alpha">${U.ALPHA.split('').map(c => `<span>${c}</span>`).join('')}</div>` : ''}
         <div class="opts ${q.figs ? 'figs' : ''} ${q.long || q.options.some(o => o.length > 38 && !q.figs) ? 'long' : ''}">
-          ${q.options.map((o, i) => `<button class="opt" data-i="${i}"><span class="k">${letters[i]}</span><span class="o">${o}</span></button>`).join('')}
+          ${q.options.map((o, i) => `<button class="opt" data-i="${i}" style="--d:${i * 0.05}s"><span class="k">${letters[i]}</span><span class="o">${o}</span></button>`).join('')}
         </div>
         <div class="feedback" id="fb" hidden></div>`;
       $$('.opt', qcard).forEach(b => b.addEventListener('click', () => answer(+b.dataset.i)));
-      qcard.classList.remove('flash-ok', 'flash-no'); void qcard.offsetWidth; qcard.classList.add('enter');
-      // timer
+      qcard.classList.remove('flash-ok', 'flash-no'); void qcard.offsetWidth; qcard.classList.add('qin');
+      // timer = BotW stamina wheel
       const T = timerFor();
       intervals.forEach(clearInterval); intervals = [];
       if (exam) {
         intervals.push(setInterval(() => { B.examLeft--; updateTop(); if (B.examLeft <= 0) { toast('⏱ Time is up!'); end(false, true); } }, 1000));
       } else if (T) {
-        B.timeLeft = T; const tw = $('#timerwrap'); tw.hidden = false; tw.classList.remove('frozen');
-        const bar = $('#timer'); bar.style.width = '100%';
+        B.timeLeft = T; const wheel = $('#stamina'); wheel.removeAttribute('hidden'); wheel.classList.remove('frozen', 'low');
+        const fg = $('#stfg'); const C = 94.2; fg.style.strokeDasharray = `${C} ${C}`;
         intervals.push(setInterval(() => {
           if (B.answered || B.frozen) return;
-          B.timeLeft--; bar.style.width = (B.timeLeft / T) * 100 + '%';
-          bar.classList.toggle('low', B.timeLeft <= 10);
+          B.timeLeft--; fg.style.strokeDasharray = `${(B.timeLeft / T) * C} ${C}`;
+          wheel.classList.toggle('low', B.timeLeft <= 10);
           if (B.timeLeft <= 5 && B.timeLeft > 0) U.sfx.tick();
           if (B.timeLeft <= 0) answer(-1);
         }, 1000));
-      } else { $('#timerwrap').hidden = true; B.timeLeft = 0; }
+      } else if ($('#stamina')) { $('#stamina').setAttribute('hidden', ''); B.timeLeft = 0; }
       if (s.settings.speech && s.settings.autoRead) speak(plain(q.prompt));
     }
 
@@ -455,7 +552,7 @@
       // Revali's Gale: one free retry
       if (!ok && i >= 0 && B.champ.revali && !B.revaliUsed && !exam) {
         B.revaliUsed = true; btns[i].disabled = true; btns[i].classList.add('wrong');
-        toast('🌬️ Revali\'s Gale! Try again.'); U.sfx.wrong(); runeBar(); return;
+        FX.banner('Revali\'s Gale!', 'gale'); FX.flash('#bff2dc', 0.3); U.sfx.wrong(); runeBar(); return;
       }
       B.answered = true;
       btns.forEach(b => (b.disabled = true));
@@ -471,41 +568,46 @@
         if (cfg.kind !== 'bloodmoon') State.addMistake(B.cur.topic.id, B.cur.lv, q);
         if (cfg.fromMistake) cfg.fromMistake(B.cur, false);
       }
-      let msg = '';
       if (exam) { State.save(); return setTimeout(advance, 250); }
+      let msg = '';
+      const foeEl = $('#foe');
       if (ok) {
         U.sfx.correct(); qcard.classList.add('flash-ok');
+        if (btns[i]) { const [x, y] = FX.center(btns[i]); FX.burst(x, y, { n: 14, colors: ['#5ce06a', '#fff'], speed: 180, gravity: 200 }); }
         let mult = 1; if (B.bombNext) { mult *= isBoss ? 2 : 3; B.bombNext = false; } if (B.furyNext) { mult *= 3; B.furyNext = false; }
-        if (isBoss) {
-          const base = cfg.boss.dmg ? cfg.boss.dmg(B) : State.weapon().dmg;
-          const dmg = Math.round(base * (1 + 0.1 * Math.min(B.streak - 1, 5)) * mult);
-          B.hp = Math.max(0, B.hp - dmg); hitBoss(dmg, mult > 1);
-          msg = `<b>${U.pick(STORY.praise)}</b> You hit for <b>${dmg}</b> damage!`;
-        }
+        let dmg = 1;
+        if (isBoss) { const base = cfg.boss.dmg ? cfg.boss.dmg(B) : State.weapon().dmg; dmg = Math.round(base * (1 + 0.1 * Math.min(B.streak - 1, 5)) * mult); }
+        B.hp = Math.max(0, B.hp - dmg);
+        strike(dmg, mult > 1, B.hp <= 0);
         const gain = Math.round((5 + Math.min(B.streak, 5)) * State.rupeeBonus() * (isBoss ? 1 : mult));
         B.rupees += gain;
-        if (!isBoss) msg = `<b>${U.pick(STORY.praise)}</b> +${gain} rupees${mult > 1 ? ' (power bonus!)' : ''}`;
-        if (!sword && Math.random() < State.korokChance()) { B.seeds++; setTimeout(korok, 400); }
+        const color = gain >= 15 ? 'red' : gain >= 8 ? 'blue' : 'green';
+        setTimeout(() => { FX.flyTo(foeEl, '#b-rupees', IC.rupee(color)); updateTop(); }, 300);
+        const xp = 10 + Math.min(B.streak, 5) * 2; B.xp += xp; setTimeout(() => gainXp(xp, $('#hero')), 450);
+        msg = isBoss ? `<b>${U.pick(STORY.praise)}</b> You hit for <b>${dmg}</b> damage!` : `<b>${U.pick(STORY.praise)}</b> +${gain} rupees${mult > 1 ? ' (power bonus!)' : ''}`;
+        if (B.streak === 3) setTimeout(() => { FX.banner('Flurry Rush!', 'flurry'); FX.flash('#3fe0ff', 0.25); }, 250);
+        else if (B.streak === 5 || (B.streak > 5 && B.streak % 5 === 0)) setTimeout(() => { FX.banner(`${B.streak} Combo! Unstoppable!`, 'flurry hot'); FX.flash('#ffd23d', 0.3); }, 250);
+        if (!sword && Math.random() < State.korokChance()) { B.seeds++; setTimeout(korok, 900); }
       } else {
         U.sfx.wrong(); qcard.classList.add('flash-no');
         let dmg = cfg.wrongDamage ? cfg.wrongDamage(B) : 1;
         let blockedBy = '';
         if (B.champ.daruk === true) { B.champ.daruk = 'used'; dmg = 0; blockedBy = '🛡️ Daruk\'s Protection blocked the hit!'; }
-        else if (isBoss && B.blocks > 0) { B.blocks--; dmg = 0; blockedBy = `${State.shield().emoji} Your shield blocked the hit!`; }
-        if (isBoss) bossAttack(dmg);
+        else if (isBoss && B.blocks > 0) { B.blocks--; dmg = 0; blockedBy = `${State.shield().emoji} Perfect Guard! Your shield blocked the hit!`; }
         B.hearts = Math.max(0, B.hearts - dmg);
-        if (dmg) hurt();
-        msg = `<b>${i < 0 ? '⏱ Out of time!' : U.pick(STORY.encourage)}</b>${blockedBy ? `<br>${blockedBy}` : ''}`;
+        foeAttack(dmg, blockedBy);
+        msg = `<b>${i < 0 ? '⏱ Out of stamina!' : U.pick(STORY.encourage)}</b>${blockedBy ? `<br>${blockedBy}` : ''}`;
         if (B.hearts <= 0) {
-          if (B.champ.mipha === true) { B.champ.mipha = 'used'; B.hearts = B.maxHearts; msg += '<br>💧 <b>Mipha\'s Grace</b> heals you completely!'; U.sfx.orb(); }
-          else if (B.fairy) { B.fairy = false; s.items.fairy--; B.hearts = 3; msg += '<br>🧚 A <b>fairy</b> appears and revives you!'; U.sfx.orb(); }
+          if (B.champ.mipha === true) { B.champ.mipha = 'used'; B.hearts = B.maxHearts; msg += '<br>💧 <b>Mipha\'s Grace</b> heals you completely!'; setTimeout(() => { FX.banner('Mipha\'s Grace!', 'grace'); FX.flash('#5cc8ff', 0.5); U.sfx.orb(); updateTop(); }, 700); }
+          else if (B.fairy) { B.fairy = false; s.items.fairy--; B.hearts = 3; msg += '<br>🧚 A <b>fairy</b> appears and revives you!'; setTimeout(() => { FX.banner('A fairy saves you!', 'grace'); FX.flash('#ffc0f0', 0.5); U.sfx.orb(); updateTop(); }, 700); }
         }
+        setTimeout(updateTop, 520);
       }
-      State.save(); updateTop(); runeBar();
+      State.save(); runeBar();
       const fb = $('#fb'); fb.hidden = false; fb.className = 'feedback ' + (ok ? 'good' : 'bad');
       fb.innerHTML = `<div class="fb-msg">${msg}</div>${!ok || q.explain ? `<div class="explain">${ok ? '✔ ' : `The answer is <b>${'ABCDE'[q.answer]}</b>. `}${q.explain}</div>` : ''}<button class="btn primary" id="cont">Continue ▶</button>`;
       on('#cont', advance, fb); $('#cont').focus({ preventScroll: true });
-      fb.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      setTimeout(() => fb.scrollIntoView({ behavior: FX.reduce ? 'auto' : 'smooth', block: 'nearest' }), 200);
     }
 
     function advance() {
@@ -513,74 +615,118 @@
       B.answered = false;
       B.idx++;
       if (!exam && B.hearts <= 0) return end(false);
-      if (isBoss && B.hp <= 0) {
-        if (cfg.boss.onPhase && cfg.boss.onPhase(B)) return; // phase change handles continuation
+      if (!exam && B.hp <= 0) {
+        if (isBoss && cfg.boss.onPhase && cfg.boss.onPhase(B)) return; // phase change handles continuation
+        if (sword) { B.kills++; nextSwordFoe(); return ask(); }
         return end(true);
       }
-      if (isBoss && cfg.boss.enrage && !B.enraged && B.hp <= B.maxHp / 2) { B.enraged = true; $('#boss').classList.add('enraged'); toast(`${cfg.boss.name} is enraged! Questions get harder!`, 'bad'); U.sfx.boss(); }
-      if (cfg.total && B.idx >= cfg.total) return end(!exam ? B.hearts > 0 : true, exam);
+      if (isBoss && cfg.boss.enrage && !B.enraged && B.hp <= B.maxHp / 2) { B.enraged = true; $('#foe').classList.add('enraged'); FX.banner(`${foe.name} is enraged!`, 'danger'); FX.shake(1.5); U.sfx.boss(); }
+      if (exam && B.idx >= cfg.total) return end(true, true);
       ask();
     }
     B.resume = () => { ask(); };
-    B.setBoss = (name, emoji, hp) => { B.hp = B.maxHp = hp; $('#bname').textContent = name; $('#boss').textContent = emoji; updateTop(); };
+    B.setFoe = (name, art, hp) => {
+      B.hp = B.maxHp = hp; $('#fname').textContent = name; const f = $('#foe'); f.innerHTML = art; f.classList.remove('dying', 'enraged'); f.classList.add('appear'); updateTop();
+    };
+    function nextSwordFoe() {
+      const pool = [['Chuchu', () => ART.chuchu(U.pick(['fire', 'water', 'thunder', 'plain'])), 'water'], ['Keese', () => ART.keese(), 'malice'], ['Bokoblin', () => ART.bokoblin(U.pick(['red', 'blue', 'black'])), 'melee'], ['Lizalfos', () => ART.lizalfos(), 'water'], ['Moblin', () => ART.moblin(), 'melee'], ['Guardian Scout', () => ART.guardianScout(), 'laser'], ['Lynel', () => ART.lynel(), 'fire']];
+      const p = pool[Math.min(pool.length - 1, Math.floor(B.kills / 3) + Math.floor(Math.random() * 2))];
+      foe.attack = p[2]; B.setFoe(`${p[0]} · Floor ${B.kills + 1}`, p[1](), 1);
+    }
 
     function end(won, examDone) {
       if (B.done) return; B.done = true; intervals.forEach(clearInterval); intervals = [];
-      // exam: count unanswered as wrong
       if (examDone) { while (B.log.length < cfg.total) { B.log.push({ ok: false, q: null, picked: -1 }); } }
       s.rupees += B.rupees; s.seeds += B.seeds; s.seedsTotal += B.seeds;
-      if (won && !exam && B.wrong === 0 && cfg.total) { s.stats.perfect++; const bonus = 25; s.rupees += bonus; B.perfectBonus = bonus; }
+      if (won && !exam && B.wrong === 0 && !sword) { s.stats.perfect++; const bonus = 25; s.rupees += bonus; B.perfectBonus = bonus; }
       State.save();
-      cfg.onEnd({ won, B });
+      const finish = () => cfg.onEnd({ won, B });
+      if (exam || FX.reduce) return finish();
+      if (won) { FX.banner(isBoss ? `${foe.name} defeated!` : 'Victory!', 'victory'); setTimeout(finish, 1400); }
+      else { const h = $('#hero'); if (h) h.classList.add('fallen'); FX.banner('You fell…', 'danger'); setTimeout(finish, 1400); }
     }
 
-    // visual effects
-    function hitBoss(dmg, big) {
-      const b = $('#boss'); if (!b) return; U.sfx.hit(); b.classList.remove('hit'); void b.offsetWidth; b.classList.add('hit');
-      const n = document.createElement('span'); n.className = 'dmg ' + (big ? 'big' : ''); n.textContent = '-' + dmg; b.parentElement.appendChild(n); setTimeout(() => n.remove(), 1200);
-      const h = $('#hero'); h.classList.remove('attack'); void h.offsetWidth; h.classList.add('attack');
+    // ---- combat animation ----
+    function strike(dmg, big, kill) {
+      const h = $('#hero'), f = $('#foe'); if (!h || !f) return;
+      h.classList.remove('attack'); void h.offsetWidth; h.classList.add('attack');
+      setTimeout(() => {
+        FX.slash(f); U.sfx.hit(); FX.shake(big ? 1.4 : 0.6);
+        f.classList.remove('hit'); void f.offsetWidth; f.classList.add('hit');
+        FX.floatText(f, isBoss ? `-${dmg}` : big ? 'CRITICAL!' : 'HIT!', big ? 'dmg big' : 'dmg');
+        if (big) FX.flash('#fff', 0.35);
+        updateTop();
+        if (kill) setTimeout(() => {
+          f.classList.add('dying'); const [x, y] = FX.center(f); FX.smoke(x, y, isBoss ? '#5a1438' : '#2a1030');
+          FX.burst(x, y, { n: 40, colors: ['#ff2d6f', '#3a0a22', '#fff'], speed: 300, size: 4 });
+          if (isBoss) { FX.flash('#fff', 0.9); FX.shake(2.5); U.sfx.boss(); }
+          setTimeout(() => FX.flyTo(f, '#b-rupees', IC.rupee(isBoss ? 'gold' : 'purple')), 300);
+        }, 350);
+      }, 180);
     }
-    function bossAttack() { const b = $('#boss'); if (!b) return; b.classList.remove('lunge'); void b.offsetWidth; b.classList.add('lunge'); }
-    function hurt() { U.sfx.hurt(); document.body.classList.remove('hurt'); void document.body.offsetWidth; document.body.classList.add('hurt'); }
+    function foeAttack(dmg, blocked) {
+      const h = $('#hero'), f = $('#foe'); if (!h || !f) return;
+      f.classList.remove('lunge', 'cast'); void f.offsetWidth;
+      const kind = foe.attack || 'melee';
+      const land = () => {
+        if (blocked) { h.classList.remove('guard'); void h.offsetWidth; h.classList.add('guard'); FX.banner(blocked.includes('Daruk') ? 'Daruk\'s Protection!' : 'Perfect Guard!', 'guard'); U.sfx.coin(); return; }
+        if (!dmg) return;
+        U.sfx.hurt(); FX.shake(1.2); FX.flash('#ff2244', 0.25);
+        h.classList.remove('hurt'); void h.offsetWidth; h.classList.add('hurt');
+      };
+      if (kind === 'melee') { f.classList.add('lunge'); setTimeout(land, 280); }
+      else { f.classList.add('cast'); setTimeout(() => FX.projectile(f, h, kind === 'laser' ? 'laser' : kind, land), 200); }
+    }
     function korok() {
-      U.sfx.korok(); const k = document.createElement('div'); k.className = 'korok'; k.innerHTML = `<span>🌿</span><b>${U.pick(STORY.korokLines)}</b><small>+1 Korok Seed 🌰</small>`;
-      document.body.appendChild(k); setTimeout(() => k.classList.add('show'), 10); setTimeout(() => { k.classList.remove('show'); setTimeout(() => k.remove(), 500); }, 2200);
+      U.sfx.korok(); const k = document.createElement('div'); k.className = 'korok-pop'; k.innerHTML = `${ART.korok()}<div class="kp-say"><b>${U.pick(STORY.korokLines)}</b><small>+1 Korok Seed</small></div>`;
+      document.body.appendChild(k); setTimeout(() => k.classList.add('show'), 10);
+      setTimeout(() => { const [x, y] = FX.center(k); FX.burst(x, y - 30, { n: 20, colors: ['#ffe066', '#7ed957'], kind: 'star', speed: 200 }); }, 300);
+      setTimeout(() => { k.classList.remove('show'); setTimeout(() => k.remove(), 500); }, 2400);
     }
 
     onKey(e => {
-      if ($('#overlay').innerHTML) return;
+      if ($('#overlay').innerHTML || $('.itemget, .chest-ov')) return;
       const k = e.key.toUpperCase();
       if (!B.answered && 'ABCDE12345'.includes(k) && k.length === 1) { const i = 'ABCDE'.includes(k) ? 'ABCDE'.indexOf(k) : +k - 1; const b = $$('.opt', qcard)[i]; if (b && !b.disabled) answer(i); }
       else if (B.answered && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); advance(); }
     });
 
-    const start = () => { if (isBoss) U.sfx.boss(); ask(); };
+    const start = () => {
+      if (isBoss) { U.sfx.boss(); FX.shake(1.5); FX.banner(foe.name, 'boss-name'); }
+      else if (!exam) FX.banner(sword ? 'Trial of the Sword' : `${foe.name} appears!`, 'appear');
+      ask();
+    };
     if (cfg.intro) dialogue(cfg.intro, start); else start();
     return B;
   }
 
   /* =========================================================== RESULTS */
   function results(r, opt = {}) {
-    const B = r.B; const s = S();
+    const B = r.B;
     if (r.quit) return opt.next ? opt.next() : map();
     const won = r.won; const pct = B.log.length ? Math.round((B.correct / B.log.length) * 100) : 0;
     const wrong = B.log.filter(l => !l.ok && l.q);
-    if (won) { U.sfx.solved(); confetti(); }
-    screen(`<div class="page results ${won ? 'win' : 'lose'}">
-      <div class="res-head">${won ? `<div class="big-ico">✨</div><h2>${opt.heading || 'Trial Complete!'}</h2>` : '<div class="big-ico">💀</div><h2>You ran out of hearts…</h2><p class="muted">Every hero falls sometimes. Read the explanations below, then try again — you\'ll be stronger!</p>'}</div>
+    const stars = won ? (B.wrong === 0 ? 3 : B.wrong === 1 ? 2 : 1) : 0;
+    screen(`${hud()}<div class="page results ${won ? 'win' : 'lose'}">
+      <div class="res-head">${won
+        ? `<div class="res-hero win">${heroArt()}</div><h2 class="shine">${opt.heading || 'Trial Complete!'}</h2><div class="perf-stars">${[1, 2, 3].map(i => `<span class="${i <= stars ? 'on' : ''}" style="--d:${0.3 + i * 0.25}s">★</span>`).join('')}</div>`
+        : `<div class="res-hero lose">${heroArt()}</div><h2>You ran out of hearts…</h2><p class="muted">Every hero falls sometimes. Read the explanations below, then try again — you'll be stronger!</p>`}</div>
       <div class="res-stats">
         <div><b>${B.correct}/${B.log.length}</b><span>correct</span></div>
         <div><b>${pct}%</b><span>accuracy</span></div>
         <div><b>${B.best}</b><span>best combo</span></div>
-        <div><b>◆ ${B.rupees + (B.perfectBonus || 0)}</b><span>rupees</span></div>
-        ${B.seeds ? `<div><b>🌰 ${B.seeds}</b><span>Korok seeds</span></div>` : ''}
+        <div><b>${IC.rupee('green')} ${B.rupees + (B.perfectBonus || 0)}</b><span>rupees</span></div>
+        <div><b>+${B.xp}</b><span>XP</span></div>
+        ${B.seeds ? `<div><b>${IC.seed()} ${B.seeds}</b><span>Korok seeds</span></div>` : ''}
       </div>
-      ${B.perfectBonus ? `<div class="reward">🌟 PERFECT! No mistakes — +${B.perfectBonus} bonus rupees</div>` : ''}
+      ${B.perfectBonus ? `<div class="reward">🌟 PERFECT! No mistakes: +${B.perfectBonus} bonus rupees</div>` : ''}
       ${opt.extra || ''}
       ${wrong.length ? `<details class="review" ${won ? '' : 'open'}><summary>📖 Review your mistakes (${wrong.length})</summary>${wrong.map(reviewItem).join('')}</details>` : ''}
       <div class="row center">${opt.retry ? `<button class="btn ${won ? '' : 'primary'}" id="retry">↻ Try again</button>` : ''}<button class="btn ${won ? 'primary' : ''}" id="next">${opt.nextLabel || 'Continue ▶'}</button></div>
-    </div>`, won ? 'bg-win' : 'bg-lose');
+    </div>`, won ? 'win' : 'shrine', won ? 'field' : 'shrine');
+    if (won) { U.sfx.solved(); setTimeout(() => confetti(80), 200); }
     on('#retry', () => opt.retry()); on('#next', () => (opt.next ? opt.next() : map()));
+    if (opt.rewards && opt.rewards.length) setTimeout(() => sequence(opt.rewards.slice(), () => { const h = $('.hud'); if (h) h.outerHTML = hud(); }), 900);
   }
   function reviewItem(l) {
     const q = l.q;
@@ -596,39 +742,40 @@
     for (let i = 0; i < topics.length; i++) { r -= w[i]; if (r <= 0) return topics[i]; }
     return topics[topics.length - 1];
   }
-  function itemPrep(title, desc, go) {
+  function itemPrep(title, desc, go, art) {
     const s = S(); const avail = ['hearty', 'hasty'].filter(k => s.items[k] > 0);
     const chosen = {};
-    const html = `<h3>${title}</h3><p>${desc}</p>
+    const html = `${art ? `<div class="prep-art">${art}</div>` : ''}<h3>${title}</h3><p>${desc}</p>
       <div class="prep">
-        <div>${heartsHtml(s.hearts, s.hearts)} · ${State.weapon().emoji} ${State.weapon().name} (${State.weapon().dmg} dmg) · ${State.shield().emoji} ${State.shield().name}</div>
-        ${avail.length ? `<p><b>Drink an elixir?</b></p>${avail.map(k => { const it = State.ITEMS.find(i => i.id === k); return `<label class="chk"><input type="checkbox" data-item="${k}"> ${it.emoji} ${it.name} (×${s.items[k]}) — ${it.desc}</label>`; }).join('')}` : '<p class="muted">Tip: Beedle sells elixirs that help in boss battles.</p>'}
+        <div class="prep-gear">${heartsHtml(s.hearts, s.hearts)}<span>${State.weapon().emoji} ${State.weapon().name} (${State.weapon().dmg} dmg)</span><span>${State.shield().emoji} ${State.shield().name}</span></div>
+        ${avail.length ? `<p><b>Drink an elixir?</b></p>${avail.map(k => { const it = State.ITEMS.find(i => i.id === k); return `<label class="chk"><input type="checkbox" data-item="${k}"> ${it.emoji} ${it.name} (×${s.items[k]}): ${it.desc}</label>`; }).join('')}` : '<p class="muted">Tip: Beedle sells elixirs that help in boss battles.</p>'}
         ${s.items.fairy ? `<p>🧚 Your fairy (×${s.items.fairy}) will revive you if you fall.</p>` : ''}
         ${s.items.bombarrow ? `<p>🏹 Bomb Arrows ready: ${s.items.bombarrow}</p>` : ''}
       </div>`;
     modal(html, [{ label: 'Not yet' }, { label: 'Fight! ⚔', cls: 'danger', fn: () => go(chosen) }]);
     $$('[data-item]', $('#overlay')).forEach(c => c.addEventListener('change', () => (chosen[c.dataset.item] = c.checked)));
   }
-  function bossPrep(r) { itemPrep(`${r.beast}`, `${r.bossIntro}`, items => bossFight(r, items)); }
+  function bossPrep(r) { itemPrep(`${r.beast}`, `${r.bossIntro}`, items => bossFight(r, items), ART.blight(r.element)); }
   function bossFight(r, items) {
     const s = S(); const ts = topicsOf(r.subject);
     battle({
-      kind: 'boss', title: r.boss, subtitle: `${r.beast} · ${State.SUBJECT_NAMES[r.subject]}`, total: null, hearts: s.hearts, timer: 60, items,
-      boss: { name: r.boss, emoji: r.bossEmoji, aura: { fire: '🔥', water: '💧', wind: '🌪️', thunder: '⚡' }[r.element], hp: 150, color: r.color, element: r.element, enrage: true },
+      kind: 'boss', title: r.beast, subtitle: State.SUBJECT_NAMES[r.subject], total: null, hearts: s.hearts, timer: 60, items,
+      boss: { name: r.boss, art: ART.blight(r.element), hp: 150, element: r.element, enrage: true, theme: r.id },
       next: B => ({ topic: weakWeighted(ts), lv: B.enraged ? (Math.random() < 0.35 ? 3 : 2) : (Math.random() < 0.3 ? 1 : 2) }),
-      intro: [[r.boss, '…'], ['Zelda', `${S().hero}, be careful! ${r.boss} attacks every time you answer wrongly. Each correct answer strikes back — build a combo for extra damage!`]],
+      intro: [[r.boss, '…'], ['Zelda', `${S().hero}, be careful! ${r.boss} attacks every time you answer wrongly. Each correct answer strikes back. Build a combo for extra damage!`]],
       onEnd: res => {
         if (res.won) {
           const first = !s.bosses[r.id];
-          s.bosses[r.id] = true;
-          let extra = `<div class="reward">◆ +300 rupees from the Divine Beast's treasure</div>`; s.rupees += 300;
+          s.bosses[r.id] = true; s.rupees += 300;
+          const rewards = [n => FX.chest([{ icon: IC.rupee('gold'), label: '300 rupees' }], n, 'Divine Beast treasure!')];
           if (first) {
             s.champions[r.ability] = true; s.hearts++; State.addMemory('m-' + r.subject);
-            extra += `<div class="reward big">❤ Heart Container! You now have ${s.hearts} hearts.</div><div class="reward big">${STORY.champions[r.ability].emoji} <b>${STORY.champions[r.ability].name}</b><br><small>${STORY.champions[r.ability].desc}</small></div>`;
+            rewards.unshift(n => FX.itemGet(IC.heart(true), 'Heart Container!', `You now have ${s.hearts} hearts.`, n));
+            rewards.push(n => FX.itemGet(`<span class="emo big">${STORY.champions[r.ability].emoji}</span>`, STORY.champions[r.ability].name, STORY.champions[r.ability].desc, n));
           }
-          State.save(); U.sfx.fanfare(); confetti(120);
-          const after = () => results(res, { heading: `${r.beast} is free!`, extra, next: () => (first ? memoryScreen('m-' + r.subject, () => regionScreen(r.id)) : regionScreen(r.id)) });
-          if (first) { screen(`<div class="spirit">${r.championEmoji}</div>`, 'bg-win'); dialogue(r.victory, after); } else after();
+          State.save();
+          const after = () => results(res, { heading: `${r.beast} is free!`, rewards, next: () => (first ? memoryScreen('m-' + r.subject, () => regionScreen(r.id)) : regionScreen(r.id)) });
+          if (first) { screen(`<div class="cutscene"><div class="spirit-champ">${ART.beast(r.subject, true)}</div></div>`, 'win', 'field'); FX.flash('#3fe0ff', 0.8); dialogue(r.victory, after); } else after();
         } else results(res, { retry: () => bossPrep(r), next: () => regionScreen(r.id), nextLabel: 'Retreat' });
       },
     });
@@ -636,25 +783,29 @@
 
   function calamityIntro() {
     const s = S();
-    if (!s.flags.calamityIntro) { s.flags.calamityIntro = true; State.save(); screen('<div class="castle-scene">🏰</div>', 'bg-malice'); return dialogue(STORY.calamity.intro, calamityIntro); }
-    itemPrep('Hyrule Castle — Calamity Ganon', 'The final battle. Questions from every subject. Three phases. Take a deep breath.', calamityFight);
+    if (!s.flags.calamityIntro) {
+      s.flags.calamityIntro = true; State.save();
+      screen(`<div class="cutscene"><div class="npc-stand big">${ART.zelda()}</div></div>`, 'castle', 'castle');
+      return dialogue(STORY.calamity.intro, calamityIntro);
+    }
+    itemPrep('Hyrule Castle: Calamity Ganon', 'The final battle. Questions from every subject. Three phases. Take a deep breath.', calamityFight, ART.calamity());
   }
   function calamityFight(items) {
     const s = S(); const C = STORY.calamity;
     const all = State.SUBJECTS.flatMap(x => topicsOf(x));
     battle({
-      kind: 'calamity', title: C.name, subtitle: 'The final battle', total: null, hearts: s.hearts, timer: 70, items,
+      kind: 'calamity', title: 'Hyrule Castle', subtitle: 'The final battle', total: null, hearts: s.hearts, timer: 70, items,
       boss: {
-        name: C.name, emoji: C.emoji, hp: 160, color: '#d1004f', element: 'malice',
+        name: C.name, art: ART.calamity(), hp: 160, element: 'malice', theme: 'castle',
         dmg: B => (B.phase === 2 ? 40 : State.weapon().dmg),
         onPhase: B => {
           if (B.phase === 0) {
-            B.phase = 1; U.sfx.boss(); toast(C.phase2, 'bad'); B.setBoss(C.name + ' (enraged)', '👿', 180); $('#boss').classList.add('enraged');
-            setTimeout(B.resume, 600); return true;
+            B.phase = 1; U.sfx.boss(); FX.shake(2); FX.flash('#ff2d6f', 0.6); FX.banner(C.phase2, 'danger');
+            setTimeout(() => { B.setFoe(C.name + ' (enraged)', ART.calamity(), 180); $('#foe').classList.add('enraged'); B.resume(); }, 900); return true;
           }
           if (B.phase === 1) {
-            B.phase = 2; B.hearts = B.maxHearts; $('#boss').classList.remove('enraged');
-            dialogue(C.phase3, () => { B.setBoss(C.beastName, C.beastEmoji, 160); $('.arena').classList.add('light'); B.resume(); });
+            B.phase = 2; B.hearts = B.maxHearts;
+            dialogue(C.phase3, () => { FX.flash('#fff6c8', 1); B.setFoe(C.beastName, ART.darkBeast(), 160); FX.theme('win'); $('#arena').classList.add('light'); B.resume(); });
             return true;
           }
           return false;
@@ -666,8 +817,8 @@
       onEnd: res => {
         if (res.won) {
           const first = !s.calamity; s.calamity = true; s.rupees += 1000; State.addMemory('m-final'); State.save();
-          U.sfx.fanfare(); confetti(200);
-          screen('<div class="dawn">🌅</div>', 'bg-win');
+          FX.flash('#fff', 1); confetti(200);
+          screen(`<div class="cutscene"><div class="duo"><span>${heroArt()}</span><span>${ART.zelda()}</span></div></div>`, 'win', 'field');
           dialogue(C.ending, () => ending(res, first));
         } else results(res, { retry: calamityIntro, next: map, nextLabel: 'Retreat' });
       },
@@ -676,62 +827,73 @@
   function ending(res, first) {
     const s = S(); const st = s.stats;
     screen(`<div class="page ending">
-      <h1>The End</h1><h2>…and the beginning of ${U.esc(s.hero)}'s legend.</h2>
+      <div class="duo"><span>${heroArt()}</span><span>${ART.zelda()}</span></div>
+      <h1 class="shine">The End</h1><h2>…and the beginning of ${U.esc(s.hero)}'s legend.</h2>
       <div class="res-stats">
         <div><b>${st.answered}</b><span>questions answered</span></div>
         <div><b>${st.answered ? Math.round((st.correct / st.answered) * 100) : 0}%</b><span>accuracy</span></div>
         <div><b>${st.bestStreak}</b><span>best combo</span></div>
-        <div><b>${s.hearts}</b><span>hearts</span></div>
+        <div><b>${State.rank().level}</b><span>hero rank</span></div>
         <div><b>${s.seedsTotal}</b><span>Korok seeds</span></div>
         <div><b>${Math.round(st.playSeconds / 60)}</b><span>minutes played</span></div>
       </div>
-      <p>Hyrule is safe — but a true hero keeps training. Aim for ★★★ in every shrine, beat your Trial of the Sword record and take the Hateno practice papers to get 11+ ready!</p>
-      ${first ? '<div class="reward big">◆ +1000 rupees · Memory unlocked: Zelda\'s Promise</div>' : ''}
-      <button class="btn big primary" id="next">Return to Hyrule ▶</button></div>`, 'bg-win');
+      <p>Hyrule is safe, but a true hero keeps training. Aim for ★★★ in every shrine, beat your Trial of the Sword record and take the Hateno practice papers to get 11+ ready!</p>
+      ${first ? `<div class="reward big">${IC.rupee('gold')} +1000 rupees · Memory unlocked: Zelda's Promise</div>` : ''}
+      <button class="btn big primary glow" id="next">Return to Hyrule ▶</button></div>`, 'win', 'field');
     on('#next', map);
   }
 
   /* =========================================================== MASTER SWORD & TRIAL OF THE SWORD */
   function masterSword() {
     const s = S();
-    if (s.weapon === 'master' || s.ownedWeapons.includes('master')) {
-      return modal(`<h3>🌲 The Lost Woods</h3><p>The Great Deku Tree rumbles: "The <b>Trial of the Sword</b> awaits. How many floors can you climb with only three hearts and no runes?"</p><p>Your record: <b>Floor ${s.swordBest}</b></p>`, [{ label: 'Leave' }, { label: 'Begin the Trial ⚔', cls: 'primary', fn: swordTrial }]);
+    const scene = (inner) => screen(`${hud()}<div class="page center woods"><div class="page-head"><button class="btn ghost" id="back">◀ Map</button><h2>The Lost Woods</h2></div>${inner}</div>`, 'plateau', 'shrine');
+    if (s.ownedWeapons.includes('master')) {
+      scene(`<div class="pedestal">${ART.korok()}</div><p class="intro slate">The Great Deku Tree rumbles: "The <b>Trial of the Sword</b> awaits. How many floors can you climb with only three hearts and no runes?"</p><p>Your record: <b>Floor ${s.swordBest}</b></p><button class="btn big primary glow" id="go">Begin the Trial ⚔</button>`);
+      on('#back', map); on('#go', swordTrial); return;
     }
     if (State.masterSwordReady()) {
-      return modal(`<h3>🌲 The Master Sword</h3><p>The legendary sword rests in its pedestal. With ${s.hearts} hearts, you are strong enough to draw it.</p>`, [{ label: 'Leave' }, { label: 'Draw the sword! ✨', cls: 'primary', fn: () => {
-        s.ownedWeapons.push('master'); s.weapon = 'master'; State.addMemory('m-sword'); State.save(); U.sfx.fanfare(); confetti();
-        screen('<div class="sword-scene">🗡️</div>', 'bg-win');
-        dialogue([['Great Deku Tree', `${s.hero}… you have drawn the Master Sword. It deals ${State.weapon().dmg} damage — the strongest blade in Hyrule.`], ['Great Deku Tree', 'The Trial of the Sword is now open to you here in the Lost Woods.']], () => memoryScreen('m-sword', map));
-      } }]);
+      scene(`<div class="pedestal sword-in">${IC.sword()}</div><p class="intro slate">The legendary sword rests in its pedestal. With ${s.hearts} hearts, you are strong enough to draw it.</p><button class="btn big primary glow" id="draw">Draw the sword! ✨</button>`);
+      on('#back', map);
+      on('#draw', () => {
+        s.ownedWeapons.push('master'); s.weapon = 'master'; State.addMemory('m-sword'); State.save();
+        FX.flash('#fff', 1); FX.shake(2);
+        FX.itemGet(`<div class="sword-get">${IC.sword()}</div>`, 'You got the Master Sword!', `The sword that seals the darkness. Boss damage: ${State.weapon().dmg}.`, () =>
+          dialogue([['Great Deku Tree', `${s.hero}… the sword has chosen you.`], ['Great Deku Tree', 'The Trial of the Sword is now open to you here in the Lost Woods.']], () => memoryScreen('m-sword', map)));
+      });
+      return;
     }
-    modal(`<h3>🌲 The Lost Woods</h3><p>Deep in the misty woods rests the <b>Master Sword</b>. Only a hero with at least <b>${State.MASTER_SWORD_HEARTS} hearts</b> who has freed a Champion can draw it.</p><p>You have ${s.hearts} heart${s.hearts > 1 ? 's' : ''} and have freed ${State.bossesBeaten()} Champion${State.bossesBeaten() === 1 ? '' : 's'}.</p>`, [{ label: 'OK' }]);
+    scene(`<div class="pedestal sword-in locked">${IC.sword()}</div><p class="intro slate">Deep in the misty woods rests the <b>Master Sword</b>. Only a hero with at least <b>${State.MASTER_SWORD_HEARTS} hearts</b> who has freed a Champion can draw it.</p><p>You have ${heartsHtml(s.hearts, s.hearts)} and have freed ${State.bossesBeaten()} Champion${State.bossesBeaten() === 1 ? '' : 's'}.</p>`);
+    on('#back', map);
   }
   function swordTrial() {
     const s = S(); const all = State.SUBJECTS.flatMap(x => topicsOf(x));
     battle({
-      kind: 'sword', title: 'Trial of the Sword', subtitle: 'How far can you go?', total: null, hearts: 3, timer: 45,
-      next: B => ({ topic: U.pick(all), lv: Math.min(3, 1 + Math.floor(B.idx / 8)) }),
+      kind: 'sword', title: 'Trial of the Sword', subtitle: 'How far can you go?', total: null, hearts: 3, timer: 45, theme: 'shrine',
+      foe: { name: 'Chuchu · Floor 1', art: ART.chuchu('plain'), attack: 'water' },
+      next: B => ({ topic: U.pick(all), lv: Math.min(3, 1 + Math.floor(B.kills / 8)) }),
       onEnd: res => {
-        const floor = res.B.correct; const rec = floor > s.swordBest; if (rec) s.swordBest = floor; s.rupees += floor * 5; State.save();
-        results(res, { heading: 'The trial ends', extra: `<div class="reward big">🗡️ You reached floor <b>${floor}</b>${rec ? ' — a NEW RECORD!' : ` (record: ${s.swordBest})`}<br><small>+${floor * 5} rupees</small></div>`, retry: swordTrial, next: map });
+        const floor = res.B.kills; const rec = floor > s.swordBest; if (rec) s.swordBest = floor; s.rupees += floor * 5; State.save();
+        results(res, { heading: 'The trial ends', extra: `<div class="reward big">🗡️ You cleared <b>${floor}</b> floor${floor === 1 ? '' : 's'}${rec ? ': a NEW RECORD!' : ` (record: ${s.swordBest})`}<br><small>+${floor * 5} rupees</small></div>`, retry: swordTrial, next: map });
       },
     });
   }
 
   /* =========================================================== BLOOD MOON (spaced review of mistakes) */
   function bloodMoonIntro() {
-    screen('<div class="moon">🌕</div>', 'bg-blood');
+    screen(`<div class="cutscene"><div class="npc-stand big">${ART.zelda()}</div></div>`, 'bloodmoon', 'castle');
+    FX.flash('#ff0000', 0.5);
     dialogue([['Zelda', `${S().hero}, beware! The Blood Moon rises… questions you got wrong before have come back to life!`], ['Zelda', 'Defeat them now and they\'ll be gone for good. Remember what the explanations taught you!']], bloodMoon);
   }
   function bloodMoon() {
     const s = S();
     const pool = U.shuffle(s.mistakes.slice()).slice(0, 8);
     battle({
-      kind: 'bloodmoon', title: 'Blood Moon', subtitle: 'Your old mistakes return!', total: pool.length, hearts: 4,
+      kind: 'bloodmoon', title: 'Blood Moon', subtitle: 'Your old mistakes return!', total: pool.length + 2, hearts: 4, theme: 'bloodmoon',
+      foe: { name: 'Black Moblin', art: ART.moblin(), attack: 'melee' },
       next: B => {
-        const m = pool[B.idx]; const t = topicById(m.topicId);
+        const m = pool[B.idx % pool.length]; const t = topicById(m.topicId);
         // half the time it's the exact question again; otherwise a fresh one of the same kind
-        return { topic: t, lv: m.lv, q: Math.random() < 0.5 ? m.q : null, mistake: m };
+        return { topic: t, lv: m.lv, q: Math.random() < 0.5 && B.idx < pool.length ? m.q : null, mistake: m };
       },
       fromMistake: (cur, ok) => { if (ok && cur.mistake) { const i = s.mistakes.indexOf(cur.mistake); if (i > -1) s.mistakes.splice(i, 1); } },
       onEnd: res => {
@@ -746,15 +908,15 @@
     const s = S();
     const hist = s.mocks.slice(-6).reverse();
     screen(`${hud()}<div class="page">
-      <div class="page-head"><button class="btn ghost" id="back">◀ Map</button><h2>🏚️ Hateno Ancient Tech Lab</h2></div>
-      <div class="lesson"><div class="monk">👩‍🔬</div><div><h3>Purah's Practice Papers</h3>
+      <div class="page-head"><button class="btn ghost" id="back">◀ Map</button><h2>Hateno Ancient Tech Lab</h2></div>
+      <div class="lesson-wrap"><div class="monk-seat purah">👩‍🔬</div><div class="lesson scroll"><h3>Purah's Practice Papers</h3>
       <p>"Want to know how ready you are for the real 11+? Try one of my practice papers! Just like the real exam: <b>no hints, no runes, no feedback until the end</b>, and a time limit."</p>
       <p class="muted">20 questions · 15 minutes · mark your answers carefully!</p></div></div>
-      <div class="cards">${State.SUBJECTS.map(x => `<button class="card" data-sub="${x}"><div class="shrine-ico">${regionOfSubject(x).emoji}</div><div><h3>${State.SUBJECT_NAMES[x]}</h3><p class="muted">Readiness: ${State.subjectMastery(x)}%</p></div><div>Start ▶</div></button>`).join('')}
-      <button class="card" data-sub="mixed"><div class="shrine-ico">🧭</div><div><h3>Mixed Paper</h3><p class="muted">All four subjects</p></div><div>Start ▶</div></button></div>
+      <div class="cards">${State.SUBJECTS.map(x => `<button class="card slate" data-sub="${x}"><div class="card-art">${ART.beast(x, S().bosses[regionOfSubject(x).id])}</div><div><h3>${State.SUBJECT_NAMES[x]}</h3><p class="muted">Readiness: ${State.subjectMastery(x)}%</p></div><div>Start ▶</div></button>`).join('')}
+      <button class="card slate" data-sub="mixed"><div class="card-art">🧭</div><div><h3>Mixed Paper</h3><p class="muted">All four subjects</p></div><div>Start ▶</div></button></div>
       <div class="row center"><label class="chk"><input type="checkbox" id="hard"> 11+ standard (Master level). Leave unticked for Adept level.</label></div>
       ${hist.length ? `<h3>Recent papers</h3><table class="hist">${hist.map(h => `<tr><td>${h.date}</td><td>${h.subject}</td><td>${h.level === 3 ? 'Master' : 'Adept'}</td><td><b>${h.score}/${h.total}</b> (${Math.round((h.score / h.total) * 100)}%)</td></tr>`).join('')}</table>` : ''}
-    </div>`, 'bg-shrine');
+    </div>`, 'shrine', 'shrine');
     on('#back', map);
     on('[data-sub]', (e, el) => mock(el.dataset.sub, $('#hard').checked ? 3 : 2));
   }
@@ -764,18 +926,19 @@
     const order = []; for (let i = 0; i < 20; i++) order.push(ts[i % ts.length]);
     const seq = U.shuffle(order);
     battle({
-      kind: 'mock', exam: true, title: 'Practice Paper', subtitle: subject === 'mixed' ? 'Mixed' : State.SUBJECT_NAMES[subject], total: 20, hearts: 99, examTime: 15 * 60,
+      kind: 'mock', exam: true, title: 'Practice Paper', subtitle: subject === 'mixed' ? 'Mixed' : State.SUBJECT_NAMES[subject], total: 20, hearts: 99, examTime: 15 * 60, theme: 'shrine',
       next: B => ({ topic: seq[B.idx], lv }),
       onEnd: res => {
         const B = res.B; const score = B.correct; const reward = score * 4;
-        s.rupees += reward; s.mocks.push({ date: new Date().toLocaleDateString('en-GB'), subject: subject === 'mixed' ? 'Mixed' : State.SUBJECT_NAMES[subject], level: lv, score, total: 20 }); State.save();
+        s.rupees += reward; s.mocks.push({ date: new Date().toLocaleDateString('en-GB'), subject: subject === 'mixed' ? 'Mixed' : State.SUBJECT_NAMES[subject], level: lv, score, total: 20 });
+        State.addXp(score * 5); State.save();
         const pct = Math.round((score / 20) * 100);
-        const verdict = pct >= 85 ? 'Outstanding — that\'s a strong 11+ score! 🏆' : pct >= 70 ? 'Great work — you\'re on track. Keep practising! ⭐' : pct >= 50 ? 'Good effort — review the mistakes and train in the shrines. 💪' : 'This is tough material — the shrines will help you build up to it. 🌱';
+        const verdict = pct >= 85 ? 'Outstanding: that\'s a strong 11+ score! 🏆' : pct >= 70 ? 'Great work, you\'re on track. Keep practising! ⭐' : pct >= 50 ? 'Good effort. Review the mistakes and train in the shrines. 💪' : 'This is tough material. The shrines will help you build up to it. 🌱';
         screen(`<div class="page results">
           <div class="res-head"><div class="big-ico">📜</div><h2>Paper complete</h2><p>${verdict}</p></div>
-          <div class="res-stats"><div><b>${score}/20</b><span>score</span></div><div><b>${pct}%</b><span>percentage</span></div><div><b>◆ ${reward}</b><span>rupees</span></div></div>
-          <details class="review" open><summary>📖 Go through the paper</summary>${B.log.map((l, i) => l.q ? `<div class="rv-n ${l.ok ? 'ok' : 'no'}">Q${i + 1} ${l.ok ? '✔' : '✘'}</div>${l.ok ? '' : reviewItem(l)}` : `<div class="rv-n no">Q${i + 1} — not answered</div>`).join('')}</details>
-          <div class="row center"><button class="btn primary" id="next">Back to the Lab ▶</button></div></div>`, 'bg-shrine');
+          <div class="res-stats"><div><b>${score}/20</b><span>score</span></div><div><b>${pct}%</b><span>percentage</span></div><div><b>${IC.rupee('blue')} ${reward}</b><span>rupees</span></div><div><b>+${score * 5}</b><span>XP</span></div></div>
+          <details class="review" open><summary>📖 Go through the paper</summary>${B.log.map((l, i) => l.q ? `<div class="rv-n ${l.ok ? 'ok' : 'no'}">Q${i + 1} ${l.ok ? '✔' : '✘'}</div>${l.ok ? '' : reviewItem(l)}` : `<div class="rv-n no">Q${i + 1}: not answered</div>`).join('')}</details>
+          <div class="row center"><button class="btn primary" id="next">Back to the Lab ▶</button></div></div>`, 'shrine', 'shrine');
         on('#next', mockMenu);
       },
     });
@@ -785,47 +948,49 @@
   function statue() {
     const s = S();
     screen(`${hud()}<div class="page center">
-      <div class="page-head"><button class="btn ghost" id="back">◀ Map</button><h2>🗿 Goddess Statue</h2></div>
-      <p class="intro">"Hero… offer me <b>four Spirit Orbs</b> and I shall grant you strength."</p>
-      <div class="orbs">${'🔮'.repeat(Math.min(s.orbs, 12))}${s.orbs > 12 ? ` +${s.orbs - 12}` : ''}${s.orbs ? '' : '<span class="muted">No orbs yet — clear shrine trials to earn them.</span>'}</div>
+      <div class="page-head"><button class="btn ghost" id="back">◀ Map</button><h2>Goddess Statue</h2></div>
+      <div class="npc-stand big">${ART.goddess()}</div>
+      <p class="intro slate">"Hero… offer me <b>four Spirit Orbs</b> and I shall grant you strength."</p>
+      <div class="orbs">${Array.from({ length: Math.min(s.orbs, 12) }, (_, i) => `<span style="--d:${i * 0.08}s">${IC.orb()}</span>`).join('')}${s.orbs > 12 ? ` +${s.orbs - 12}` : ''}${s.orbs ? '' : '<span class="muted">No orbs yet. Clear shrine trials to earn them.</span>'}</div>
       <div class="row center">
-        <button class="btn big ${s.orbs >= 4 ? 'primary' : ''}" id="heart" ${s.orbs >= 4 ? '' : 'disabled'}>❤ Heart Container<br><small>+1 heart in every boss battle</small></button>
+        <button class="btn big ${s.orbs >= 4 ? 'primary glow' : ''}" id="heart" ${s.orbs >= 4 ? '' : 'disabled'}>${IC.heart(true)} Heart Container<br><small>+1 heart in every boss battle</small></button>
         <button class="btn big ${s.orbs >= 4 ? 'primary' : ''}" id="stam" ${s.orbs >= 4 && s.stamina < 10 ? '' : 'disabled'}>🟢 Stamina Vessel<br><small>+6 seconds on every timer</small></button>
       </div>
       <p class="muted">You have ${s.hearts} hearts and ${s.stamina} stamina vessels. The Master Sword needs ${State.MASTER_SWORD_HEARTS} hearts.</p>
-    </div>`, 'bg-statue');
+    </div>`, 'plateau', 'shrine');
     on('#back', map);
-    on('#heart', () => { s.orbs -= 4; s.hearts++; State.save(); U.sfx.fanfare(); toast('❤ Your hearts grow stronger!', 'good'); statue(); });
-    on('#stam', () => { s.orbs -= 4; s.stamina++; State.save(); U.sfx.fanfare(); toast('🟢 Your stamina increases!', 'good'); statue(); });
+    on('#heart', () => { s.orbs -= 4; s.hearts++; State.save(); FX.flash('#fff6c8', 0.8); FX.itemGet(IC.heart(true), 'Heart Container!', `Your life grows. You now have ${s.hearts} hearts.`, statue); });
+    on('#stam', () => { s.orbs -= 4; s.stamina++; State.save(); FX.flash('#9cff9c', 0.6); FX.itemGet('<span class="emo big">🟢</span>', 'Stamina Vessel!', 'Every timer now gives you 6 more seconds.', statue); });
   }
   function hestu() {
     const s = S(); const cost = State.HESTU_COSTS[s.hestuLevel];
     screen(`${hud()}<div class="page center">
-      <div class="page-head"><button class="btn ghost" id="back">◀ Map</button><h2>🪇 Hestu</h2></div>
-      <div class="hestu">🌳</div>
-      <p class="intro">"Shake-shake! Korok seeds! Give Hestu seeds and Hestu makes your pouch BIGGER!"</p>
+      <div class="page-head"><button class="btn ghost" id="back">◀ Map</button><h2>Hestu</h2></div>
+      <div class="npc-stand big dance">${ART.hestu()}</div>
+      <p class="intro slate">"Shake-shake! Korok seeds! Give Hestu seeds and Hestu makes your pouch BIGGER!"</p>
       <p>Each upgrade gives every rune <b>one extra use</b> per battle. Current: <b>${s.runeLevel}</b> use${s.runeLevel > 1 ? 's' : ''} each.</p>
-      ${cost ? `<button class="btn big ${s.seeds >= cost ? 'primary' : ''}" id="up" ${s.seeds >= cost ? '' : 'disabled'}>Give ${cost} 🌰 for a bigger pouch</button><p class="muted">You have ${s.seeds} seed${s.seeds === 1 ? '' : 's'}. Find Koroks by answering correctly — they hide everywhere!</p>` : '<p class="ok-note">"Your pouch is the BIGGEST! Shake-shake!"</p>'}
-    </div>`, 'bg-plateau');
+      ${cost ? `<button class="btn big ${s.seeds >= cost ? 'primary glow' : ''}" id="up" ${s.seeds >= cost ? '' : 'disabled'}>Give ${cost} ${IC.seed()} for a bigger pouch</button><p class="muted">You have ${s.seeds} seed${s.seeds === 1 ? '' : 's'}. Find Koroks by answering correctly. They hide everywhere!</p>` : '<p class="ok-note">"Your pouch is the BIGGEST! Shake-shake!"</p>'}
+    </div>`, 'plateau', 'field');
     on('#back', map);
-    on('#up', () => { s.seeds -= cost; s.hestuLevel++; s.runeLevel++; State.save(); U.sfx.korok(); confetti(30); toast('🪇 Your rune pouch grew!', 'good'); hestu(); });
+    on('#up', () => { s.seeds -= cost; s.hestuLevel++; s.runeLevel++; State.save(); U.sfx.korok(); FX.itemGet('<span class="emo big">🎒</span>', 'Your pouch grew!', `Each rune can now be used ${s.runeLevel} times per battle.`, hestu); });
   }
   function shop(tab = 'items') {
     const s = S();
-    const row = (it, owned, equipped, kind) => `<div class="shop-row"><span class="si">${it.emoji}</span><div><b>${it.name}</b><p class="muted">${it.desc || (it.dmg ? `Boss damage: ${it.dmg}` : `Blocks ${it.blocks} hit${it.blocks === 1 ? '' : 's'} per boss battle`)}</p></div>
-      ${kind === 'item' ? `<span class="muted">Have ${s.items[it.id]}</span><button class="btn small ${s.rupees >= it.price ? 'primary' : ''}" data-buy="${it.id}" data-kind="item" ${s.rupees >= it.price ? '' : 'disabled'}>◆ ${it.price}</button>`
+    const price = p => `${IC.rupee('green')} ${p}`;
+    const row = (it, owned, equipped, kind) => `<div class="shop-row slate"><span class="si">${it.emoji}</span><div><b>${it.name}</b><p class="muted">${it.desc || (it.dmg ? `Boss damage: ${it.dmg}` : `Blocks ${it.blocks} hit${it.blocks === 1 ? '' : 's'} per boss battle`)}</p></div>
+      ${kind === 'item' ? `<span class="muted">Have ${s.items[it.id]}</span><button class="btn small ${s.rupees >= it.price ? 'primary' : ''}" data-buy="${it.id}" data-kind="item" ${s.rupees >= it.price ? '' : 'disabled'}>${price(it.price)}</button>`
         : equipped ? '<span class="tag ok">Equipped</span>' : owned ? `<button class="btn small" data-equip="${it.id}" data-kind="${kind}">Equip</button>`
-        : it.price === null ? '<span class="muted">Not for sale</span>' : `<button class="btn small ${s.rupees >= it.price ? 'primary' : ''}" data-buy="${it.id}" data-kind="${kind}" ${s.rupees >= it.price ? '' : 'disabled'}>◆ ${it.price}</button>`}</div>`;
+        : it.price === null ? '<span class="muted">Not for sale</span>' : `<button class="btn small ${s.rupees >= it.price ? 'primary' : ''}" data-buy="${it.id}" data-kind="${kind}" ${s.rupees >= it.price ? '' : 'disabled'}>${price(it.price)}</button>`}</div>`;
     let body = '';
     if (tab === 'items') body = State.ITEMS.map(it => row(it, false, false, 'item')).join('');
     if (tab === 'weapons') body = State.WEAPONS.map(w => row(w, s.ownedWeapons.includes(w.id), s.weapon === w.id, 'weapon')).join('');
     if (tab === 'shields') body = State.SHIELDS.map(w => row(w, s.ownedShields.includes(w.id), s.shield === w.id, 'shield')).join('');
     if (tab === 'armour') body = State.ARMOUR.map(w => row(w, s.ownedArmour.includes(w.id), s.armour === w.id, 'armour')).join('');
     screen(`${hud()}<div class="page">
-      <div class="page-head"><button class="btn ghost" id="back">◀ Map</button><h2>🎒 Beedle's Shop</h2></div>
-      <p class="intro">"Thank you! Please come again! …Oh, you haven't bought anything yet. Take a look!"</p>
+      <div class="page-head"><button class="btn ghost" id="back">◀ Map</button><h2>Beedle's Shop</h2></div>
+      <div class="shop-top"><div class="npc-stand">${ART.beedle()}</div><div class="mirror">${heroArt()}<small>Your gear</small></div><p class="intro slate">"Thank you! Please come again! …Oh, you haven't bought anything yet. Take a look!"</p></div>
       <div class="tabs">${['items', 'weapons', 'shields', 'armour'].map(t => `<button class="tab ${t === tab ? 'on' : ''}" data-tab="${t}">${{ items: '🧪 Items', weapons: '⚔️ Weapons', shields: '🛡️ Shields', armour: '👕 Armour' }[t]}</button>`).join('')}</div>
-      <div class="shop">${body}</div></div>`, 'bg-shop');
+      <div class="shop">${body}</div></div>`, 'plateau', 'field');
     on('#back', map);
     on('[data-tab]', (e, el) => shop(el.dataset.tab));
     on('[data-buy]', (e, el) => {
@@ -837,48 +1002,52 @@
       if (k === 'weapon') { s.ownedWeapons.push(id); s.weapon = id; }
       if (k === 'shield') { s.ownedShields.push(id); s.shield = id; }
       if (k === 'armour') { s.ownedArmour.push(id); s.armour = id; }
-      State.save(); toast(`Bought ${it.emoji} ${it.name}!`, 'good'); shop(tab);
+      State.save();
+      if (k === 'item') { toast(`Bought ${it.emoji} ${it.name}!`, 'good'); shop(tab); }
+      else FX.itemGet(`<span class="emo big">${it.emoji}</span>`, `You got the ${it.name}!`, k === 'weapon' ? `Boss damage: ${it.dmg}` : it.desc || `Blocks ${it.blocks} hit${it.blocks === 1 ? '' : 's'} per boss battle`, () => shop(tab));
     });
     on('[data-equip]', (e, el) => { const k = el.dataset.kind; s[k] = el.dataset.equip; State.save(); shop(tab); });
   }
 
   /* =========================================================== ADVENTURE LOG */
   function adventureLog(tab = 'mastery') {
-    const s = S(); const st = s.stats;
+    const s = S(); const st = s.stats; const rk = State.rank();
     let body = '';
     if (tab === 'mastery') {
-      body = State.SUBJECTS.map(x => `<div class="subj"><h3>${regionOfSubject(x).emoji} ${State.SUBJECT_NAMES[x]} <span class="pill">${State.subjectMastery(x)}% ready</span></h3>
+      body = State.SUBJECTS.map(x => `<div class="subj slate"><h3>${ART.beast(x, s.bosses[regionOfSubject(x).id])} ${State.SUBJECT_NAMES[x]} <span class="pill">${State.subjectMastery(x)}% ready</span></h3>
         ${topicsOf(x).map(t => { const m = State.mastery(t.id); return `<div class="mrow"><span>${t.icon} ${t.name}</span><div class="mbar big"><i style="width:${m}%" class="${m >= 75 ? 'hi' : m >= 45 ? 'mid' : 'lo'}"></i></div><span class="pct">${m}%</span><span class="stars">${'★'.repeat(s.stars[t.id] || 0)}</span></div>`; }).join('')}</div>`).join('')
-        + '<p class="muted">Readiness grows as you answer questions correctly — harder trials count for more. 75%+ means that topic is in great shape for the 11+.</p>';
+        + '<p class="muted">Readiness grows as you answer questions correctly. Harder trials count for more. 75%+ means that topic is in great shape for the 11+.</p>';
     }
     if (tab === 'memories') body = STORY.memories.map(m => State.hasMemory(m.id) ? `<div class="memory"><h3>📷 ${m.title}</h3><p>${fillName(m.text)}</p></div>` : '<div class="memory locked"><h3>📷 ???</h3><p class="muted">A memory not yet recovered…</p></div>').join('');
-    if (tab === 'stats') body = `<div class="res-stats">
+    if (tab === 'stats') body = `<div class="rank-card slate">${heroArt()}<div><h3>${U.esc(s.hero)}</h3><p>Hero Rank <b>${rk.level}</b> · ${rk.title}</p><div class="bar"><i style="width:${Math.round((rk.into / rk.need) * 100)}%"></i></div><small class="muted">${rk.into}/${rk.need} XP to next rank</small></div></div>
+        <div class="res-stats">
         <div><b>${st.answered}</b><span>questions</span></div><div><b>${st.answered ? Math.round((st.correct / st.answered) * 100) : 0}%</b><span>accuracy</span></div>
         <div><b>${st.bestStreak}</b><span>best combo</span></div><div><b>${st.trials}</b><span>trials cleared</span></div><div><b>${st.perfect}</b><span>perfect runs</span></div>
         <div><b>${s.streak.best}</b><span>best day streak</span></div><div><b>${s.seedsTotal}</b><span>Korok seeds found</span></div><div><b>${s.orbsTotal}</b><span>Spirit Orbs</span></div>
         <div><b>${Math.round(st.playSeconds / 60)}</b><span>minutes played</span></div><div><b>${s.swordBest}</b><span>Sword Trial record</span></div></div>
         <h3>Sheikah Runes & Champion Powers</h3>
-        <div class="powers">${Object.entries(STORY.runes).map(([k, r]) => `<div class="${s.runes[k] ? '' : 'locked'}">${r.emoji} <b>${r.name}</b> — ${r.desc}</div>`).join('')}
-        ${Object.entries(STORY.champions).map(([k, r]) => `<div class="${s.champions[k] ? '' : 'locked'}">${r.emoji} <b>${r.name}</b> — ${s.champions[k] ? r.desc : '???'}</div>`).join('')}</div>`;
+        <div class="powers">${Object.entries(STORY.runes).map(([k, r]) => `<div class="slate ${s.runes[k] ? '' : 'locked'}">${IC.rune(k)} <b>${r.name}</b>: ${r.desc}</div>`).join('')}
+        ${Object.entries(STORY.champions).map(([k, r]) => `<div class="slate ${s.champions[k] ? '' : 'locked'}">${r.emoji} <b>${r.name}</b>: ${s.champions[k] ? r.desc : '???'}</div>`).join('')}</div>`;
     screen(`${hud()}<div class="page">
-      <div class="page-head"><button class="btn ghost" id="back">◀ Map</button><h2>📒 Adventure Log</h2></div>
-      <div class="tabs">${[['mastery', '🧠 11+ Readiness'], ['memories', '📷 Memories'], ['stats', '📊 Stats']].map(([k, l]) => `<button class="tab ${k === tab ? 'on' : ''}" data-tab="${k}">${l}</button>`).join('')}</div>
-      ${body}</div>`, 'bg-shrine');
+      <div class="page-head"><button class="btn ghost" id="back">◀ Map</button><h2>Adventure Log</h2></div>
+      <div class="tabs">${[['mastery', '🧠 11+ Readiness'], ['memories', '📷 Memories'], ['stats', '🏅 Hero & Stats']].map(([k, l]) => `<button class="tab ${k === tab ? 'on' : ''}" data-tab="${k}">${l}</button>`).join('')}</div>
+      ${body}</div>`, 'map', 'field');
     on('#back', map); on('[data-tab]', (e, el) => adventureLog(el.dataset.tab));
   }
   function memoryScreen(id, next) {
     const m = STORY.memories.find(x => x.id === id);
-    screen(`<div class="page memory-screen"><div class="memory big"><div class="photo">📷</div><h2>${m.title}</h2><p>${fillName(m.text)}</p></div><button class="btn big primary" id="next">Continue ▶</button></div>`, 'bg-memory');
-    U.sfx.orb(); on('#next', next);
+    screen(`<div class="page memory-screen"><div class="memory big photo-frame"><div class="duo">${heroArt()}${ART.zelda()}</div><h2>${m.title}</h2><p>${fillName(m.text)}</p></div><button class="btn big primary" id="next">Continue ▶</button></div>`, 'memory', 'field');
+    U.sfx.orb(); FX.flash('#fff8e0', 0.8); on('#next', next);
   }
 
   /* =========================================================== SETTINGS */
   function settings() {
     const s = S(); const st = s.settings;
     screen(`${hud()}<div class="page">
-      <div class="page-head"><button class="btn ghost" id="back">◀ Map</button><h2>⚙️ Settings</h2></div>
-      <div class="settings">
+      <div class="page-head"><button class="btn ghost" id="back">◀ Map</button><h2>Settings</h2></div>
+      <div class="settings slate">
         <label class="chk"><input type="checkbox" id="snd" ${st.sound ? 'checked' : ''}> 🔊 Sound effects</label>
+        <label class="chk"><input type="checkbox" id="mus" ${st.music !== false ? 'checked' : ''}> 🎵 Music</label>
         <label class="chk"><input type="checkbox" id="tmr" ${st.timers ? 'checked' : ''}> ⏱ Timers in Master trials and boss battles</label>
         <label class="chk"><input type="checkbox" id="auto" ${st.autoRead ? 'checked' : ''}> 🗣️ Read every question aloud automatically</label>
         <label>Hero name <input id="nm" maxlength="14" value="${U.esc(s.hero)}"></label>
@@ -889,9 +1058,10 @@
       <textarea id="code" rows="3" placeholder="Save code appears / paste here"></textarea>
       <p class="muted">Content follows the GL Assessment 11+ format (English, Maths, Verbal Reasoning, Non-Verbal Reasoning). Free official familiarisation papers: <a href="https://11plus.gl-assessment.co.uk/pages/free-materials" target="_blank" rel="noopener">11plus.gl-assessment.co.uk</a>.</p>
       <p class="muted">Fan-made educational game. Not affiliated with or endorsed by Nintendo.</p>
-    </div>`, 'bg-shrine');
+    </div>`, 'map', 'field');
     on('#back', map);
     $('#snd').addEventListener('change', e => { st.sound = U.soundOn = e.target.checked; State.save(); });
+    $('#mus').addEventListener('change', e => { st.music = e.target.checked; FX.Music.unlock(); FX.Music.set(st.music); State.save(); });
     $('#tmr').addEventListener('change', e => { st.timers = e.target.checked; State.save(); });
     $('#auto').addEventListener('change', e => { st.autoRead = e.target.checked; State.save(); });
     $('#nm').addEventListener('change', e => { s.hero = e.target.value.trim() || s.hero; State.save(); });

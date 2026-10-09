@@ -53,8 +53,9 @@
       daily: { date: '', correct: 0, claimed: false },
       streak: { last: '', days: 0, best: 0 },
       swordBest: 0,
+      xp: 0, fog: {}, dailyChest: '', lastRegion: 'plateau', compendium: {},
       mocks: [], // {date, subject, score, total}
-      settings: { sound: true, timers: true, speech: true },
+      settings: { sound: true, music: true, timers: true, speech: true },
     };
   }
 
@@ -127,6 +128,16 @@
     hasMemory(id) { return this.s.memories.includes(id); },
     addMemory(id) { if (!this.s.memories.includes(id)) this.s.memories.push(id); },
     runeCharges() { return this.s.runeLevel; },
+
+    /* ---- hero rank (XP) ---- */
+    TITLES: ['Sleepy Hylian', 'Plateau Explorer', 'Shrine Seeker', 'Korok Friend', 'Monster Hunter', 'Rune Master', 'Sheikah Scholar', 'Royal Guard', 'Knight of Hyrule', 'Champion', 'Hero of Wisdom', 'Legend of Hyrule'],
+    xpFor(level) { return 60 * level + 15 * level * level; }, // XP needed to go from level-1 to level
+    rank() {
+      let lv = 1, left = this.s.xp;
+      while (left >= this.xpFor(lv)) { left -= this.xpFor(lv); lv++; }
+      return { level: lv, into: left, need: this.xpFor(lv), title: this.TITLES[Math.min(this.TITLES.length - 1, Math.floor((lv - 1) / 2))] };
+    },
+    addXp(n) { const before = this.rank().level; this.s.xp += n; return this.rank().level > before; },
   };
 
   window.State = State;

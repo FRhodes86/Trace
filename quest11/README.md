@@ -25,11 +25,35 @@ The hero (named by the player, default "Link") wakes on the Great Plateau and ha
   - ★ **Novice**: about Year 3/4
   - ★★ **Adept**: about Year 5
   - ★★★ **Master**: 11+ standard, timed
-- Each trial has 8 questions and 3 hearts. A wrong answer always shows a worked explanation.
+- Every trial is a fight against a monster: Chuchus and Keese at Novice, Bokoblins, Lizalfos and Moblins at Adept, Guardian Scouts and Lynels at Master. Land 6 hits (correct answers) before it lands 3 on you. A wrong answer always shows a worked explanation.
 - Shrines unlock one after another. A region's **boss** unlocks once you've cleared Trial 1 everywhere in that region and have an average of 2★.
 - Boss battles: each correct answer is a sword strike. Combos deal extra damage, and the questions get harder when the boss is enraged. They lean towards the child's **weakest topics**.
 
+## Look and feel
+
+- Everything is drawn in code, with no image files:
+  - Hand-drawn SVG characters: Link (his outfit, sword and shield change with what you equip), Zelda, the Old Man, the Monks, Koroks, Hestu and Beedle.
+  - Nine kinds of monster, the four Blights, Calamity Ganon and Dark Beast Ganon.
+- Each region has an animated painted landscape on a canvas:
+  - Embers and lava glow on Death Mountain, rain at Zora's Domain, snow at Rito Village.
+  - Blowing sand and lightning in Gerudo, swirling malice at the castle, and a Blood Moon.
+- Combat animations:
+  - Sword swings with slash trails, hit sparks and screen shake.
+  - Monsters lunge or fire elemental projectiles, and puff into smoke when defeated.
+  - Hearts shatter, the timer is a Breath of the Wild–style stamina wheel, and combos trigger "Flurry Rush" banners.
+- Reward moments:
+  - "You got…" item-get fanfares with light rays.
+  - Treasure chests that open with a burst of loot, and rupees that fly into your counter.
+  - Hero Rank level-ups and a daily treasure chest.
+- The map is an illustrated Hyrule:
+  - Clouds cover unexplored regions until you visit, which activates a Sheikah Tower.
+  - Divine Beasts glow red while corrupted and blue once freed, and freed beasts fire beams at the castle.
+  - Link paraglides between locations.
+- Ambient music is generated live: sparse, piano-like notes that change for each region, plus battle themes. It can be switched off in Settings.
+
 ## What keeps them coming back
+
+- **Hero Rank:** every correct answer earns XP, and levels unlock titles from *Sleepy Hylian* to *Legend of Hyrule*.
 
 - **Rupees** buy items and upgrades from Beedle: weapons (more boss damage), shields (block hits), armour (rupee bonus, easier Koroks), elixirs and fairies.
 - **Spirit Orbs** (first clear of each shrine) can be swapped at the Goddess Statue: 4 orbs make a Heart Container or a Stamina Vessel.
@@ -65,6 +89,8 @@ Most questions are **generated procedurally**, so practice never runs out. The w
 quest11/
   index.html, css/style.css
   js/util.js            helpers, multiple-choice builder, WebAudio sound effects
+  js/art.js             all SVG artwork (characters, monsters, icons, world map)
+  js/fx.js              animated backgrounds, particles, item-get/chest overlays, music
   js/content/*.js       question generators per subject (+ wordbank.js, generated)
   js/story.js           all names, dialogue and story text (easy to rename characters)
   js/state.js           save data, progression rules, mastery
