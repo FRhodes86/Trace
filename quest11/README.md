@@ -10,6 +10,15 @@ The hero (named by the player, default "Link") wakes on the Great Plateau and ha
 - **From source:** open `index.html`, or serve the folder (`npx serve quest11`).
 - Progress saves automatically in the browser. Settings → *Copy save code* moves a save to another device.
 
+## Install it as an app (phone or tablet, with its own icon)
+
+1. Run `node tools/build-pwa.js`, or use the ready-made `dist/breath-of-knowledge-app.zip`.
+2. Unzip it and upload the folder to a free static host. The easiest is **https://app.netlify.com/drop**: drag the folder onto the page and it gives you a web address.
+3. Open that address on each device and add it to the home screen:
+   - **iPhone or iPad (Safari):** tap Share, then **Add to Home Screen**.
+   - **Android (Chrome):** tap ⋮, then **Install app** (or **Add to Home screen**).
+4. It opens full-screen with the Triforce icon, like a normal app. After the first visit it works offline.
+
 ## Game structure
 
 | Region | Subject | Shrines (topics) | Boss | Champion power earned |
