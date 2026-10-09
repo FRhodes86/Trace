@@ -188,11 +188,11 @@
           <button class="pin castle ${State.calamityUnlocked() ? 'ready' : 'locked'} ${s.calamity ? 'freed' : ''}" style="left:${PINS.castle[0]}%;top:${PINS.castle[1]}%" id="castle"><span class="pin-lbl"><b>Hyrule Castle</b><small>${s.calamity ? 'Peace restored' : State.calamityUnlocked() ? 'Face Calamity Ganon!' : `${State.bossesBeaten()}/4 Champions freed`}</small></span></button>
           <button class="pin small" style="left:${PINS.woods[0]}%;top:${PINS.woods[1]}%" id="woods"><span class="pin-art sm">${IC.sword()}</span><span class="pin-lbl"><b>Lost Woods</b></span></button>
           <button class="pin small" style="left:${PINS.plateau[0]}%;top:${PINS.plateau[1]}%" id="plat"><span class="pin-art sm">${IC.tower(true)}</span><span class="pin-lbl"><b>Great Plateau</b></span></button>
-          <button class="pin small" style="left:${PINS.hateno[0]}%;top:${PINS.hateno[1]}%" id="hateno"><span class="pin-art sm">📜</span><span class="pin-lbl"><b>Hateno Lab</b><small>Practice papers</small></span></button>
-          <button class="pin small side" style="left:${PINS.stable[0]}%;top:${PINS.stable[1]}%" id="stable"><span class="pin-art sm">🐴</span><span class="pin-lbl"><b>Outskirt Stable</b><small>Horses &amp; cooking</small></span></button>
-          <button class="pin small side" style="left:${PINS.house[0]}%;top:${PINS.house[1]}%" id="house"><span class="pin-art sm">🏡</span><span class="pin-lbl"><b>Hateno House</b></span></button>
-          <button class="pin small side" style="left:${PINS.range[0]}%;top:${PINS.range[1]}%" id="range"><span class="pin-art sm">🎯</span><span class="pin-lbl"><b>Flight Range</b></span></button>
-          <button class="pin small side" style="left:${PINS.kass[0]}%;top:${PINS.kass[1]}%" id="kass"><span class="pin-art sm">🪗</span><span class="pin-lbl"><b>Kass's Song</b></span></button>
+          <button class="pin small" style="left:${PINS.hateno[0]}%;top:${PINS.hateno[1]}%" id="hateno"><span class="pin-art sm">${IC.lab()}</span><span class="pin-lbl"><b>Hateno Lab</b><small>Practice papers</small></span></button>
+          <button class="pin small side" style="left:${PINS.stable[0]}%;top:${PINS.stable[1]}%" id="stable"><span class="pin-art sm">${IC.stable()}</span><span class="pin-lbl"><b>Outskirt Stable</b><small>Horses &amp; cooking</small></span></button>
+          <button class="pin small side" style="left:${PINS.house[0]}%;top:${PINS.house[1]}%" id="house"><span class="pin-art sm">${IC.house()}</span><span class="pin-lbl"><b>Hateno House</b></span></button>
+          <button class="pin small side" style="left:${PINS.range[0]}%;top:${PINS.range[1]}%" id="range"><span class="pin-art sm">${IC.range()}</span><span class="pin-lbl"><b>Flight Range</b></span></button>
+          <button class="pin small side" style="left:${PINS.kass[0]}%;top:${PINS.kass[1]}%" id="kass"><span class="pin-art sm">${IC.kass()}</span><span class="pin-lbl"><b>Kass's Song</b></span></button>
           ${bloodMoon ? `<button class="pin bloodmoon" style="left:${PINS.blood[0]}%;top:${PINS.blood[1]}%" id="blood"><span class="pin-art sm">🌕</span><span class="pin-lbl"><b>Blood Moon!</b><small>${s.mistakes.length} mistakes return</small></span></button>` : ''}
           <div class="me" id="me" style="left:${here[0]}%;top:${here[1]}%">${ART.hero({ armour: s.armour, shield: s.shield, weapon: s.weapon })}</div>
         </div></div>
@@ -216,7 +216,7 @@
     const travel = (to, go) => {
       const me = $('#me'); const [x, y] = PINS[to];
       if (!me || FX.reduce) return go();
-      me.classList.add('flying'); U.sfx.korok();
+      me.classList.add('flying'); me.insertAdjacentHTML('afterbegin', `<div class="me-glider">${ART.glider(s.glider, false)}</div>`); U.sfx.korok();
       me.animate([{ left: me.style.left, top: me.style.top }, { left: `${(parseFloat(me.style.left) + x) / 2}%`, top: `${Math.min(parseFloat(me.style.top), y) - 12}%`, offset: 0.5 }, { left: x + '%', top: y + '%' }], { duration: 750, easing: 'ease-in-out' }).onfinish = () => { s.lastRegion = to; State.save(); go(); };
     };
     on('[data-region]', (e, el) => travel(el.dataset.region, () => regionScreen(el.dataset.region)));

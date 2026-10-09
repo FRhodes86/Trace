@@ -147,16 +147,20 @@
       </g>`, 'npc monk');
   }
   function korok(small) {
+    // a little wooden forest spirit wearing a leaf for a mask, with a twig sprouting from its head
     return svg('0 0 100 110', `${shadow(50, 106, 18)}
       <g class="h-body">
-        <path d="M42,70 L36,96 M58,70 L64,96 M38,68 L24,78 M62,68 L76,58" stroke="#7a5230" stroke-width="5" stroke-linecap="round"/>
-        <ellipse cx="50" cy="66" rx="12" ry="9" fill="#9c6b3d" stroke="${INK}" stroke-width="2"/>
-        <path d="M50,4 Q76,20 64,40 Q56,34 50,36 Q44,34 36,40 Q24,20 50,4Z" fill="#6fcf4f" stroke="${INK}" stroke-width="2"/>
-        <path d="M50,8 L50,36" stroke="#3f8f2d" stroke-width="2"/>
-        <circle cx="50" cy="48" r="20" fill="#7ed957" stroke="${INK}" stroke-width="2.4"/>
-        <circle cx="42" cy="44" r="4.2" fill="${INK}"/><circle cx="58" cy="44" r="4.2" fill="${INK}"/>
-        <ellipse cx="50" cy="56" rx="4" ry="5" fill="${INK}"/>
-        <circle cx="43" cy="43" r="1.2" fill="#fff"/><circle cx="59" cy="43" r="1.2" fill="#fff"/>
+        <path d="M44,74 L38,98 M56,74 L62,98 M40,72 L24,80 M60,72 L78,60" stroke="#7a5230" stroke-width="4.5" stroke-linecap="round"/>
+        <path d="M24,80 l-5,3 M24,80 l-3,-5 M78,60 l5,-3 M78,60 l1,-6" stroke="#7a5230" stroke-width="2.4" stroke-linecap="round"/>
+        <ellipse cx="50" cy="70" rx="11" ry="10" fill="#9c6b3d" stroke="${INK}" stroke-width="2"/>
+        <circle cx="50" cy="44" r="18" fill="#8a5a2b" stroke="${INK}" stroke-width="2.2"/>
+        <path d="M50,26 Q48,14 54,6" stroke="#6b4423" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <path d="M54,8 Q66,2 70,10 Q62,16 54,8Z" fill="#8fd65a" stroke="${INK}" stroke-width="1.4"/>
+        <path d="M50,22 Q72,30 68,52 Q62,66 50,70 Q38,66 32,52 Q28,30 50,22Z" fill="#78c850" stroke="${INK}" stroke-width="2.2"/>
+        <path d="M50,24 L50,68 M50,36 L60,30 M50,36 L40,30 M50,48 L62,42 M50,48 L38,42" stroke="#4f9a34" stroke-width="1.4" fill="none"/>
+        <ellipse cx="42" cy="44" rx="4.4" ry="5" fill="${INK}"/><ellipse cx="58" cy="44" rx="4.4" ry="5" fill="${INK}"/>
+        <ellipse cx="50" cy="57" rx="3.4" ry="4.2" fill="${INK}"/>
+        <circle cx="43" cy="42.5" r="1.2" fill="#fff"/><circle cx="59" cy="42.5" r="1.2" fill="#fff"/>
       </g>`, 'npc korok' + (small ? ' small' : ''));
   }
   function hestu() {
@@ -421,9 +425,60 @@
     orb: () => `<svg class="ic orb" viewBox="0 0 24 24"><defs><radialGradient id="orbg" cx="40%" cy="35%"><stop offset="0" stop-color="#fff6d8"/><stop offset=".45" stop-color="#ffb347"/><stop offset="1" stop-color="#e2531f"/></radialGradient></defs><circle cx="12" cy="12" r="10" fill="url(#orbg)" stroke="#7a2a0c" stroke-width="1"/><circle cx="12" cy="12" r="5" fill="none" stroke="#fff4c2" stroke-width="1" opacity=".8"/></svg>`,
     seed: () => `<svg class="ic seed" viewBox="0 0 24 24"><path d="M12,3 Q20,10 17,18 Q12,23 7,18 Q4,10 12,3Z" fill="#e8b33a" stroke="#6b4a10" stroke-width="1.2"/><path d="M12,6 Q14,12 12,19" stroke="#fff2b0" stroke-width="1.2" fill="none"/></svg>`,
     chest: (open = false) => `<svg class="ic chest ${open ? 'open' : ''}" viewBox="0 0 64 52"><rect x="6" y="22" width="52" height="28" rx="3" fill="#8a4f20" stroke="${INK}" stroke-width="2"/><rect x="6" y="30" width="52" height="5" fill="#d4a63a"/><g class="lid"><path d="M6,24 Q6,6 32,6 Q58,6 58,24 Z" fill="#a8622a" stroke="${INK}" stroke-width="2"/><path d="M6,20 h52" stroke="#d4a63a" stroke-width="4"/></g><rect x="28" y="24" width="8" height="12" rx="1.5" fill="#f2d16b" stroke="${INK}" stroke-width="1.5"/></svg>`,
-    shrine: (state = 'new') => { const c = state === 'done' ? '#3fe0ff' : state === 'locked' ? '#555' : '#ff9a2e'; return `<svg class="ic shrine-ic ${state}" viewBox="0 0 64 60"><ellipse cx="32" cy="54" rx="28" ry="5" fill="#000" opacity=".3"/><path d="M6,52 h52 l-4,-8 h-44z" fill="#6d6a5e" stroke="${INK}" stroke-width="1.6"/><path d="M10,44 Q10,8 32,6 Q54,8 54,44 Z" fill="#8f8a7a" stroke="${INK}" stroke-width="2"/><path d="M16,40 Q16,16 32,14 Q48,16 48,40" stroke="${c}" stroke-width="2.4" fill="none" class="glowline"/><path d="M24,44 v-14 q8,-8 16,0 v14" fill="${state === 'locked' ? '#2a2a2a' : c}" opacity=".85" class="glowline"/><path d="M32,20 l-4,6 h8 z" fill="${c}" class="glowline"/></svg>`; },
-    tower: (lit) => `<svg class="ic tower" viewBox="0 0 30 60"><path d="M8,58 L11,10 h8 L22,58 Z" fill="#7d7768" stroke="${INK}" stroke-width="1.4"/><path d="M5,12 h20 l-3,-6 h-14z" fill="#6d6a5e" stroke="${INK}" stroke-width="1.2"/><path d="M12,18 h6 M12,30 h6 M11,42 h8" stroke="${lit ? '#3fe0ff' : '#ff9a2e'}" stroke-width="2"/><circle cx="15" cy="4" r="3" fill="${lit ? '#3fe0ff' : '#ff9a2e'}"/></svg>`,
-    sword: () => `<svg class="ic sword" viewBox="0 0 30 90"><path d="M13,4 L17,4 L18,62 L12,62 Z" fill="#e9f4ff" stroke="${INK}" stroke-width="1.4"/><path d="M13,4 L15,0 L17,4" fill="#e9f4ff" stroke="${INK}"/><path d="M4,62 Q15,70 26,62 L24,66 Q15,72 6,66 Z" fill="#3159c9" stroke="${INK}" stroke-width="1.4"/><rect x="12" y="66" width="6" height="16" fill="#3159c9" stroke="${INK}" stroke-width="1.2"/><circle cx="15" cy="85" r="3.5" fill="#f2d16b" stroke="${INK}"/></svg>`,
+    // Sheikah shrine: dark stone dome with glowing circuit lines (orange until cleared, then blue) and a terminal pedestal
+    shrine: (state = 'new') => { const c = state === 'done' ? '#3fe0ff' : state === 'locked' ? '#4a4a4a' : '#ff9a2e'; return `<svg class="ic shrine-ic ${state}" viewBox="0 0 64 60"><ellipse cx="32" cy="55" rx="29" ry="4.5" fill="#000" opacity=".3"/>
+      <path d="M4,54 L8,46 H56 L60,54 Z" fill="#4a4740" stroke="${INK}" stroke-width="1.5"/>
+      <path d="M10,46 C10,24 18,10 32,8 C46,10 54,24 54,46 Z" fill="#3a3834" stroke="${INK}" stroke-width="2"/>
+      <path d="M14,44 C14,26 21,14 32,12 C43,14 50,26 50,44" stroke="${c}" stroke-width="1.6" fill="none" class="glowline"/>
+      <path d="M20,44 v-8 q0,-8 6,-11 M44,44 v-8 q0,-8 -6,-11 M26,16 h12" stroke="${c}" stroke-width="1.4" fill="none" class="glowline" opacity=".85"/>
+      <path d="M25,46 V34 Q32,27 39,34 V46 Z" fill="${state === 'locked' ? '#222' : c}" opacity=".9" class="glowline"/>
+      <path d="M24,22 Q32,15 40,22 Q32,29 24,22Z" fill="none" stroke="${c}" stroke-width="1.5" class="glowline"/><circle cx="32" cy="22" r="2.4" fill="${c}" class="glowline"/><path d="M32,26 l-1.6,4 h3.2z" fill="${c}" class="glowline"/>
+      <path d="M48,52 v-8 l4,-2 l2,2 v8" fill="#5a574e" stroke="${INK}" stroke-width="1.2"/><path d="M50,44 h3" stroke="${c}" stroke-width="1.4" class="glowline"/></svg>`; },
+    // Sheikah tower: tall stone spire rising from root-like legs, with a domed lookout platform on top
+    tower: (lit) => { const c = lit ? '#3fe0ff' : '#ff9a2e'; return `<svg class="ic tower" viewBox="0 0 30 60"><path d="M4,59 Q9,54 11,48 M26,59 Q21,54 19,48 M15,59 V50" stroke="#5a564c" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+      <path d="M10,50 L12,14 h6 L20,50 Z" fill="#6d6a5e" stroke="${INK}" stroke-width="1.3"/>
+      <path d="M13,20 v26 M17,20 v26" stroke="${c}" stroke-width="1" opacity=".85"/><path d="M12,24 h6 M11.5,34 h7 M11,44 h8" stroke="${c}" stroke-width="1.4"/>
+      <path d="M4,15 h22 l-2,-3 h-18 z" fill="#5a574e" stroke="${INK}" stroke-width="1.2"/>
+      <path d="M8,12 Q15,2 22,12 Z" fill="#7d7768" stroke="${INK}" stroke-width="1.2"/><path d="M10,10.5 Q15,5 20,10.5" stroke="${c}" stroke-width="1.2" fill="none"/>
+      <circle cx="15" cy="7.5" r="1.6" fill="${c}"/></svg>`; },
+    // Master Sword: tapered blade with a fuller, blue wing-shaped crossguard, gold gem, blue grip
+    sword: () => `<svg class="ic sword" viewBox="0 0 34 92"><path d="M14,8 L17,1 L20,8 L20.5,60 h-7 Z" fill="#eef6ff" stroke="${INK}" stroke-width="1.3"/><path d="M17,6 V58" stroke="#b9cde2" stroke-width="1.6"/>
+      <path d="M17,60 C12,60 6,58 2,52 C6,62 10,65 15,66 Z M17,60 C22,60 28,58 32,52 C28,62 24,65 19,66 Z" fill="#3a5fd0" stroke="${INK}" stroke-width="1.3" stroke-linejoin="round"/>
+      <path d="M13,60 h8 l-1,6 h-6 z" fill="#3a5fd0" stroke="${INK}" stroke-width="1.2"/><path d="M17,61 l2,2.5 l-2,2.5 l-2,-2.5 z" fill="#f2d16b" stroke="${INK}" stroke-width=".8"/>
+      <rect x="14.5" y="66" width="5" height="16" rx="1" fill="#4a4fb8" stroke="${INK}" stroke-width="1.2"/><path d="M14.5,70 l5,2 M14.5,74 l5,2 M14.5,78 l5,2" stroke="#2c2f7a" stroke-width="1"/>
+      <path d="M12,83 h10 l-2,4 h-6 z" fill="#3a5fd0" stroke="${INK}" stroke-width="1.2"/><circle cx="17" cy="88.5" r="2.4" fill="#f2d16b" stroke="${INK}" stroke-width="1"/></svg>`,
+    // Rito Flight Range: a target hanging from a wooden frame on a high perch
+    range: () => `<svg class="ic flightrange" viewBox="0 0 64 56"><ellipse cx="32" cy="52" rx="24" ry="4" fill="#000" opacity=".3"/>
+      <path d="M14,52 V10 H50 V52" stroke="#7a5230" stroke-width="4" fill="none"/><path d="M10,10 H54" stroke="#5a3a22" stroke-width="4" stroke-linecap="round"/>
+      <path d="M26,10 v6 M38,10 v6" stroke="#c9a26a" stroke-width="1.4"/>
+      <circle cx="32" cy="30" r="13" fill="#fff" stroke="${INK}" stroke-width="1.6"/><circle cx="32" cy="30" r="9.5" fill="#d8402e"/><circle cx="32" cy="30" r="6" fill="#fff"/><circle cx="32" cy="30" r="3" fill="#d8402e"/>
+      <path d="M44,22 L36,28" stroke="#5a3a22" stroke-width="1.6"/><path d="M44,22 l3,-2 l-1,3 z M45,20 l3,-1" stroke="#3a7fc9" stroke-width="1.6"/></svg>`,
+    // Kass: a Rito bard (blue-feathered bird) with his accordion
+    kass: () => `<svg class="ic kass" viewBox="0 0 64 56"><ellipse cx="32" cy="52" rx="20" ry="4" fill="#000" opacity=".3"/>
+      <path d="M20,50 Q18,30 32,26 Q46,30 44,50 Z" fill="#3f6fc9" stroke="${INK}" stroke-width="1.6"/>
+      <circle cx="32" cy="18" r="11" fill="#4a7fd8" stroke="${INK}" stroke-width="1.6"/><path d="M26,4 Q32,10 30,8 M34,4 Q32,10 34,8" stroke="#ffd23d" stroke-width="2.4" stroke-linecap="round"/>
+      <path d="M36,19 L48,22 L36,24 Z" fill="#f2b33a" stroke="${INK}" stroke-width="1.2"/><circle cx="31" cy="16" r="2" fill="${INK}"/>
+      <rect x="18" y="32" width="28" height="12" rx="2" fill="#f2ead6" stroke="${INK}" stroke-width="1.4"/><path d="M23,32 v12 M28,32 v12 M33,32 v12 M38,32 v12 M43,32 v12" stroke="#c9a26a" stroke-width="1.2"/>
+      <path d="M50,14 q4,-4 6,0 M52,8 v6" stroke="#ffd23d" stroke-width="1.6" fill="none"/><circle cx="51" cy="14" r="1.6" fill="#ffd23d"/></svg>`,
+    // Hateno Ancient Tech Lab: a hilltop house with a giant glowing furnace telescope
+    lab: () => `<svg class="ic lab" viewBox="0 0 64 56"><ellipse cx="32" cy="52" rx="26" ry="4" fill="#000" opacity=".3"/>
+      <path d="M12,50 V28 H44 V50 Z" fill="#f2ead6" stroke="${INK}" stroke-width="1.6"/><path d="M8,30 L28,14 L48,30 Z" fill="#7a3a2a" stroke="${INK}" stroke-width="1.6"/>
+      <path d="M24,50 V40 h8 v10" fill="#7a5230" stroke="${INK}" stroke-width="1.2"/><rect x="34" y="34" width="6" height="6" fill="#bfe6ff" stroke="${INK}" stroke-width="1"/>
+      <path d="M40,20 L58,8 L61,13 L44,26 Z" fill="#6d6a5e" stroke="${INK}" stroke-width="1.4"/><circle cx="59.5" cy="10.5" r="3" fill="#3fe0ff" stroke="${INK}" stroke-width="1"/>
+      <path d="M50,50 V40 h8 v10 z" fill="#5a574e" stroke="${INK}" stroke-width="1.2"/><path d="M52,42 h4 v4 h-4 z" fill="#3fe0ff"/></svg>`,
+    // Stable: big round canvas tent topped with a horse head, like the stables all over Hyrule
+    stable: () => `<svg class="ic stable" viewBox="0 0 64 56"><ellipse cx="32" cy="52" rx="28" ry="4" fill="#000" opacity=".3"/>
+      <path d="M6,50 Q6,30 18,22 Q32,14 46,22 Q58,30 58,50 Z" fill="#e9dcc0" stroke="${INK}" stroke-width="1.8"/>
+      <path d="M18,22 Q16,36 14,50 M46,22 Q48,36 50,50 M32,17 V50" stroke="#c4b08a" stroke-width="1.4" fill="none"/>
+      <path d="M6,40 Q32,34 58,40" stroke="#b5452e" stroke-width="3" fill="none"/>
+      <path d="M26,50 V38 Q32,32 38,38 V50 Z" fill="#5a3a22" stroke="${INK}" stroke-width="1.4"/>
+      <path d="M27,20 Q26,8 32,4 Q40,2 44,10 L40,12 Q38,9 35,10 L36,20 Z" fill="#c9a26a" stroke="${INK}" stroke-width="1.6"/><path d="M30,7 l-1,-4 l3,3 M34,4 l1,-3 l1,4" stroke="${INK}" stroke-width="1.2" fill="#c9a26a"/><path d="M28,8 Q26,14 27,20" stroke="#7a4f2a" stroke-width="2.4" fill="none"/><circle cx="37" cy="7.5" r="1" fill="${INK}"/></svg>`,
+    // Hateno-style cottage: white walls, timber beams and a deep blue roof
+    house: () => `<svg class="ic house" viewBox="0 0 64 56"><ellipse cx="32" cy="52" rx="26" ry="4" fill="#000" opacity=".3"/>
+      <path d="M10,50 V26 H54 V50 Z" fill="#f2ead6" stroke="${INK}" stroke-width="1.8"/><path d="M10,34 H54 M22,26 V50 M42,26 V50" stroke="#7a5230" stroke-width="2"/>
+      <path d="M4,28 L32,8 L60,28 L54,30 L32,15 L10,30 Z" fill="#3a5fa8" stroke="${INK}" stroke-width="1.8" stroke-linejoin="round"/>
+      <path d="M28,50 V38 h8 v12" fill="#7a5230" stroke="${INK}" stroke-width="1.4"/><rect x="45" y="37" width="6" height="6" fill="#bfe6ff" stroke="${INK}" stroke-width="1.2"/><rect x="13" y="37" width="6" height="6" fill="#bfe6ff" stroke="${INK}" stroke-width="1.2"/>
+      <path d="M44,14 v-6 h5 v10" fill="#8a8478" stroke="${INK}" stroke-width="1.2"/></svg>`,
     rune: (k) => {
       const p = {
         magnesis: '<path d="M7,6 v8 a5,5 0 0 0 10,0 v-8" stroke="currentColor" stroke-width="3" fill="none"/><path d="M5,6 h5 M14,6 h5" stroke="#ff6b6b" stroke-width="3"/>',
@@ -438,16 +493,53 @@
     },
   };
 
+
+  /* ======================= PARAGLIDER ======================= */
+  // Wide arched canopy on a wooden frame, Link hanging from the bar. Fabric patterns follow the game's styles.
+  const GLIDER_FABRIC = {
+    hylian: { base: '#ecdcae', edge: '#c9a86a', mark: '#a8442e', mark2: '#7a2e20' },
+    zora: { base: '#d8eef2', edge: '#7fb9c9', mark: '#2f7fb5', mark2: '#1d5687' },
+    goron: { base: '#f0d0a0', edge: '#c08850', mark: '#c2381c', mark2: '#7a2010' },
+    rito: { base: '#e4f0d8', edge: '#9cbf88', mark: '#3f8f6a', mark2: '#26604a' },
+    royal: { base: '#2f4fa8', edge: '#1d3373', mark: '#f2d16b', mark2: '#c9a227' },
+  };
+  function glider(kind = 'hylian', withHero = true) {
+    const f = GLIDER_FABRIC[kind] || GLIDER_FABRIC.hylian;
+    const hero = withHero ? `<g class="gl-hero">
+        <path d="M54,54 L50,45 M66,54 L70,45" stroke="#e9c49a" stroke-width="3.2" stroke-linecap="round"/>
+        <path d="M52,60 Q60,52 68,60 L67,76 h-14z" fill="#2f63c4" stroke="${INK}" stroke-width="1.5"/>
+        <path d="M53,70 h14" stroke="#7a5230" stroke-width="2"/>
+        <path d="M55,76 L53,88 M65,76 L68,87" stroke="#6b4a2b" stroke-width="4" stroke-linecap="round"/>
+        <circle cx="60" cy="53" r="6.5" fill="#f4d2a8" stroke="${INK}" stroke-width="1.4"/>
+        <path d="M53.5,52 Q54,45 60,45 Q66,45 66.5,52 Q63,48 60,49 Q57,48 53.5,52Z" fill="#e6c160" stroke="${INK}" stroke-width="1"/>
+        <path d="M60,46 Q66,44 70,50 Q66,49 64,51" fill="#e6c160" stroke="${INK}" stroke-width="1"/>
+      </g>` : '';
+    return svg('0 0 120 92', `
+      <path d="M4,38 C10,14 32,4 60,4 C88,4 110,14 116,38 Q106,33 96,39 Q86,32 76,38 Q68,32 60,37 Q52,32 44,38 Q34,32 24,39 Q14,33 4,38Z" fill="${f.base}" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>
+      <path d="M10,32 C18,14 36,8 60,8 C84,8 102,14 110,32" stroke="${f.edge}" stroke-width="2" fill="none"/>
+      <path d="M60,5 V37 M40,7 Q42,22 44,38 M80,7 Q78,22 76,38 M22,15 Q23,28 24,39 M98,15 Q97,28 96,39" stroke="${f.edge}" stroke-width="1.3" fill="none"/>
+      <path d="M60,12 L67,21 L60,29 L53,21 Z" fill="${f.mark}" stroke="${f.mark2}" stroke-width="1"/><path d="M60,16 L63,21 L60,25 L57,21Z" fill="${f.base}" opacity=".7"/>
+      <path d="M38,20 Q46,13 52,18 L50,28 Q42,27 38,20Z M82,20 Q74,13 68,18 L70,28 Q78,27 82,20Z" fill="${f.mark}" stroke="${f.mark2}" stroke-width="1"/>
+      <path d="M14,30 Q22,22 30,28 M106,30 Q98,22 90,28 M26,22 Q30,17 34,22 M94,22 Q90,17 86,22" stroke="${f.mark}" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+      <path d="M44,38 L52,46 M76,38 L68,46 M24,39 L50,46 M96,39 L70,46" stroke="#6b4a2b" stroke-width="1.2"/>
+      <path d="M48,45 h24" stroke="#8a5a2b" stroke-width="3" stroke-linecap="round"/>
+      ${hero}`, 'glider');
+  }
+
   /* ======================= DIVINE BEASTS (small, for map) ======================= */
   function beast(kind, freed) {
     const body = freed ? '#d9d3c0' : '#4a1b3d', line = freed ? '#3fe0ff' : '#ff2d6f';
     const shapes = {
-      maths: '<path d="M6,30 Q10,14 30,12 Q46,10 52,18 L60,14 L56,24 Q56,34 44,36 L40,42 h-6 l0,-6 h-10 l-2,6 h-6 l0,-8 Q6,36 6,30Z"/><path d="M52,18 l8,-10 l-2,10" />',
-      english: '<path d="M8,36 Q6,16 26,12 Q44,10 50,20 Q58,24 58,34 Q56,40 50,38 Q52,30 48,28 L46,42 h-6 v-6 h-18 v6 h-6 Z"/>',
-      verbal: '<path d="M2,24 Q18,16 30,20 Q42,16 58,24 Q44,26 38,30 L34,40 L26,40 L22,30 Q16,26 2,24Z"/><path d="M30,20 l0,-10 l6,6"/>',
-      nonverbal: '<path d="M8,38 Q4,22 18,18 Q24,8 32,16 Q40,8 46,18 Q58,22 54,38 L50,46 h-6 l0,-8 h-22 l0,8 h-6 Z"/><path d="M54,26 Q62,18 60,8"/>',
+      // Vah Rudania: a giant salamander clinging to the mountain, long curling tail
+      maths: '<path d="M4,30 Q2,22 10,22 Q16,16 24,18 L30,14 Q44,10 52,16 Q58,20 54,26 Q60,30 62,22 Q64,32 56,34 Q48,36 42,32 L44,40 h-6 l-2,-6 h-8 l-2,6 h-6 l1,-8 Q12,34 8,32 L2,34 Z"/><path d="M10,22 l-2,-6 l5,4 M18,19 l0,-6 l4,5"/>',
+      // Vah Ruta: an elephant with a raised trunk
+      english: '<path d="M14,40 Q10,22 22,14 Q34,8 46,14 Q50,16 52,22 Q56,20 58,12 Q62,6 60,16 Q58,26 52,30 L50,42 h-6 v-8 h-20 v8 h-6 v-6 Q14,40 14,40Z"/><path d="M46,16 Q40,22 44,28 Q48,24 46,16Z"/>',
+      // Vah Medoh: a great bird with wide swept wings
+      verbal: '<path d="M2,26 Q14,14 26,20 Q30,14 34,20 Q48,12 62,24 Q50,24 44,28 Q40,34 34,36 L36,44 L30,38 L26,44 L27,36 Q22,34 20,28 Q12,24 2,26Z"/><path d="M30,16 l2,-8 l3,8"/>',
+      // Vah Naboris: a long-legged camel with a humped back
+      nonverbal: '<path d="M10,30 Q12,18 22,18 Q26,10 32,16 Q38,10 42,18 Q48,18 50,22 L54,12 Q58,8 62,12 L58,16 L56,28 Q54,32 50,32 L48,46 h-4 l-1,-12 h-18 l-2,12 h-4 l0,-12 Q10,34 10,30Z"/><path d="M10,28 Q4,30 4,38"/>',
     }[kind];
-    return `<svg class="beast-ic ${freed ? 'freed' : 'corrupt'}" viewBox="0 0 64 50"><g fill="${body}" stroke="${line}" stroke-width="1.8" stroke-linejoin="round">${shapes}</g><circle cx="${kind === 'verbal' ? 30 : 20}" cy="${kind === 'verbal' ? 24 : 24}" r="2.4" fill="${line}"/></svg>`;
+    return `<svg class="beast-ic ${freed ? 'freed' : 'corrupt'}" viewBox="0 0 64 50"><g fill="${body}" stroke="${line}" stroke-width="1.8" stroke-linejoin="round">${shapes}</g><circle cx="${{ maths: 50, english: 40, verbal: 32, nonverbal: 58 }[kind]}" cy="${{ maths: 20, english: 20, verbal: 24, nonverbal: 14 }[kind]}" r="2.4" fill="${line}"/></svg>`;
   }
 
   /* ======================= WORLD MAP ======================= */
@@ -495,8 +587,15 @@
       <g transform="translate(690 560)"><path d="M0,0 h14 v-12 l7,-6 l7,6 v12 h14 v10 h-42z" fill="#c78a5a" stroke="#5a3a22" stroke-width="1.4"/><path d="M50,4 h12 v-10 l6,-5 l6,5 v10 h10 v8 h-34z" fill="#b5794a" stroke="#5a3a22" stroke-width="1.4"/></g>
       <g class="castle-g">
         <circle cx="500" cy="330" r="${st.calamity ? 0 : 92}" fill="url(#malg)" class="malice-swirl"/>
-        <path d="M466,350 v-36 h8 v-10 h6 v10 h10 v-26 l10,-14 l10,14 v26 h10 v-10 h6 v10 h8 v36z" fill="${st.calamity ? '#e9e2cf' : '#5a4a5a'}" stroke="#2a1d2a" stroke-width="2"/>
-        <path d="M496,300 l4,-26 l4,26" fill="${st.calamity ? '#e9e2cf' : '#5a4a5a'}" stroke="#2a1d2a" stroke-width="1.6"/>
+        <g stroke="#2a1d2a" stroke-width="1.6" stroke-linejoin="round">
+          <path d="M448,356 v-22 h8 v-6 h6 v6 h76 v-6 h6 v6 h8 v22 z" fill="${st.calamity ? '#e9e2cf' : '#5a4a5a'}"/>
+          <path d="M456,334 v-24 h12 v24 M532,334 v-24 h12 v24 M474,334 v-34 h12 v34 M514,334 v-34 h12 v34" fill="${st.calamity ? '#e9e2cf' : '#5a4a5a'}"/>
+          <path d="M454,310 l8,-16 l8,16 z M530,310 l8,-16 l8,16 z M472,300 l8,-18 l8,18 z M512,300 l8,-18 l8,18 z" fill="${st.calamity ? '#3a5fa8' : '#3a2a3a'}"/>
+          <path d="M488,334 v-44 h24 v44" fill="${st.calamity ? '#e9e2cf' : '#5a4a5a'}"/><path d="M486,290 l14,-14 l14,14 z" fill="${st.calamity ? '#3a5fa8' : '#3a2a3a'}"/>
+          <path d="M494,276 v-14 h12 v14" fill="${st.calamity ? '#e9e2cf' : '#5a4a5a'}"/><path d="M492,262 l8,-24 l8,24 z" fill="${st.calamity ? '#3a5fa8' : '#3a2a3a'}"/>
+          <path d="M500,238 v-8" stroke-width="1.4"/>
+        </g>
+        <path d="M494,346 v-8 q6,-6 12,0 v8 M462,320 h4 M534,320 h4 M478,312 h4 M518,312 h4 M497,300 h6" stroke="#2a1d2a" stroke-width="1.6" fill="#2a1d2a"/>
         ${st.calamity ? '' : '<path class="malice-tendril" d="M440,360 Q470,300 450,250 M560,360 Q530,300 560,240 M480,380 Q500,420 470,450 M530,380 Q520,430 560,460" stroke="#ff2d6f" stroke-width="5" fill="none" opacity=".8" filter="url(#soft)"/>'}
       </g>
       ${fogBlob('verbal', 'M40,80 C120,40 300,60 320,140 C340,260 280,340 180,340 C80,340 30,260 40,80Z')}
@@ -506,5 +605,5 @@
     </svg>`;
   }
 
-  window.ART = { pet, horse, hero, zelda, oldMan, monk, korok, hestu, beedle, goddess, chuchu, keese, bokoblin, moblin, lizalfos, guardianScout, lynel, blight, calamity, darkBeast, icons, beast, worldMap, EL };
+  window.ART = { glider, pet, horse, hero, zelda, oldMan, monk, korok, hestu, beedle, goddess, chuchu, keese, bokoblin, moblin, lizalfos, guardianScout, lynel, blight, calamity, darkBeast, icons, beast, worldMap, EL };
 })();

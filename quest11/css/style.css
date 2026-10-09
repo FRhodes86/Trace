@@ -251,7 +251,14 @@ textarea { font-size: 0.8rem; text-align: left; max-width: 100%; width: 100%; }
 .pin.castle.freed .pin-lbl { --c: var(--amber); }
 .pin.bloodmoon .pin-lbl { --c: #ff2244; animation: glowM 1.4s infinite; }
 .me { position: absolute; width: 38px; height: 48px; transform: translate(-50%, -100%); z-index: 3; pointer-events: none; filter: drop-shadow(0 0 6px #fff); }
-.me.flying::before { filter: hue-rotate(var(--glider-hue, 0deg)); content: '🪂'; position: absolute; top: -26px; left: 50%; transform: translateX(-50%); font-size: 1.8rem; }
+.me-glider { position: absolute; left: 50%; top: -34px; width: 86px; height: 66px; transform: translateX(-50%); animation: glideSway 0.75s ease-in-out infinite alternate; }
+.me-glider svg { width: 100%; height: 100%; }
+@keyframes glideSway { from { transform: translateX(-50%) rotate(-5deg); } to { transform: translateX(-50%) rotate(5deg); } }
+.glider-sw { display: inline-block; width: 64px; height: 50px; }
+.glider-sw svg, .house-outside svg { width: 100%; height: 100%; }
+.house-outside { width: 200px; height: 175px; margin: 10px auto; }
+.pin-art.sm .ic.stable, .pin-art.sm .ic.house, .pin-art.sm .ic.flightrange, .pin-art.sm .ic.kass, .pin-art.sm .ic.lab { width: 100%; height: 100%; }
+.npc-stand .ic.stable { width: 100%; height: 100%; }
 .map-hint { display: none; text-align: center; font-size: 0.8rem; color: var(--muted); margin: 6px 0 0; }
 .daily { max-width: 980px; margin: 12px auto; padding: 10px 16px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; justify-content: space-between; }
 .dq { display: flex; gap: 12px; align-items: center; flex: 1; min-width: 0; }

@@ -72,7 +72,7 @@
     if (tab === 'armour') body = gearRow(K.ARMOUR, 'armour', 'ownedArmour', 'armour', a => `${a.desc}${s.fairy.levels[a.id] ? ` <b class="stars">${'★'.repeat(s.fairy.levels[a.id])}</b>` : ''}`);
     if (tab === 'style') body = '<h3>Sheikah Slate colour</h3>' + gearRow(K.THEMES, 'theme', 'ownedThemes', 'theme', () => 'Changes the glow colour of the whole game.')
       + '<h3>Battle companion</h3>' + gearRow(K.PETS, 'pet', 'ownedPets', 'pet', p => p.desc || 'Fight on your own.')
-      + '<h3>Paraglider fabric</h3>' + gearRow(K.GLIDERS, 'glider', 'ownedGliders', 'glider', () => 'Shows when you fly across the map.');
+      + '<h3>Paraglider fabric</h3>' + gearRow(K.GLIDERS.map(g => ({ ...g, emoji: `<span class="glider-sw">${ART.glider(g.id, false)}</span>` })), 'glider', 'ownedGliders', 'glider', () => 'Shows when you fly across the map.');
     if (tab === 'horse') body = K.SADDLES.map(sd => row(`<span class="saddle-sw" style="background:${sd.color}"></span>`, sd.name, 'A saddle for your horses. Choose it at the stable.', s.ownedSaddles.includes(sd.id) ? '<span class="tag ok">Owned</span>' : buyBtn('saddle', sd.id, sd.price))).join('')
       + K.INGREDIENTS.filter(i => i.id === 'carrot' || i.id === 'apple').map(it => row(it.emoji, it.name, 'Horses love these! Feed them at the stable.', `<span class="muted">Have ${s.ingredients[it.id] || 0}</span>${buyBtn('food', it.id, it.price)}`)).join('');
     if (tab === 'sell') {
@@ -98,7 +98,7 @@
       if (kind === 'food') { addIng(id); State.save(); toast(`Bought ${it.emoji} ${it.name}!`, 'good'); return shop(tab); }
       const own = { weapon: 'ownedWeapons', shield: 'ownedShields', armour: 'ownedArmour', theme: 'ownedThemes', pet: 'ownedPets', glider: 'ownedGliders', saddle: 'ownedSaddles' }[kind];
       s[own].push(id); if (kind !== 'saddle') s[kind] = id; State.save(); applyTheme();
-      FX.itemGet(kind === 'pet' ? `<div class="pet-get">${ART.pet(id)}</div>` : kind === 'saddle' ? '<span class="emo big">🐎</span>' : `<span class="emo big">${it.emoji}</span>`, `You got the ${it.name}!`, it.desc || (it.dmg ? `Boss damage: ${it.dmg}` : it.blocks ? `Blocks ${it.blocks} hit${it.blocks > 1 ? 's' : ''} per boss battle.` : ''), () => shop(tab));
+      FX.itemGet(kind === 'pet' ? `<div class="pet-get">${ART.pet(id)}</div>` : kind === 'glider' ? `<div class="pet-get wide">${ART.glider(id)}</div>` : kind === 'saddle' ? '<span class="emo big">🐎</span>' : `<span class="emo big">${it.emoji}</span>`, `You got the ${it.name}!`, it.desc || (it.dmg ? `Boss damage: ${it.dmg}` : it.blocks ? `Blocks ${it.blocks} hit${it.blocks > 1 ? 's' : ''} per boss battle.` : ''), () => shop(tab));
     });
     on('[data-equip]', (e, el) => { s[el.dataset.kind] = el.dataset.equip; State.save(); applyTheme(); shop(tab); });
     on('[data-sell]', (e, el) => {
@@ -193,7 +193,7 @@
     const s = S(); const { screen, hud, on, dialogue } = UI();
     const horses = s.horses;
     screen(`${hud()}<div class="page"><div class="page-head">${back()}<h2>Outskirt Stable</h2><span class="pill">🎫 ${s.tickets}</span></div>
-      <div class="stable-top"><div class="npc-stand">${ART.oldMan()}</div><p class="intro slate">"Welcome! Tame wild horses in Hyrule Field, then bring them here. Brush and feed them every day to grow your bond, and race them for prizes!"</p></div>
+      <div class="stable-top"><div class="npc-stand">${IC.stable()}</div><p class="intro slate">"Welcome! Tame wild horses in Hyrule Field, then bring them here. Brush and feed them every day to grow your bond, and race them for prizes!"</p></div>
       <div class="row center"><button class="btn primary" id="field">🌾 Hyrule Field: find wild horses</button><button class="btn" id="cook">🍲 Cooking Pot</button></div>
       <div class="horse-list">${horses.length ? horses.map((h, i) => `<div class="horse-card slate ${s.activeHorse === i ? 'active' : ''}">
           <div class="horse-art">${ART.horse(h, { saddle: h.saddle || 'stable', anim: 'idle' })}</div>
@@ -403,7 +403,7 @@
     const s = S(); const { screen, hud, on, heroArt, toast } = UI();
     if (!s.house.owned) {
       screen(`${hud()}<div class="page center"><div class="page-head">${back()}<h2>Hateno Village</h2></div>
-        <div class="house-outside">🏡</div>
+        <div class="house-outside">${IC.house()}</div>
         <p class="intro slate">Hudson: "This old house is for sale! It needs some love, but it could be a real home. Only <b>${fmt(K.HOUSE_PRICE)} rupees</b>, and I'll throw in the bed once you finish my quest!"</p>
         <button class="btn big ${s.rupees >= K.HOUSE_PRICE ? 'primary glow' : ''}" id="buy" ${s.rupees >= K.HOUSE_PRICE ? '' : 'disabled'}>Buy the house (${price(K.HOUSE_PRICE)})</button>
         <p class="muted">You have ${fmt(s.rupees)} rupees. Keep clearing shrines to save up!</p></div>`, 'plateau', 'home');
