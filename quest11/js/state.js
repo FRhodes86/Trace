@@ -52,7 +52,7 @@
       stats: { answered: 0, correct: 0, bestStreak: 0, trials: 0, perfect: 0, playSeconds: 0 },
       daily: { date: '', correct: 0, claimed: false },
       streak: { last: '', days: 0, best: 0 },
-      swordBest: 0,
+      swordBest: 0, recentQs: [], recentPassages: [],
       xp: 0, fog: {}, dailyChest: '', lastRegion: 'plateau', compendium: {},
       mocks: [], // {date, subject, score, total}
       settings: { sound: true, music: true, timers: true, speech: true },
@@ -128,6 +128,15 @@
     hasMemory(id) { return this.s.memories.includes(id); },
     addMemory(id) { if (!this.s.memories.includes(id)) this.s.memories.push(id); },
     runeCharges() { return this.s.runeLevel; },
+
+    /* ---- repeat avoidance: remember fingerprints of recently asked questions ---- */
+    qSig(q) {
+      const raw = (q.prompt + '|' + (q.visual || '') + '|' + q.options.slice().sort().join('|')).replace(/id="[^"]*"|url\(#[^)]*\)/g, '');
+      let h = 5381; for (let i = 0; i < raw.length; i++) h = ((h << 5) + h + raw.charCodeAt(i)) | 0;
+      return h.toString(36);
+    },
+    recentlyAsked(sig) { return (this.s.recentQs || []).includes(sig); },
+    markAsked(sig) { const r = this.s.recentQs = this.s.recentQs || []; r.push(sig); if (r.length > 600) r.splice(0, r.length - 600); },
 
     /* ---- hero rank (XP) ---- */
     TITLES: ['Sleepy Hylian', 'Plateau Explorer', 'Shrine Seeker', 'Korok Friend', 'Monster Hunter', 'Rune Master', 'Sheikah Scholar', 'Royal Guard', 'Knight of Hyrule', 'Champion', 'Hero of Wisdom', 'Legend of Hyrule'],

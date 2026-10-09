@@ -97,6 +97,21 @@ function buildCompounds() {
 
 /* ---------- Hidden words: validate hand-written sentences ---------- */
 const HIDDEN = [
+  [1, 'Kim eats bread.', 'meat'],
+  [1, 'The camel ate the leaves.', 'late'],
+  [1, 'The crab and the fish swam.', 'band'],
+  [1, 'The owl and the hare played.', 'land'],
+  [1, 'Bob eats bread.', 'beat'],
+  [1, 'The dog ate my homework.', 'gate'],
+  [2, 'The cat owner smiled.', 'town'],
+  [2, 'Zelda tells the truth.', 'date'],
+  [2, 'Hippos trample the grass.', 'post'],
+  [2, 'The cow and the goat ate grass.', 'wand'],
+  [2, 'Fish eat worms.', 'heat'],
+  [2, 'Watch our cat closely.', 'hour'],
+  [3, 'The giraffe ate grass.', 'feat'],
+  [3, 'The taco stand was busy.', 'cost'],
+  [3, 'The shooting star chased a comet.', 'arch'],
   [1, 'We ate fish and chips by the sea.', 'hand'],
   [1, 'The cat entered the kitchen quietly.', 'tent'],
   [1, 'We explored the big old castle.', 'gold'],

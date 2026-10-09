@@ -90,6 +90,11 @@
 
   /* ---------------- 2. Punctuation ---------------- */
   const PUNCT = [
+    [1, "My sister's bike is red."],
+    [1, "Can you help me carry the shield?"],
+    [1, "On Saturday, Link went fishing with Sidon."],
+    [1, "We bought eggs, milk, bread and cheese."],
+    [1, "I'm going to Hateno Village tomorrow."],
     [1, "Link packed his sword, shield, bow and arrows."],
     [1, "Where did Zelda hide the map?"],
     [1, "On Monday, we visited Kakariko Village."],
@@ -273,6 +278,36 @@
 
   /* ---------------- 5. Cloze (choose the best word) ---------------- */
   const CLOZE = [
+    [1, 'The puppy wagged its ___ when it saw its owner.', 'tail', ['hat', 'shoe', 'nose']],
+    [1, 'It was so dark that we needed a ___ to see.', 'torch', ['spoon', 'pillow', 'ladder']],
+    [1, 'Link drank a glass of cold ___ after the race.', 'water', ['bread', 'sand', 'wood']],
+    [1, 'The ice cream began to ___ in the hot sun.', 'melt', ['freeze', 'sing', 'grow']],
+    [1, 'Zelda wrapped up warm because it was ___ outside.', 'freezing', ['boiling', 'sunny', 'dry']],
+    [1, 'The farmer collected eggs from the ___.', 'hens', ['cows', 'sheep', 'fish']],
+    [1, 'We used a pair of ___ to cut the paper.', 'scissors', ['hammers', 'spoons', 'brushes']],
+    [1, 'The library was ___, so everyone whispered.', 'silent', ['noisy', 'broken', 'colourful']],
+    [1, 'Birds build ___ to lay their eggs in.', 'nests', ['shells', 'puddles', 'boats']],
+    [1, 'The cake smelled so ___ that my mouth watered.', 'delicious', ['horrible', 'loud', 'square']],
+    [1, 'After the storm, a beautiful ___ appeared in the sky.', 'rainbow', ['river', 'mountain', 'carpet']],
+    [2, 'The ___ crowd cheered as the knight returned home.', 'excited', ['silent', 'sleepy', 'bored']],
+    [2, 'She was ___ to share her sweets, so she kept them all.', 'unwilling', ['eager', 'happy', 'quick']],
+    [2, 'The old rope bridge was too ___ to cross safely.', 'fragile', ['sturdy', 'modern', 'wide']],
+    [2, 'Link ___ the heavy boulder up the hill.', 'pushed', ['floated', 'whispered', 'painted']],
+    [2, 'The thief ___ before anyone could catch him.', 'fled', ['arrived', 'stayed', 'waited']],
+    [2, 'Everyone was ___ when the shy boy won the singing contest.', 'astonished', ['bored', 'angry', 'unsurprised']],
+    [2, 'The baker ___ the dough before putting it in the oven.', 'kneaded', ['boiled', 'froze', 'sewed']],
+    [2, 'The path was so ___ that the horses kept slipping.', 'icy', ['dry', 'sandy', 'grassy']],
+    [2, 'The lion let out a mighty ___.', 'roar', ['whisper', 'giggle', 'squeak']],
+    [2, 'The Gorons are ___ for their incredible strength.', 'famous', ['forgotten', 'ashamed', 'tiny']],
+    [3, 'The witness gave such a ___ account that the judge believed her.', 'credible', ['dubious', 'fictional', 'careless']],
+    [3, 'His ___ attitude meant he never shared anything.', 'selfish', ['generous', 'kindly', 'cheerful']],
+    [3, 'The general devised an ___ plan to outwit the enemy.', 'ingenious', ['foolish', 'obvious', 'clumsy']],
+    [3, 'After the long drought, the land was completely ___.', 'barren', ['fertile', 'flooded', 'lush']],
+    [3, 'The ___ child asked question after question.', 'inquisitive', ['indifferent', 'silent', 'sleepy']],
+    [3, 'Despite his ___ appearance, the old man was very strong.', 'frail', ['sturdy', 'robust', 'muscular']],
+    [3, 'The king issued a ___ that all citizens must obey.', 'decree', ['rumour', 'song', 'riddle']],
+    [3, 'The villagers were ___ of strangers after the robbery.', 'wary', ['fond', 'careless', 'trusting']],
+    [3, 'Her speech was so ___ that the audience was moved to tears.', 'poignant', ['tedious', 'dull', 'trivial']],
     [1, 'The castle walls were so ___ that no army could climb them.', 'high', ['soft', 'happy', 'quick']],
     [1, 'Link was so ___ after the long climb that he fell asleep at once.', 'tired', ['excited', 'hungry', 'early']],
     [1, 'The Zora swam ___ through the cold water.', 'gracefully', ['clumsily', 'loudly', 'dryly']],
@@ -304,6 +339,16 @@
 
   /* ---------------- 6. Word building: homophones, prefixes, suffixes ---------------- */
   const HOMO = [
+    [1, 'The wind ___ the leaves off the tree.', 'blew', ['blue', 'blewe']],
+    [1, 'I ate ___ slices of pizza.', 'eight', ['ate', 'eigth']],
+    [1, 'Please ___ here until I come back.', 'wait', ['weight', 'wate']],
+    [1, 'The ___ of my shoe has a hole in it.', 'sole', ['soul', 'sol']],
+    [2, 'The ___ galloped across the field.', 'horse', ['hoarse', 'hors']],
+    [2, 'He shouted so much that his voice was ___.', 'hoarse', ['horse', 'horce']],
+    [2, 'We could ___ the bells ringing from far away.', 'hear', ['here', 'heer']],
+    [3, 'Please read the poem ___ to the class.', 'aloud', ['allowed', 'alowd']],
+    [3, 'The bride walked slowly down the ___.', 'aisle', ['isle', "I'll"]],
+    [3, 'The princess will ___ over the kingdom.', 'reign', ['rain', 'rein']],
     [1, 'The Koroks hid ___ seeds under the rocks.', 'their', ['there', "they're"]],
     [1, 'Look over ___ by the waterfall!', 'there', ['their', "they're"]],
     [1, "___ going to the shrine after lunch.", "They're", ['Their', 'There']],
@@ -354,6 +399,8 @@
 
   /* ---------------- 7. Figurative language ---------------- */
   const FIG = [
+    [1, 'The thunder roared like a lion.', 'simile'], [1, 'Sizzle went the sausages in the pan.', 'onomatopoeia'], [1, 'The sun smiled down on us.', 'personification'],
+    [1, 'Tiny Tim took ten toys.', 'alliteration'], [1, 'The kitten was as soft as a cloud.', 'simile'], [1, 'The door creaked and the floor squeaked.', 'onomatopoeia'],
     [1, 'The wind howled like a hungry wolf.', 'simile'], [1, 'Link was as brave as a lion.', 'simile'], [1, 'Silly snakes slithered silently.', 'alliteration'],
     [1, 'Crash! Bang! The rocks tumbled down.', 'onomatopoeia'], [1, 'The flowers danced in the breeze.', 'personification'], [1, 'Big brown bears bounced on the bridge.', 'alliteration'],
     [1, 'The bees buzzed around the hive.', 'onomatopoeia'], [1, 'Her smile was as bright as the sun.', 'simile'],
@@ -384,6 +431,73 @@
   /* ---------------- 8. Comprehension ---------------- */
   // Each passage: level, title, text, questions [q, answer, distractors, explanation]
   const PASSAGES = [
+    {
+      l: 1, title: 'Epona’s Apple',
+      text: `Every morning, Link visited the stable to brush his horse, Epona. She had a shiny brown coat, a white mane and a mischievous twinkle in her eye.
+
+One morning, Link brought a crunchy red apple as a treat. He put it in his pocket while he fetched the brush. When he came back, the apple had gone! Link looked under the hay bales and behind the water bucket, but he could not find it anywhere.
+
+Then he heard a loud CRUNCH. Epona was munching happily, with juice dripping from her chin. She had pushed her nose into his pocket and taken the apple herself!
+
+Link laughed so much that he had to sit down on a hay bale. "You clever girl," he said, patting her neck. From then on, he always kept her treats in a closed bag.`,
+      qs: [
+        ['What colour was Epona’s mane?', 'White', ['Brown', 'Black', 'Red'], '"She had a shiny brown coat, a white mane…"'],
+        ['Why did Link bring the apple?', 'As a treat for Epona', ['For his own lunch', 'To sell at the market', 'To plant in the garden'], '"Link brought a crunchy red apple as a treat."'],
+        ['Where did Link look for the apple?', 'Under the hay bales and behind the water bucket', ['In the river', 'Inside his house', 'Up a tree'], 'See the second paragraph.'],
+        ['Which word from the passage is an example of onomatopoeia?', 'CRUNCH', ['shiny', 'laughed', 'clever'], '"CRUNCH" sounds like the noise it describes.'],
+        ['How did Epona get the apple?', 'She took it from Link’s pocket', ['Link gave it to her', 'It fell on the floor', 'Another horse dropped it'], '"She had pushed her nose into his pocket and taken the apple herself!"'],
+        ['What does "mischievous" suggest about Epona?', 'She likes to cause playful trouble', ['She is very old', 'She is frightened', 'She is very slow'], 'Mischievous means naughty in a playful way, just like taking the apple.'],
+        ['How did Link feel when he found out?', 'Amused', ['Furious', 'Sad', 'Scared'], 'He "laughed so much that he had to sit down".'],
+      ],
+    },
+    {
+      l: 2, title: 'Night on the Great Plateau (a poem)',
+      text: `The moon climbs up the mountain’s back,
+A lantern made of silver light;
+The old stone tower, tall and black,
+Stands guard above the sleeping night.
+
+The grasses whisper to the breeze,
+The river hums a lullaby,
+And fireflies dance between the trees
+Like little stars that learned to fly.
+
+Far off, a Guardian’s orange eye
+Blinks once, then fades into the dark,
+While somewhere, safe beneath the sky,
+A traveller dreams beside a spark.`,
+      qs: [
+        ['What type of text is this?', 'A poem', ['A letter', 'A recipe', 'A newspaper report'], 'It is written in rhyming verses (stanzas).'],
+        ['"A lantern made of silver light" describes…', 'the moon', ['the tower', 'a firefly', 'the river'], 'The line follows "The moon climbs up the mountain’s back".'],
+        ['"The grasses whisper to the breeze" is an example of…', 'personification', ['a simile', 'onomatopoeia', 'alliteration'], 'Grass can’t really whisper, so the poet gives it a human action.'],
+        ['Which line contains a simile?', 'Like little stars that learned to fly', ['The moon climbs up the mountain’s back', 'The river hums a lullaby', 'Blinks once, then fades into the dark'], 'It compares fireflies to stars using "like".'],
+        ['Which word rhymes with "light" in the first verse?', 'night', ['back', 'black', 'tall'], 'light / night.'],
+        ['What is the "spark" in the last line most likely to be?', 'A small campfire', ['A firework', 'A star', 'The Guardian’s eye'], 'A traveller sleeping outdoors would dream beside a campfire.'],
+        ['Which words best describe the mood of the poem?', 'Calm and peaceful', ['Angry and loud', 'Busy and noisy', 'Silly and funny'], 'Lullabies, sleeping and dreams create a calm mood.'],
+      ],
+    },
+    {
+      l: 3, title: 'Why Every Traveller Should Climb a Sheikah Tower',
+      text: `Hyrule is a vast and confusing land. Rivers twist without warning, forests swallow paths whole, and mountains hide entire villages from view. It is no surprise, then, that countless travellers have become hopelessly lost. Fortunately, there is a remarkably simple solution: climb a Sheikah Tower.
+
+Firstly, the towers provide the most accurate maps available anywhere. Once activated, each tower uploads detailed information about the surrounding region directly onto a traveller’s Sheikah Slate. No hand-drawn map, however carefully made, can compete with such precision.
+
+Secondly, the view from the summit is breathtaking. On a clear day, you can see from the snowy peaks of Hebra to the shimmering sands of Gerudo. Many visitors describe it as the most unforgettable moment of their journey.
+
+Admittedly, the climb is not easy. The towers are tall, and some are surrounded by thorns or guarded by monsters. However, with patience and a full stamina wheel, almost anyone can reach the top.
+
+In conclusion, a Sheikah Tower is not merely a landmark; it is a traveller’s best friend. Why wander blindly when the answers are waiting at the top?`,
+      qs: [
+        ['What is the main purpose of this text?', 'To persuade travellers to climb Sheikah Towers', ['To tell a funny story', 'To explain how the towers were built', 'To warn people never to travel'], 'The writer gives reasons and ends with "Why wander blindly…?" It is persuasive writing.'],
+        ['Which word in the text means "exactness"?', 'precision', ['summit', 'landmark', 'stamina'], '"No hand-drawn map… can compete with such precision."'],
+        ['Why does the writer use "Firstly" and "Secondly"?', 'To organise the arguments in order', ['To show time passing in a story', 'To describe the view', 'To introduce a character'], 'These connectives signpost each reason in turn.'],
+        ['What does "Admittedly" show the writer is doing?', 'Accepting a point against their own argument', ['Changing the subject', 'Telling a lie', 'Giving up'], 'The writer admits the climb is hard, then answers that point with "However…".'],
+        ['"Forests swallow paths whole" is an example of…', 'personification', ['a simile', 'alliteration', 'onomatopoeia'], 'Forests cannot really swallow. The writer gives them a living action.'],
+        ['The final sentence of the text is…', 'a rhetorical question', ['a command', 'a statement of fact', 'a simile'], 'It is a question asked for effect, not one that needs an answer.'],
+        ['According to the text, what does an activated tower do?', 'Uploads maps onto a Sheikah Slate', ['Lights up the sky', 'Defeats nearby monsters', 'Grows taller'], 'See the second paragraph.'],
+        ['Which word best describes the writer’s attitude towards the towers?', 'Enthusiastic', ['Doubtful', 'Bored', 'Fearful'], 'Words like "breathtaking" and "best friend" show enthusiasm.'],
+      ],
+    },
     {
       l: 1, title: 'The Korok Who Lost His Leaf',
       text: `Deep in the Lost Woods lived a small Korok called Pip. Like all Koroks, Pip carried a leaf on his head, but his was special: it was the biggest, greenest leaf in the whole forest. Every morning, Pip polished it with dew drops until it shone.
@@ -523,7 +637,13 @@ Symin`,
       r.passage = `<h4>${esc(p.title)}</h4>${p.text.split('\n\n').map(par => `<p>${esc(par).replace(/\n/g, '<br>')}</p>`).join('')}`;
       return r;
     },
-    trial(lv) { const opts = PASSAGES.filter(x => x.l === lv); const p = pick(opts.length ? opts : PASSAGES); return p.qs.map(q => () => this.fromPassage(p, q)); },
+    // avoid: titles of recently read passages, so the same story doesn't come round again straight away
+    trial(lv, avoid = []) {
+      const opts = PASSAGES.filter(x => x.l === lv); const pool = opts.length ? opts : PASSAGES;
+      const fresh = pool.filter(p => !avoid.includes(p.title));
+      const p = pick(fresh.length ? fresh : pool);
+      const list = p.qs.map(q => () => this.fromPassage(p, q)); list.title = p.title; return list;
+    },
   });
 
   window.CONTENT = window.CONTENT || {};

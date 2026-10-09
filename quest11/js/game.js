@@ -381,7 +381,8 @@
   function trial(topicId, lv) {
     const t = topicById(topicId); const subj = subjectOf(topicId); const idx = topicsOf(subj).indexOf(t); const name = shrineName(subj, idx);
     const tr = TRIALS[lv - 1];
-    const fixed = t.trial ? t.trial(lv) : null; // comprehension uses one passage per trial
+    const fixed = t.trial ? t.trial(lv, S().recentPassages || []) : null; // comprehension uses one passage per trial
+    if (fixed) { const rp = S().recentPassages = (S().recentPassages || []).filter(x => x !== fixed.title); rp.push(fixed.title); if (rp.length > 4) rp.shift(); }
     const foe = trialFoe(subj, lv, idx);
     battle({
       kind: 'trial', title: name, subtitle: `${tr.name} · ${t.name}`, total: fixed ? fixed.length : 8, hearts: 3, fixed: !!fixed, theme: 'shrine',
@@ -425,7 +426,7 @@
       runes: {}, champ: {}, blocks: isBoss ? State.shield().blocks : 0, bombNext: false, furyNext: false,
       arrows: isBoss ? s.items.bombarrow : 0, fairy: s.items.fairy > 0 && !exam && !sword,
       timeLeft: 0, frozen: false, q: null, cur: null, answered: false, revaliUsed: false,
-      examLeft: cfg.examTime || 0, done: false,
+      examLeft: cfg.examTime || 0, done: false, seen: new Set(),
     };
     if (!exam && !sword) {
       for (const k of Object.keys(STORY.runes)) if (s.runes[k]) B.runes[k] = State.runeCharges();
@@ -503,11 +504,20 @@
       B.runes[k]--; runeBar();
     }
 
+    // No repeats inside a battle, and avoid anything asked in recent play. Small banks fall back
+    // to an older question rather than stalling.
     function pickNext() {
-      for (let tries = 0; tries < 8; tries++) {
+      let fallback = null;
+      for (let tries = 0; tries < 40; tries++) {
         const n = cfg.next(B);
-        try { const q = n.q || n.topic.gen(n.lv); if (q && q.options) return Object.assign(n, { q }); } catch (e) { console.warn('generator failed', n.topic && n.topic.id, e); }
+        let q;
+        try { q = n.q || n.topic.gen(n.lv); } catch (e) { console.warn('generator failed', n.topic && n.topic.id, e); continue; }
+        if (!q || !q.options) continue;
+        const sig = State.qSig(q);
+        if (n.q || (!B.seen.has(sig) && (tries >= 25 || !State.recentlyAsked(sig)))) { B.seen.add(sig); State.markAsked(sig); return Object.assign(n, { q }); }
+        if (!fallback && !B.seen.has(sig)) fallback = Object.assign(n, { q, sig });
       }
+      if (fallback) { B.seen.add(fallback.sig); State.markAsked(fallback.sig); return fallback; }
       throw new Error('No question available');
     }
     function ask() {

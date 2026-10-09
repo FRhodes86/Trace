@@ -202,6 +202,18 @@
 
   /* Word analogies */
   const ANALOGY = [
+    [1, ['tall', 'short'], ['wet', 'dry'], ['rain', 'damp', 'water']], [1, ['cat', 'kitten'], ['dog', 'puppy'], ['bone', 'bark', 'cub']],
+    [1, ['glove', 'hand'], ['sock', 'foot'], ['shoe', 'leg', 'wool']], [1, ['sun', 'day'], ['moon', 'night'], ['star', 'sky', 'cheese']],
+    [1, ['bee', 'buzz'], ['dog', 'bark'], ['bone', 'tail', 'cat']], [1, ['cow', 'milk'], ['hen', 'eggs'], ['farm', 'chick', 'corn']],
+    [1, ['pen', 'write'], ['scissors', 'cut'], ['paper', 'sharp', 'glue']], [1, ['nose', 'smell'], ['tongue', 'taste'], ['mouth', 'lick', 'teeth']],
+    [2, ['library', 'books'], ['wardrobe', 'clothes'], ['bedroom', 'wood', 'mirror']], [2, ['teacher', 'school'], ['doctor', 'hospital'], ['nurse', 'medicine', 'patient']],
+    [2, ['caterpillar', 'butterfly'], ['tadpole', 'frog'], ['pond', 'fish', 'lily']], [2, ['hand', 'finger'], ['foot', 'toe'], ['shoe', 'leg', 'sock']],
+    [2, ['pilot', 'aeroplane'], ['captain', 'ship'], ['sea', 'sailor', 'anchor']], [2, ['few', 'many'], ['narrow', 'wide'], ['thin', 'road', 'long']],
+    [2, ['hour', 'minute'], ['minute', 'second'], ['clock', 'time', 'day']], [2, ['north', 'south'], ['east', 'west'], ['left', 'compass', 'sunrise']],
+    [3, ['pen', 'author'], ['brush', 'artist'], ['canvas', 'paint', 'gallery']], [3, ['wolf', 'howl'], ['owl', 'hoot'], ['night', 'feather', 'tree']],
+    [3, ['cub', 'bear'], ['foal', 'horse'], ['pony', 'stable', 'hay']], [3, ['mason', 'stone'], ['carpenter', 'wood'], ['hammer', 'saw', 'nail']],
+    [3, ['geese', 'gaggle'], ['fish', 'shoal'], ['pond', 'swim', 'fin']], [3, ['thermometer', 'temperature'], ['scales', 'weight'], ['kitchen', 'heavy', 'balance']],
+    [3, ['ruler', 'length'], ['clock', 'time'], ['watch', 'hand', 'tick']], [3, ['interior', 'exterior'], ['maximum', 'minimum'], ['most', 'largest', 'middle']],
     [1, ['hot', 'cold'], ['up', 'down'], ['top', 'high', 'sky']], [1, ['puppy', 'dog'], ['kitten', 'cat'], ['mouse', 'pet', 'milk']],
     [1, ['bird', 'nest'], ['bee', 'hive'], ['honey', 'flower', 'sting']], [1, ['foot', 'shoe'], ['hand', 'glove'], ['finger', 'arm', 'ring']],
     [1, ['day', 'night'], ['black', 'white'], ['dark', 'grey', 'colour']], [1, ['fish', 'swim'], ['bird', 'fly'], ['feather', 'tree', 'sing']],
