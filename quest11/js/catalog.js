@@ -217,6 +217,12 @@
     { id: 'm-medoh', name: 'Vah Medoh Model', emoji: '🦅', price: null, mastery: 'verbal', x: 8, y: 20 },
     { id: 'm-naboris', name: 'Vah Naboris Model', emoji: '🐪', price: null, mastery: 'nonverbal', x: 92, y: 18 },
     { id: 'm-triforce', name: 'The Triforce', emoji: '🔺', price: null, mastery: 'all', x: 60, y: 50 },
+    // Regional trophies from the Divine Beast regions' side quests
+    { id: 'goronruby', name: 'Goron Ruby Statue', emoji: '💎', price: null, x: 14, y: 54 },
+    { id: 'zorafountain', name: 'Zora Fountain', emoji: '⛲', price: null, x: 86, y: 86 },
+    { id: 'ritochime', name: 'Rito Wind Chime', emoji: '🎐', price: null, x: 64, y: 8 },
+    { id: 'sealfigure', name: 'Sand Seal Figurine', emoji: '🦭', price: null, x: 30, y: 86 },
+    { id: 'cycletrophy', name: 'Master Cycle Trophy', emoji: '🏍️', price: null, x: 40, y: 64 },
     { id: 'goldstatue', name: 'Golden Hero Statue', emoji: '🏅', price: 6000, x: 50, y: 46, desc: 'A shining statue of you. Only true heroes can afford it!' },
   ];
 
@@ -243,10 +249,11 @@
       lines: [['Revali', 'Three stars in every shrine around Rito Village? Hmph. I suppose even I must admit… that\'s impressive.'], ['Revali', 'Take my Great Eagle Bow, and a paraglider made with my colours. Try not to embarrass me.']] },
     nonverbal: { champion: 'Urbosa', title: 'Champion of the Gerudo Desert', reward: { weapon: 'scimitar', shield: 'daybreaker', decor: 'm-naboris', rupees: 1000 },
       lines: [['Urbosa', 'Every shrine in the desert, all three stars. Now THAT is the mark of a true warrior, little one.'], ['Urbosa', 'The Scimitar of the Seven and the Daybreaker are the pride of the Gerudo. Today, they are yours.']] },
-    all: { champion: 'Zelda', title: 'Hero of Hyrule', reward: { theme: 'triforce', glider: 'golden', decor: 'm-triforce', rupees: 5000 },
-      lines: [['Zelda', 'You did it… three stars in every shrine, in every corner of Hyrule. No hero has ever done this before.'], ['Zelda', 'The goddess has chosen to reward you with the Triforce itself. Wear its light with pride!']] },
+    all: { champion: 'Zelda', title: 'Hero of Hyrule', reward: { relic: 'mastercycle', theme: 'triforce', glider: 'golden', decor: 'm-triforce', rupees: 5000 },
+      lines: [['Zelda', 'You did it… three stars in every shrine, in every corner of Hyrule. No hero has ever done this before.'], ['Zelda', 'The goddess has chosen to reward you with the Triforce itself. Wear its light with pride!'], ['Zelda', 'And one more thing… the Master Cycle Zero, the final Divine Beast. Ride it anywhere in Hyrule!']] },
   };
   C.RELICS = {
+    mastercycle: { name: 'Master Cycle Zero', emoji: '🏍️', art: 'masterCycle', desc: 'The final Divine Beast: an ancient Sheikah motorcycle! Find the Master Cycle Run on the map.' },
     eaglebow: { name: 'Great Eagle Bow', emoji: '🏹', desc: 'Revali\'s bow. Every boss battle starts with 3 free Bomb Arrows.' },
   };
 
@@ -274,6 +281,16 @@
     { id: 'q-house', npc: 'Hudson', icon: '🏠', title: 'Home Sweet Home', text: 'Buy the house in Hateno Village!', goal: ['house', 1], reward: { rupees: 200, decor: 'bed' } },
     { id: 'q-bond', npc: 'Stable Master', icon: '💞', title: 'Best Friends', text: 'Raise any horse to full bond (5 hearts).', goal: ['maxBond', 5], reward: { rupees: 300, ingredient: { carrot: 5 } } },
     { id: 'q-spend', npc: 'Beedle', icon: '💰', title: 'Big Spender', text: 'Spend 3,000 rupees in my shop. Thank you! Please come again!', goal: ['spent', 3000], reward: { rupees: 500, pet: 'dog' } },
+    // Regional quests: these NPCs only appear once that region's Divine Beast is free (region: subject id, or 'all' for the Master Cycle)
+    { id: 'q-rockroll', region: 'maths', npc: 'Yunobo', icon: '🪨', title: 'Roll, Goro, Roll!', text: 'Goro! Collect 30 gems in one run of my Rock Roll down Death Mountain!', goal: ['rockBest', 30], reward: { rupees: 300, tickets: 3, decor: 'goronruby' } },
+    { id: 'q-bludo', region: 'maths', npc: 'Bludo', icon: '⛏️', title: 'The Boss\'s Sums', text: 'The Gorons need sharp miners! Answer 40 Maths questions correctly in Master (★★★) trials.', goal: ['m_maths', 40], reward: { rupees: 600, ingredient: { pepper: 5, truffle: 3 } } },
+    { id: 'q-fishing', region: 'english', npc: 'Sidon', icon: '🎣', title: 'A Splendid Catch', text: 'My friend! Catch 15 fish in the reservoir. I believe in you!', goal: ['fishCaught', 15], reward: { rupees: 300, tickets: 3, decor: 'zorafountain' } },
+    { id: 'q-dorephan', region: 'english', npc: 'King Dorephan', icon: '👑', title: 'The King\'s Library', text: 'Answer 40 English questions correctly in Master (★★★) trials, young hero.', goal: ['m_english', 40], reward: { rupees: 600, ingredient: { salmon: 5, crab: 3 } } },
+    { id: 'q-bowling', region: 'verbal', npc: 'Teba', icon: '☃️', title: 'Snowball Strikes', text: 'Bowl 3 strikes at the Snowball Bowling lane. Show me your aim!', goal: ['strikes', 3], reward: { rupees: 300, tickets: 3, decor: 'ritochime' } },
+    { id: 'q-kaneli', region: 'verbal', npc: 'Elder Kaneli', icon: '🪶', title: 'Riddles of the Elder', text: 'Answer 40 Verbal Reasoning questions correctly in Master (★★★) trials.', goal: ['m_verbal', 40], reward: { rupees: 600, ingredient: { bird: 5, egg: 3 } } },
+    { id: 'q-sealrally', region: 'nonverbal', npc: 'Riju', icon: '🦭', title: 'Sand Seal Rally', text: 'Ride through 25 flag gates in a single Sand Seal Rally!', goal: ['sealBest', 25], reward: { rupees: 300, tickets: 3, decor: 'sealfigure' } },
+    { id: 'q-buliara', region: 'nonverbal', npc: 'Buliara', icon: '🗡️', title: 'Guard Training', text: 'A Gerudo guard spots every pattern. Answer 40 Non-Verbal questions correctly in Master (★★★) trials.', goal: ['m_nonverbal', 40], reward: { rupees: 600, ingredient: { melon: 5, voltfruit: 3 } } },
+    { id: 'q-cycle', region: 'all', npc: 'Zelda', icon: '🏍️', title: 'The Final Divine Beast', text: 'Ride the Master Cycle Zero 2,000 metres in a single run!', goal: ['cycleBest', 2000], reward: { rupees: 2000, tickets: 10, decor: 'cycletrophy' } },
     { id: 'q-blights', npc: 'Zelda', icon: '👑', title: 'The Four Champions', text: 'Free all four Divine Beasts.', goal: ['bosses', 4], reward: { rupees: 1000, pet: 'fairy' } },
   ];
 

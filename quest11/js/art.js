@@ -760,5 +760,140 @@
     </svg>`;
   }
 
-  window.ART = { glider, pet, horse, hero, zelda, oldMan, monk, korok, hestu, beedle, goddess, chuchu, keese, bokoblin, moblin, lizalfos, guardianScout, lynel, blight, calamity, darkBeast, icons, beast, worldMap, EL };
+
+  /* ======================= REGIONAL CHARACTERS ======================= */
+  function yunobo() {
+    // young Goron: round rocky back, pale belly, white tuft of hair, big friendly grin, yellow scarf
+    const g = id('yb');
+    return svg('0 0 120 150', `<defs>${lg(g, '#d9a26a', '#a8703e')}</defs>${shadow(60, 145, 36)}
+      <g class="h-body">
+        <path d="M38,120 l-4,22 h16 l2,-20 M82,120 l4,22 h-16 l-2,-20" fill="url(#${g})" stroke="${INK}" stroke-width="2"/>
+        <path d="M20,96 Q18,58 60,52 Q102,58 100,96 Q98,128 60,130 Q22,128 20,96Z" fill="url(#${g})" stroke="${INK}" stroke-width="2.4"/>
+        <path d="M34,98 Q60,84 86,98 Q84,124 60,126 Q36,124 34,98Z" fill="#f0d0a8" stroke="${INK}" stroke-width="1.6"/>
+        <path d="M44,104 q16,6 32,0 M46,114 q14,5 28,0" stroke="#c99a6a" stroke-width="1.6" fill="none"/>
+        <path d="M20,90 Q8,96 10,112 Q16,118 24,112 M100,90 Q112,96 110,112 Q104,118 96,112" fill="url(#${g})" stroke="${INK}" stroke-width="2"/>
+        <path d="M36,80 Q60,92 84,80 L80,88 Q60,98 40,88Z" fill="#f2c14e" stroke="${INK}" stroke-width="1.6"/>
+        <ellipse cx="60" cy="54" rx="26" ry="22" fill="url(#${g})" stroke="${INK}" stroke-width="2.2"/>
+        <path d="M44,34 Q48,18 60,22 Q66,10 74,20 Q84,18 80,36 Q68,30 60,32 Q50,30 44,34Z" fill="#f4f2ea" stroke="${INK}" stroke-width="1.8"/>
+        <path d="M46,48 q5,-4 10,0 M64,48 q5,-4 10,0" stroke="#5a3a22" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <circle cx="51" cy="53" r="3.4" fill="${INK}"/><circle cx="69" cy="53" r="3.4" fill="${INK}"/><circle cx="52" cy="52" r="1" fill="#fff"/><circle cx="70" cy="52" r="1" fill="#fff"/>
+        <path d="M58,58 q2,2 4,0" stroke="#7a4a22" stroke-width="2" fill="none"/>
+        <path d="M46,64 Q60,76 74,64 Q60,70 46,64Z" fill="#7a2a1a" stroke="${INK}" stroke-width="1.6"/>
+        <path d="M36,62 l-6,-2 M84,62 l6,-2" stroke="#7a4a22" stroke-width="2"/>
+      </g>`, 'npc yunobo');
+  }
+  function goronBall() {
+    // a Goron curled up for rolling: knobbly rock shell with a peek of tan belly
+    return svg('0 0 100 100', `<circle cx="50" cy="52" r="42" fill="#a8703e" stroke="${INK}" stroke-width="3"/>
+      <path d="M22,30 l6,-10 l6,8 M44,14 l6,-8 l6,8 M66,18 l8,-6 l4,10 M80,40 l10,-2 l-4,10 M16,56 l-8,2 l6,8" fill="#8a5a2b" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>
+      <path d="M30,44 q8,-8 16,0 M54,36 q8,-8 16,0 M40,64 q8,-8 16,0" stroke="#8a5a2b" stroke-width="3" fill="none"/>
+      <path d="M30,74 Q50,92 70,74 Q50,84 30,74Z" fill="#f0d0a8" stroke="${INK}" stroke-width="1.6"/>
+      <path d="M40,22 q10,-6 20,0" stroke="#f4f2ea" stroke-width="5" stroke-linecap="round"/>`, 'ball');
+  }
+  function sidon() {
+    // the Zora prince: red shark-like head fin, white chest, big confident grin
+    const g = id('sd');
+    return svg('0 0 120 150', `<defs>${lg(g, '#ff5a4a', '#c2302a')}</defs>${shadow(60, 145, 28)}
+      <g class="h-body">
+        <path d="M48,112 l-2,30 h12 l2,-30 M66,112 l2,30 h12 l-4,-30" fill="url(#${g})" stroke="${INK}" stroke-width="2"/>
+        <path d="M40,72 Q60,62 80,72 L82,116 Q60,122 38,116 Z" fill="url(#${g})" stroke="${INK}" stroke-width="2.2"/>
+        <path d="M48,74 Q60,104 72,74 Q60,80 48,74Z" fill="#f4f2ea" stroke="${INK}" stroke-width="1.4"/>
+        <path d="M44,76 Q60,86 76,76" stroke="#c9a227" stroke-width="3" fill="none"/><circle cx="60" cy="82" r="3" fill="#3fe0ff" stroke="${INK}" stroke-width="1"/>
+        <path d="M40,76 Q30,92 34,106 M80,76 Q90,92 86,106" stroke="${INK}" stroke-width="8" stroke-linecap="round" fill="none"/><path d="M40,76 Q30,92 34,106 M80,76 Q90,92 86,106" stroke="#ff5a4a" stroke-width="5.5" stroke-linecap="round" fill="none"/>
+        <path d="M60,22 Q90,24 104,60 Q90,52 82,58 Q78,46 66,46Z" fill="url(#${g})" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/>
+        <ellipse cx="60" cy="48" rx="18" ry="20" fill="url(#${g})" stroke="${INK}" stroke-width="2.2"/>
+        <path d="M46,56 Q60,66 74,56 Q66,62 60,62 Q54,62 46,56Z" fill="#f4f2ea" stroke="${INK}" stroke-width="1.4"/>
+        <path d="M48,56 l2,4 l2,-3 l2,3 l2,-3 l2,3 l2,-3 l2,3 l2,-3 l2,3 l2,-4" stroke="${INK}" stroke-width=".9" fill="none"/>
+        <ellipse cx="53" cy="45" rx="3.2" ry="3.8" fill="#ffe17a" stroke="${INK}" stroke-width="1"/><ellipse cx="67" cy="45" rx="3.2" ry="3.8" fill="#ffe17a" stroke="${INK}" stroke-width="1"/>
+        <circle cx="53" cy="45.5" r="1.8" fill="${INK}"/><circle cx="67" cy="45.5" r="1.8" fill="${INK}"/>
+        <path d="M42,44 L32,38 L42,52Z M78,44 L88,38 L78,52Z" fill="#f4f2ea" stroke="${INK}" stroke-width="1.4"/>
+      </g>`, 'npc sidon');
+  }
+  function teba() {
+    // Rito warrior: white-and-grey feathered bird-man, yellow beak, red scarf, bow on his back
+    return svg('0 0 120 150', `${shadow(60, 145, 28)}
+      <g class="h-body">
+        <path d="M84,40 Q108,80 86,124" stroke="#7a5230" stroke-width="3" fill="none"/><path d="M84,40 L86,124" stroke="#e8e0c8" stroke-width="1"/>
+        <path d="M48,116 l-4,26 h4 l2,-4 l2,4 h4 l0,-26 M68,116 l2,26 h4 l2,-4 l2,4 h4 l-4,-26" fill="#f2b33a" stroke="${INK}" stroke-width="1.6"/>
+        <path d="M38,74 Q60,62 82,74 L86,118 Q60,126 34,118 Z" fill="#e8eef6" stroke="${INK}" stroke-width="2.2"/>
+        <path d="M44,84 l6,6 l6,-6 l6,6 l6,-6 l6,6 M42,98 l6,6 l6,-6 l6,6 l6,-6 l6,6 l6,-6" stroke="#9aa6b5" stroke-width="1.4" fill="none"/>
+        <path d="M34,78 Q16,96 20,118 Q30,108 40,104 Z M86,78 Q104,96 100,118 Q90,108 80,104 Z" fill="#c8d0dc" stroke="${INK}" stroke-width="2"/>
+        <path d="M42,72 Q60,82 78,72 L76,80 Q60,88 44,80Z" fill="#c63b4f" stroke="${INK}" stroke-width="1.6"/>
+        <ellipse cx="60" cy="50" rx="18" ry="20" fill="#f4f6fa" stroke="${INK}" stroke-width="2.2"/>
+        <path d="M44,40 Q48,22 60,28 Q70,18 78,32 Q86,30 80,46 Q70,38 60,40 Q52,38 44,40Z" fill="#5a6476" stroke="${INK}" stroke-width="1.8"/>
+        <path d="M74,28 Q88,20 96,26 Q86,30 80,36" fill="#5a6476" stroke="${INK}" stroke-width="1.6"/>
+        <path d="M46,48 q5,-3 9,0 M65,48 q5,-3 9,0" stroke="#c63b4f" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+        <circle cx="51" cy="52" r="2.8" fill="${INK}"/><circle cx="69" cy="52" r="2.8" fill="${INK}"/>
+        <path d="M54,58 L60,72 L66,58 Q60,55 54,58Z" fill="#f2b33a" stroke="${INK}" stroke-width="1.6" stroke-linejoin="round"/>
+      </g>`, 'npc teba');
+  }
+  function riju() {
+    // the young Gerudo chief: bright red hair in a topknot, golden circlet and jewellery, deep blue and white outfit
+    const g = id('rj');
+    return svg('0 0 120 150', `<defs>${lg(g, '#ff7a4a', '#c2381c')}</defs>${shadow(60, 145, 26)}
+      <g class="h-body">
+        <path d="M48,112 Q46,126 46,142 h12 l2,-30 M64,112 l2,30 h12 q0,-16 -2,-30" fill="#f4f2ea" stroke="${INK}" stroke-width="2"/>
+        <path d="M44,138 h14 v6 h-14z M64,138 h14 v6 h-14z" fill="#c9a227" stroke="${INK}" stroke-width="1.4"/>
+        <path d="M44,96 Q60,92 76,96 L80,116 Q60,122 40,116 Z" fill="#2b3f8a" stroke="${INK}" stroke-width="2"/>
+        <path d="M42,100 h36" stroke="#c9a227" stroke-width="3"/>
+        <path d="M46,72 Q60,66 74,72 L76,90 Q60,94 44,90Z" fill="#2b3f8a" stroke="${INK}" stroke-width="2"/>
+        <path d="M46,90 Q60,96 74,90 L74,98 Q60,100 46,98Z" fill="#9a6a42" stroke="${INK}" stroke-width="1.4"/>
+        <path d="M46,74 Q36,90 40,104 M74,74 Q84,90 80,104" stroke="${INK}" stroke-width="7" stroke-linecap="round" fill="none"/><path d="M46,74 Q36,90 40,104 M74,74 Q84,90 80,104" stroke="#9a6a42" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+        <path d="M37,92 h6 M77,92 h6" stroke="#c9a227" stroke-width="3"/>
+        <path d="M44,40 Q40,22 60,18 Q80,22 76,40 Q72,30 60,30 Q48,30 44,40Z" fill="url(#${g})" stroke="${INK}" stroke-width="2"/>
+        <path d="M52,18 Q56,2 66,4 Q74,10 68,20 Q62,14 52,18Z" fill="url(#${g})" stroke="${INK}" stroke-width="1.8"/>
+        <ellipse cx="60" cy="46" rx="15" ry="17" fill="#9a6a42" stroke="${INK}" stroke-width="2.2"/>
+        <path d="M45,32 Q60,26 75,32" stroke="#c9a227" stroke-width="3" fill="none"/><path d="M57,30 l3,-6 l3,6z" fill="#3fe0ff" stroke="${INK}" stroke-width=".8"/>
+        <path d="M44,40 Q40,56 46,66 M76,40 Q80,56 74,66" stroke="#c2381c" stroke-width="4" fill="none" stroke-linecap="round"/>
+        <ellipse cx="54" cy="47" rx="2.6" ry="3.4" fill="#fff"/><ellipse cx="66" cy="47" rx="2.6" ry="3.4" fill="#fff"/><circle cx="54.4" cy="47.4" r="1.8" fill="#3b8d4f"/><circle cx="66.4" cy="47.4" r="1.8" fill="#3b8d4f"/>
+        <path d="M51,42 q3,-1.6 6,0 M63,42 q3,-1.6 6,0" stroke="#5a2a1a" stroke-width="1.4" fill="none"/>
+        <path d="M56,55 q4,2 8,0" stroke="#5a2a1a" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+        <circle cx="45" cy="52" r="2" fill="#c9a227"/><circle cx="75" cy="52" r="2" fill="#c9a227"/>
+      </g>`, 'npc riju');
+  }
+  function sandSeal() {
+    // a sand seal towing Link on his shield, seen from the side
+    return svg('0 0 160 90', `<ellipse cx="80" cy="82" rx="70" ry="6" fill="#000" opacity=".22"/>
+      <path d="M8,74 Q40,80 64,74" stroke="#d8b26a" stroke-width="4" fill="none" opacity=".7"/>
+      <path d="M70,72 Q72,48 96,44 Q128,40 146,54 Q154,62 146,70 Q120,80 76,78Z" fill="#c9a26a" stroke="${INK}" stroke-width="2.2"/>
+      <path d="M84,74 Q110,68 140,70" stroke="#f0dcb0" stroke-width="5" fill="none" stroke-linecap="round"/>
+      <path d="M100,60 Q112,54 124,58 M92,66 Q112,62 132,64" stroke="#a87a4a" stroke-width="2" fill="none"/>
+      <path d="M128,44 Q140,36 150,46 Q156,56 146,58 Q136,58 128,52Z" fill="#c9a26a" stroke="${INK}" stroke-width="2"/>
+      <circle cx="142" cy="47" r="2.4" fill="${INK}"/><path d="M150,52 l6,-1 M150,54 l6,2" stroke="${INK}" stroke-width="1"/>
+      <path d="M112,48 Q118,40 126,44" stroke="#c63b4f" stroke-width="4" fill="none"/>
+      <path d="M66,58 L112,50" stroke="#7a5230" stroke-width="1.6"/>
+      <ellipse cx="44" cy="74" rx="24" ry="5" fill="#2f55b5" stroke="${INK}" stroke-width="2"/>
+      <path d="M38,72 L36,52 M50,72 L50,52" stroke="#5a3a22" stroke-width="5" stroke-linecap="round"/>
+      <path d="M34,54 Q44,46 54,54 L56,36 Q44,30 34,36Z" fill="#2e73d9" stroke="${INK}" stroke-width="1.8"/>
+      <path d="M54,40 L66,56" stroke="#f5cfa8" stroke-width="4" stroke-linecap="round"/>
+      <circle cx="46" cy="26" r="9" fill="#f8d6b3" stroke="${INK}" stroke-width="1.8"/><path d="M37,26 Q36,14 46,15 Q56,15 55,24 Q48,20 44,22 Q40,20 37,26Z" fill="#e6c160" stroke="${INK}" stroke-width="1.4"/>
+      <path d="M38,22 Q28,24 26,34 Q32,30 38,28" fill="#e6c160" stroke="${INK}" stroke-width="1.2"/><circle cx="50" cy="27" r="1.4" fill="#2e6fbf"/>`, 'sandseal');
+  }
+  function masterCycle(withHero = true) {
+    // the Master Cycle Zero: an ancient Sheikah motorcycle with glowing blue lines and Divine-Beast-style plating
+    const hero = withHero ? `<g class="mc-hero">
+        <path d="M84,46 L96,62 L82,66" stroke="#5a3a22" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M70,28 Q84,22 92,32 L88,50 Q76,54 70,48Z" fill="#2e73d9" stroke="${INK}" stroke-width="1.8"/>
+        <path d="M70,46 h20" stroke="#7a5230" stroke-width="2.4"/>
+        <path d="M88,32 L112,38" stroke="#f5cfa8" stroke-width="5" stroke-linecap="round"/><path d="M88,32 L104,36" stroke="#2e73d9" stroke-width="5" stroke-linecap="round"/>
+        <circle cx="84" cy="18" r="9" fill="#f8d6b3" stroke="${INK}" stroke-width="1.8"/>
+        <path d="M75,18 Q74,6 84,7 Q94,7 93,16 Q86,12 82,14 Q78,12 75,18Z" fill="#e6c160" stroke="${INK}" stroke-width="1.4"/>
+        <path d="M76,14 Q62,14 58,20 Q66,20 76,18" fill="#e6c160" stroke="${INK}" stroke-width="1.2"/><path d="M76,18 L70,12 L78,16Z" fill="#f8d6b3" stroke="${INK}" stroke-width="1"/>
+        <circle cx="89" cy="19" r="1.4" fill="#2e6fbf"/>
+      </g>` : '';
+    const wheel = cx => `<circle cx="${cx}" cy="72" r="15" fill="#2b2f38" stroke="${INK}" stroke-width="2.4"/><circle cx="${cx}" cy="72" r="9" fill="#5a5a50" stroke="${INK}" stroke-width="1.4"/><circle cx="${cx}" cy="72" r="11.5" fill="none" stroke="#3fe0ff" stroke-width="1.6" class="mc-glow"/><circle cx="${cx}" cy="72" r="3" fill="#ff9a2e"/>`;
+    return svg('0 0 160 92', `<ellipse cx="80" cy="88" rx="64" ry="4" fill="#000" opacity=".25"/>
+      ${wheel(36)}${wheel(124)}
+      <path d="M36,72 L58,52 M124,72 L112,38" stroke="#6f6a5c" stroke-width="5" stroke-linecap="round"/>
+      <path d="M40,56 Q50,40 74,42 L104,44 Q118,46 122,56 L110,62 Q80,66 54,64 Z" fill="#b2ab95" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/>
+      <path d="M48,58 Q80,52 112,56" stroke="#3fe0ff" stroke-width="2" fill="none" class="mc-glow"/>
+      <path d="M96,44 Q108,26 122,28 L118,40 Q110,40 104,46Z" fill="#8c8674" stroke="${INK}" stroke-width="2"/>
+      <path d="M104,36 q6,-6 12,-4" stroke="#3fe0ff" stroke-width="1.6" fill="none"/>
+      <path d="M112,30 L118,22" stroke="${INK}" stroke-width="3" stroke-linecap="round"/><circle cx="122" cy="34" r="3" fill="#ff9a2e" stroke="${INK}" stroke-width="1"/>
+      <path d="M40,56 Q28,52 20,58 L30,62 Z" fill="#8c8674" stroke="${INK}" stroke-width="1.8"/>
+      <path d="M62,52 q6,-4 12,0 q-6,4 -12,0z" fill="none" stroke="#ff9a2e" stroke-width="1.4"/><circle cx="68" cy="52" r="1.6" fill="#ff9a2e"/>
+      ${hero}`, 'mastercycle');
+  }
+
+  window.ART = { yunobo, goronBall, sidon, teba, riju, sandSeal, masterCycle, glider, pet, horse, hero, zelda, oldMan, monk, korok, hestu, beedle, goddess, chuchu, keese, bokoblin, moblin, lizalfos, guardianScout, lynel, blight, calamity, darkBeast, icons, beast, worldMap, EL };
 })();

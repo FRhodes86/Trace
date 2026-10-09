@@ -757,3 +757,24 @@ button.opt:active:not(:disabled) { transform: translateY(1px); box-shadow: 0 1px
 .mastery .m-art.locked { filter: brightness(0.2) drop-shadow(0 0 8px #ffd23d); }
 .mastery.won { box-shadow: 0 0 26px rgba(255, 210, 61, 0.6); }
 .mastery-hint { margin: 0 0 8px; padding: 8px 12px; border-radius: var(--r); background: rgba(255, 210, 61, 0.12); border: 1px solid rgba(255, 210, 61, 0.5); font-size: 0.88rem; }
+
+/* ---------- regional activities & Master Cycle ---------- */
+.region-act { display: grid; grid-template-columns: 100px 1fr; gap: 14px; align-items: center; padding: 14px; border-radius: var(--r); margin: 16px 0 0; border-color: var(--c, var(--rune)); }
+.region-act h3 { margin: 0 0 4px; }
+.region-act p { margin: 0 0 8px; font-size: 0.92rem; }
+.region-act .row { justify-content: flex-start; flex-wrap: wrap; gap: 8px; }
+.region-act .ra-art { width: 100px; height: 120px; }
+.region-act .ra-art svg { width: 100%; height: 100%; }
+.region-act.locked .ra-art { filter: grayscale(1) brightness(0.45); }
+.quest.locked-q { opacity: 0.7; border-style: dashed; }
+.mg-page h2 { margin: 4px 0 8px; }
+.mg-stage { width: 100%; max-width: 560px; margin: 0 auto; display: flex; justify-content: center; }
+.mg-stage canvas { display: block; border-radius: var(--r); border: 2px solid var(--edge); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45); touch-action: manipulation; user-select: none; -webkit-user-select: none; }
+.mg-ctrl { display: flex; justify-content: center; gap: 18px; margin: 12px 0; }
+.mg-ctrl .btn { min-width: 96px; font-size: 1.6rem; touch-action: manipulation; }
+.mg-page #act { margin-top: 10px; min-width: 180px; touch-action: manipulation; }
+.npc-stand .mc-art { width: 100%; height: 100%; display: grid; place-items: center; }
+.npc-stand .mc-art svg { width: 100%; }
+.cycle-pin .pin-art.sm svg { width: 100%; height: 100%; }
+.art .mc-glow, .mastercycle .mc-glow { animation: eye 1.2s ease-in-out infinite; }
+@media (max-width: 600px) { .region-act { grid-template-columns: 70px 1fr; } .region-act .ra-art { width: 70px; height: 90px; } }

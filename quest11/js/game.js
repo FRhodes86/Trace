@@ -76,7 +76,7 @@
   }
 
   /* ---------------- Dialogue (BotW-style box with portrait) ---------------- */
-  const PORTRAIT = { Zelda: ART.zelda, 'Old Man': ART.oldMan, Monk: ART.monk, Hestu: ART.hestu, Beedle: ART.beedle, Korok: ART.korok };
+  const PORTRAIT = { Yunobo: ART.yunobo, Sidon: ART.sidon, 'Prince Sidon': ART.sidon, Teba: ART.teba, Riju: ART.riju, Zelda: ART.zelda, 'Old Man': ART.oldMan, Monk: ART.monk, Hestu: ART.hestu, Beedle: ART.beedle, Korok: ART.korok };
   function dialogue(lines, done) {
     const ov = $('#overlay'); ov.className = 'dlg-wrap'; let i = 0; let typing = null; let full = '';
     const show = () => {
@@ -159,7 +159,7 @@
   }
 
   /* =========================================================== MAP */
-  const PINS = { maths: [77, 21], english: [86, 52], verbal: [20, 26], nonverbal: [20, 80], castle: [50, 44], woods: [49, 17], plateau: [50, 79], hateno: [76, 79], blood: [33, 62], stable: [38, 53], house: [89, 70], range: [27, 41], kass: [63, 30] };
+  const PINS = { maths: [77, 21], english: [86, 52], verbal: [20, 26], nonverbal: [20, 80], castle: [50, 44], woods: [49, 17], plateau: [50, 79], hateno: [76, 79], blood: [33, 62], stable: [38, 53], house: [89, 70], range: [27, 41], kass: [63, 30], cycle: [66, 63] };
   function map() {
     const s = S();
     if (!s.flags.introSeen) return intro();
@@ -193,6 +193,7 @@
           <button class="pin small side" style="left:${PINS.house[0]}%;top:${PINS.house[1]}%" id="house"><span class="pin-art sm">${IC.house()}</span><span class="pin-lbl"><b>Hateno House</b></span></button>
           <button class="pin small side" style="left:${PINS.range[0]}%;top:${PINS.range[1]}%" id="range"><span class="pin-art sm">${IC.range()}</span><span class="pin-lbl"><b>Flight Range</b></span></button>
           <button class="pin small side" style="left:${PINS.kass[0]}%;top:${PINS.kass[1]}%" id="kass"><span class="pin-art sm">${IC.kass()}</span><span class="pin-lbl"><b>Kass's Song</b></span></button>
+          ${s.mastered.all ? `<button class="pin small side cycle-pin" style="left:${PINS.cycle[0]}%;top:${PINS.cycle[1]}%" id="cycle"><span class="pin-art sm">${ART.masterCycle(false)}</span><span class="pin-lbl"><b>Master Cycle Run</b></span></button>` : ''}
           ${bloodMoon ? `<button class="pin bloodmoon" style="left:${PINS.blood[0]}%;top:${PINS.blood[1]}%" id="blood"><span class="pin-art sm">🌕</span><span class="pin-lbl"><b>Blood Moon!</b><small>${s.mistakes.length} mistakes return</small></span></button>` : ''}
           <div class="me" id="me" style="left:${here[0]}%;top:${here[1]}%">${ART.hero({ armour: s.armour, shield: s.shield, weapon: s.weapon })}</div>
         </div></div>
@@ -227,7 +228,7 @@
     on('#blood', bloodMoonIntro);
     on('#stable', () => travel('stable', World.stable)); on('#house', () => travel('house', World.house));
     on('#range', () => travel('range', World.archeryIntro)); on('#kass', () => travel('kass', World.kassIntro));
-    on('#quests', World.quests); on('#bag', () => World.bag());
+    on('#quests', World.quests); on('#cycle', () => travel('cycle', Regions.cycleIntro)); on('#bag', () => World.bag());
     on('#claim', () => {
       const bonus = 50 + Math.min(50, s.streak.days * 5);
       s.rupees += bonus; s.seeds++; s.seedsTotal++; s.tickets += 2; s.daily.claimed = true; State.save();
@@ -335,7 +336,8 @@
           <small>${beaten ? `✔ ${r.champion} is free! Rematch?` : unlocked ? `${r.boss} awaits!` : `🔒 Clear Trial 1 everywhere and earn ${need} ★ (${Math.min(stars, need)}/${need})`}</small>
         </button>
         ${nodes}
-      </div>${World.masteryPanel(r)}</div>`, id, id);
+      </div>${Regions.regionPanel(r)}${World.masteryPanel(r)}</div>`, id, id);
+    Regions.bindRegionPanel(r);
     on('#back', map);
     on('[data-t]', (e, el) => shrineScreen(el.dataset.t));
     on('#boss', () => (unlocked ? bossPrep(r) : toast(`Earn ${need} ★ in ${r.name} to board the Divine Beast.`)));
@@ -1090,6 +1092,6 @@
 
   // free static hosts like Netlify can overlay a badge in the bottom corner
   if (/netlify\.app$|netlify\.com$/.test(location.hostname)) document.documentElement.classList.add('host-badge');
-  window.Game = { title, map, statue, ui: { screen, on, onKey, hud, toast, confetti, dialogue, modal, sequence, gainXp, heartsHtml, heroArt, speak, addInterval: id => intervals.push(id) } };
+  window.Game = { title, map, statue, regionScreen, ui: { screen, on, onKey, hud, toast, confetti, dialogue, modal, sequence, gainXp, heartsHtml, heroArt, speak, addInterval: id => intervals.push(id) } };
   title();
 })();

@@ -50,7 +50,7 @@
     if (r.theme) { if (!s.ownedThemes.includes(r.theme)) s.ownedThemes.push(r.theme); if (r.theme === 'triforce') { s.theme = 'triforce'; applyTheme(); } const A = K.THEMES.find(x => x.id === r.theme); steps.push(n => FX.itemGet(`<span class="emo big">${A.emoji}</span>`, `New Sheikah Slate colour: ${A.name}!`, 'Choose it in the shop\'s Style tab.', n)); }
     if (r.weapon) { if (!s.ownedWeapons.includes(r.weapon)) s.ownedWeapons.push(r.weapon); s.weapon = r.weapon; const A = K.WEAPONS.find(x => x.id === r.weapon); steps.push(n => FX.itemGet(`<div class="pet-get">${ART.hero({ armour: s.armour, shield: s.shield, weapon: r.weapon })}</div>`, `You got the ${A.name}!`, `${A.desc} Boss damage: ${A.dmg}.`, n)); }
     if (r.shield) { if (!s.ownedShields.includes(r.shield)) s.ownedShields.push(r.shield); s.shield = r.shield; const A = K.SHIELDS.find(x => x.id === r.shield); steps.push(n => FX.itemGet(`<div class="pet-get">${ART.hero({ armour: s.armour, shield: r.shield, weapon: s.weapon })}</div>`, `You got the ${A.name}!`, A.desc, n)); }
-    if (r.relic) { const A = K.RELICS[r.relic]; steps.push(n => FX.itemGet(`<span class="emo big">${A.emoji}</span>`, `You got the ${A.name}!`, A.desc, n)); }
+    if (r.relic) { const A = K.RELICS[r.relic]; steps.push(n => FX.itemGet(A.art ? `<div class="pet-get wide">${ART[A.art]()}</div>` : `<span class="emo big">${A.emoji}</span>`, `You got the ${A.name}!`, A.desc, n)); }
     if (r.glider) { if (!s.ownedGliders.includes(r.glider)) s.ownedGliders.push(r.glider); s.glider = r.glider; const A = K.GLIDERS.find(x => x.id === r.glider); steps.push(n => FX.itemGet(`<div class="pet-get wide">${ART.glider(r.glider)}</div>`, `You got ${A.name}!`, 'You\'ll see it every time you fly across the map.', n)); }
     if (r.decor) { if (!s.house.decor.includes(r.decor)) s.house.decor.push(r.decor); const A = K.DECOR.find(x => x.id === r.decor); steps.push(n => FX.itemGet(`<span class="emo big">${A.emoji}</span>`, `${A.name} for your house!`, s.house.owned ? '' : 'It will appear once you own the Hateno house.', n)); }
     State.save(); return steps;
@@ -475,10 +475,12 @@
   /* ---------------- SIDE QUESTS ---------------- */
   function quests() {
     const s = S(); const { screen, hud, on, sequence } = UI();
-    const list = K.QUESTS.map(q => { const v = State.questValue(q.goal[0]); const done = v >= q.goal[1]; const claimed = s.quests[q.id]; return { q, v: Math.min(v, q.goal[1]), done, claimed }; })
+    const lockedRegions = STORY.regions.filter(r => !s.bosses[r.id]);
+    const list = K.QUESTS.filter(q => State.questOpen(q)).map(q => { const v = State.questValue(q.goal[0]); const done = v >= q.goal[1]; const claimed = s.quests[q.id]; return { q, v: Math.min(v, q.goal[1]), done, claimed }; })
       .sort((a, b) => (a.claimed - b.claimed) || (b.done - a.done));
     const rewardTxt = r => [r.rupees && `${fmt(r.rupees)} rupees`, r.tickets && `${r.tickets} tickets`, r.armour && K.ARMOUR.find(x => x.id === r.armour).name, r.saddle && K.SADDLES.find(x => x.id === r.saddle).name, r.pet && 'companion: ' + K.PETS.find(x => x.id === r.pet).name, r.theme && 'Slate colour: ' + K.THEMES.find(x => x.id === r.theme).name, r.decor && K.DECOR.find(x => x.id === r.decor).name, r.item && Object.keys(r.item).map(k => K.ITEMS.find(x => x.id === k).name).join(', '), r.ingredient && Object.keys(r.ingredient).map(k => ING(k).name).join(', ')].filter(Boolean).join(' · ');
     screen(`${hud()}<div class="page"><div class="page-head">${back()}<h2>Side Quests</h2><span class="pill">${Object.keys(s.quests).length}/${K.QUESTS.length} done</span></div>
+      ${lockedRegions.map(r => `<div class="quest slate locked-q"><span class="q-ico">🔒</span><div><h3>${r.name}</h3><p class="muted">Free ${r.beast} to meet the locals and unlock their quests and mini-game.</p></div></div>`).join('')}
       <div class="quests">${list.map(({ q, v, done, claimed }) => `<div class="quest slate ${claimed ? 'claimed' : done ? 'ready' : ''}">
         <span class="q-ico">${q.icon}</span><div><h3>${q.title}</h3><p><b>${q.npc}:</b> "${q.text}"</p>
         <div class="bar"><i style="width:${(v / q.goal[1]) * 100}%"></i></div><small class="muted">${fmt(v)}/${fmt(q.goal[1])} · Reward: ${rewardTxt(q.reward)}</small></div>
@@ -515,6 +517,6 @@
     });
   }
 
-  window.World = { checkMastery, masteryPanel, masteryProgress, applyTheme, shop, bag, kitchen, stable, wildField, archeryIntro, kassIntro, leafIntro, house, quests, fairy, trialDrops, grant, mealInfo };
+  window.World = { ticketGate, checkMastery, masteryPanel, masteryProgress, applyTheme, shop, bag, kitchen, stable, wildField, archeryIntro, kassIntro, leafIntro, house, quests, fairy, trialDrops, grant, mealInfo };
   if (S()) applyTheme();
 })();

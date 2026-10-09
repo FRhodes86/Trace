@@ -97,6 +97,13 @@ The hero (named by the player, default "Link") wakes on the Great Plateau and ha
   - **Gerudo Desert:** Urbosa's Scimitar of the Seven, the Daybreaker shield and a Vah Naboris model.
   - **All four regions:** the Triforce for the house, the Triforce Radiance slate colour and the Hero's Golden paraglider.
   - Each region also gives a 1,000-rupee bonus, and the full set gives 5,000.
+- **Free a Divine Beast to open up its region.** New mini-games (paid with Adventure Tickets) and local side quests appear on the region screen:
+  - **Death Mountain:** Yunobo's Rock Roll. Roll down the mountain dodging lava boulders and grabbing gems.
+  - **Zora's Domain:** Zora Fishing with Prince Sidon. Ignore the nibbles and reel in on the bite. Your catch goes into your Bag for cooking.
+  - **Rito Village:** Snowball Bowling with Teba. Time your aim, and the pins are knocked down with real physics.
+  - **Gerudo Desert:** Sand Seal Rally with Riju. Surf through flag gates to earn more time.
+  - Each region also brings quests from Yunobo and Bludo, Sidon and King Dorephan, Teba and Elder Kaneli, and Riju and Buliara. Rewards include house trophies and rare ingredients.
+- **Master Cycle Zero:** 3-star every shrine in Hyrule to win the final Divine Beast. The **Master Cycle Run** appears on the map: jump boulders and Bokoblins and collect rupees. Rides are free, and rupee prizes cover the first 3 rides each day.
 - **22 side quests** from Hudson, Sidon, Yunobo, Teba, Riju, Kass, Purah, Beedle and others. Rewards include armour sets, companions, saddles, colour themes and decor.
 - **Great Fairy Fountain** (next to the Goddess Statue): upgrade armour up to ★★★★ with rupees and monster parts, which boosts its perks.
 - **Spirit Orbs** (first clear of each shrine) can be swapped at the Goddess Statue: 4 orbs make a Heart Container or a Stamina Vessel.
@@ -140,6 +147,7 @@ quest11/
   js/catalog.js         every ownable thing: gear, items, ingredients, recipes, cosmetics, decor, horses, side quests
   js/game.js            screens, battle engine, story
   js/world.js           side content: shop, bag, cooking, horses, mini-games, house, side quests, Great Fairy
+  js/regions.js         regional mini-games unlocked by freeing each Divine Beast, and the Master Cycle Run (canvas)
   tools/test-content.js stress-tests every generator: node tools/test-content.js 1000
   tools/build-wordbank.js  rebuilds wordbank.js (needs `npm i wordlist-english`)
   tools/bundle.js       builds dist/breath-of-knowledge.html

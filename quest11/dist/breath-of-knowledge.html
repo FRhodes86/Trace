@@ -767,6 +767,27 @@ button.opt:active:not(:disabled) { transform: translateY(1px); box-shadow: 0 1px
 .mastery .m-art.locked { filter: brightness(0.2) drop-shadow(0 0 8px #ffd23d); }
 .mastery.won { box-shadow: 0 0 26px rgba(255, 210, 61, 0.6); }
 .mastery-hint { margin: 0 0 8px; padding: 8px 12px; border-radius: var(--r); background: rgba(255, 210, 61, 0.12); border: 1px solid rgba(255, 210, 61, 0.5); font-size: 0.88rem; }
+
+/* ---------- regional activities & Master Cycle ---------- */
+.region-act { display: grid; grid-template-columns: 100px 1fr; gap: 14px; align-items: center; padding: 14px; border-radius: var(--r); margin: 16px 0 0; border-color: var(--c, var(--rune)); }
+.region-act h3 { margin: 0 0 4px; }
+.region-act p { margin: 0 0 8px; font-size: 0.92rem; }
+.region-act .row { justify-content: flex-start; flex-wrap: wrap; gap: 8px; }
+.region-act .ra-art { width: 100px; height: 120px; }
+.region-act .ra-art svg { width: 100%; height: 100%; }
+.region-act.locked .ra-art { filter: grayscale(1) brightness(0.45); }
+.quest.locked-q { opacity: 0.7; border-style: dashed; }
+.mg-page h2 { margin: 4px 0 8px; }
+.mg-stage { width: 100%; max-width: 560px; margin: 0 auto; display: flex; justify-content: center; }
+.mg-stage canvas { display: block; border-radius: var(--r); border: 2px solid var(--edge); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45); touch-action: manipulation; user-select: none; -webkit-user-select: none; }
+.mg-ctrl { display: flex; justify-content: center; gap: 18px; margin: 12px 0; }
+.mg-ctrl .btn { min-width: 96px; font-size: 1.6rem; touch-action: manipulation; }
+.mg-page #act { margin-top: 10px; min-width: 180px; touch-action: manipulation; }
+.npc-stand .mc-art { width: 100%; height: 100%; display: grid; place-items: center; }
+.npc-stand .mc-art svg { width: 100%; }
+.cycle-pin .pin-art.sm svg { width: 100%; height: 100%; }
+.art .mc-glow, .mastercycle .mc-glow { animation: eye 1.2s ease-in-out infinite; }
+@media (max-width: 600px) { .region-act { grid-template-columns: 70px 1fr; } .region-act .ra-art { width: 70px; height: 90px; } }
 </style>
 </head>
 <body>
@@ -4004,7 +4025,142 @@ Symin`,
     </svg>`;
   }
 
-  window.ART = { glider, pet, horse, hero, zelda, oldMan, monk, korok, hestu, beedle, goddess, chuchu, keese, bokoblin, moblin, lizalfos, guardianScout, lynel, blight, calamity, darkBeast, icons, beast, worldMap, EL };
+
+  /* ======================= REGIONAL CHARACTERS ======================= */
+  function yunobo() {
+    // young Goron: round rocky back, pale belly, white tuft of hair, big friendly grin, yellow scarf
+    const g = id('yb');
+    return svg('0 0 120 150', `<defs>${lg(g, '#d9a26a', '#a8703e')}</defs>${shadow(60, 145, 36)}
+      <g class="h-body">
+        <path d="M38,120 l-4,22 h16 l2,-20 M82,120 l4,22 h-16 l-2,-20" fill="url(#${g})" stroke="${INK}" stroke-width="2"/>
+        <path d="M20,96 Q18,58 60,52 Q102,58 100,96 Q98,128 60,130 Q22,128 20,96Z" fill="url(#${g})" stroke="${INK}" stroke-width="2.4"/>
+        <path d="M34,98 Q60,84 86,98 Q84,124 60,126 Q36,124 34,98Z" fill="#f0d0a8" stroke="${INK}" stroke-width="1.6"/>
+        <path d="M44,104 q16,6 32,0 M46,114 q14,5 28,0" stroke="#c99a6a" stroke-width="1.6" fill="none"/>
+        <path d="M20,90 Q8,96 10,112 Q16,118 24,112 M100,90 Q112,96 110,112 Q104,118 96,112" fill="url(#${g})" stroke="${INK}" stroke-width="2"/>
+        <path d="M36,80 Q60,92 84,80 L80,88 Q60,98 40,88Z" fill="#f2c14e" stroke="${INK}" stroke-width="1.6"/>
+        <ellipse cx="60" cy="54" rx="26" ry="22" fill="url(#${g})" stroke="${INK}" stroke-width="2.2"/>
+        <path d="M44,34 Q48,18 60,22 Q66,10 74,20 Q84,18 80,36 Q68,30 60,32 Q50,30 44,34Z" fill="#f4f2ea" stroke="${INK}" stroke-width="1.8"/>
+        <path d="M46,48 q5,-4 10,0 M64,48 q5,-4 10,0" stroke="#5a3a22" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <circle cx="51" cy="53" r="3.4" fill="${INK}"/><circle cx="69" cy="53" r="3.4" fill="${INK}"/><circle cx="52" cy="52" r="1" fill="#fff"/><circle cx="70" cy="52" r="1" fill="#fff"/>
+        <path d="M58,58 q2,2 4,0" stroke="#7a4a22" stroke-width="2" fill="none"/>
+        <path d="M46,64 Q60,76 74,64 Q60,70 46,64Z" fill="#7a2a1a" stroke="${INK}" stroke-width="1.6"/>
+        <path d="M36,62 l-6,-2 M84,62 l6,-2" stroke="#7a4a22" stroke-width="2"/>
+      </g>`, 'npc yunobo');
+  }
+  function goronBall() {
+    // a Goron curled up for rolling: knobbly rock shell with a peek of tan belly
+    return svg('0 0 100 100', `<circle cx="50" cy="52" r="42" fill="#a8703e" stroke="${INK}" stroke-width="3"/>
+      <path d="M22,30 l6,-10 l6,8 M44,14 l6,-8 l6,8 M66,18 l8,-6 l4,10 M80,40 l10,-2 l-4,10 M16,56 l-8,2 l6,8" fill="#8a5a2b" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>
+      <path d="M30,44 q8,-8 16,0 M54,36 q8,-8 16,0 M40,64 q8,-8 16,0" stroke="#8a5a2b" stroke-width="3" fill="none"/>
+      <path d="M30,74 Q50,92 70,74 Q50,84 30,74Z" fill="#f0d0a8" stroke="${INK}" stroke-width="1.6"/>
+      <path d="M40,22 q10,-6 20,0" stroke="#f4f2ea" stroke-width="5" stroke-linecap="round"/>`, 'ball');
+  }
+  function sidon() {
+    // the Zora prince: red shark-like head fin, white chest, big confident grin
+    const g = id('sd');
+    return svg('0 0 120 150', `<defs>${lg(g, '#ff5a4a', '#c2302a')}</defs>${shadow(60, 145, 28)}
+      <g class="h-body">
+        <path d="M48,112 l-2,30 h12 l2,-30 M66,112 l2,30 h12 l-4,-30" fill="url(#${g})" stroke="${INK}" stroke-width="2"/>
+        <path d="M40,72 Q60,62 80,72 L82,116 Q60,122 38,116 Z" fill="url(#${g})" stroke="${INK}" stroke-width="2.2"/>
+        <path d="M48,74 Q60,104 72,74 Q60,80 48,74Z" fill="#f4f2ea" stroke="${INK}" stroke-width="1.4"/>
+        <path d="M44,76 Q60,86 76,76" stroke="#c9a227" stroke-width="3" fill="none"/><circle cx="60" cy="82" r="3" fill="#3fe0ff" stroke="${INK}" stroke-width="1"/>
+        <path d="M40,76 Q30,92 34,106 M80,76 Q90,92 86,106" stroke="${INK}" stroke-width="8" stroke-linecap="round" fill="none"/><path d="M40,76 Q30,92 34,106 M80,76 Q90,92 86,106" stroke="#ff5a4a" stroke-width="5.5" stroke-linecap="round" fill="none"/>
+        <path d="M60,22 Q90,24 104,60 Q90,52 82,58 Q78,46 66,46Z" fill="url(#${g})" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/>
+        <ellipse cx="60" cy="48" rx="18" ry="20" fill="url(#${g})" stroke="${INK}" stroke-width="2.2"/>
+        <path d="M46,56 Q60,66 74,56 Q66,62 60,62 Q54,62 46,56Z" fill="#f4f2ea" stroke="${INK}" stroke-width="1.4"/>
+        <path d="M48,56 l2,4 l2,-3 l2,3 l2,-3 l2,3 l2,-3 l2,3 l2,-3 l2,3 l2,-4" stroke="${INK}" stroke-width=".9" fill="none"/>
+        <ellipse cx="53" cy="45" rx="3.2" ry="3.8" fill="#ffe17a" stroke="${INK}" stroke-width="1"/><ellipse cx="67" cy="45" rx="3.2" ry="3.8" fill="#ffe17a" stroke="${INK}" stroke-width="1"/>
+        <circle cx="53" cy="45.5" r="1.8" fill="${INK}"/><circle cx="67" cy="45.5" r="1.8" fill="${INK}"/>
+        <path d="M42,44 L32,38 L42,52Z M78,44 L88,38 L78,52Z" fill="#f4f2ea" stroke="${INK}" stroke-width="1.4"/>
+      </g>`, 'npc sidon');
+  }
+  function teba() {
+    // Rito warrior: white-and-grey feathered bird-man, yellow beak, red scarf, bow on his back
+    return svg('0 0 120 150', `${shadow(60, 145, 28)}
+      <g class="h-body">
+        <path d="M84,40 Q108,80 86,124" stroke="#7a5230" stroke-width="3" fill="none"/><path d="M84,40 L86,124" stroke="#e8e0c8" stroke-width="1"/>
+        <path d="M48,116 l-4,26 h4 l2,-4 l2,4 h4 l0,-26 M68,116 l2,26 h4 l2,-4 l2,4 h4 l-4,-26" fill="#f2b33a" stroke="${INK}" stroke-width="1.6"/>
+        <path d="M38,74 Q60,62 82,74 L86,118 Q60,126 34,118 Z" fill="#e8eef6" stroke="${INK}" stroke-width="2.2"/>
+        <path d="M44,84 l6,6 l6,-6 l6,6 l6,-6 l6,6 M42,98 l6,6 l6,-6 l6,6 l6,-6 l6,6 l6,-6" stroke="#9aa6b5" stroke-width="1.4" fill="none"/>
+        <path d="M34,78 Q16,96 20,118 Q30,108 40,104 Z M86,78 Q104,96 100,118 Q90,108 80,104 Z" fill="#c8d0dc" stroke="${INK}" stroke-width="2"/>
+        <path d="M42,72 Q60,82 78,72 L76,80 Q60,88 44,80Z" fill="#c63b4f" stroke="${INK}" stroke-width="1.6"/>
+        <ellipse cx="60" cy="50" rx="18" ry="20" fill="#f4f6fa" stroke="${INK}" stroke-width="2.2"/>
+        <path d="M44,40 Q48,22 60,28 Q70,18 78,32 Q86,30 80,46 Q70,38 60,40 Q52,38 44,40Z" fill="#5a6476" stroke="${INK}" stroke-width="1.8"/>
+        <path d="M74,28 Q88,20 96,26 Q86,30 80,36" fill="#5a6476" stroke="${INK}" stroke-width="1.6"/>
+        <path d="M46,48 q5,-3 9,0 M65,48 q5,-3 9,0" stroke="#c63b4f" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+        <circle cx="51" cy="52" r="2.8" fill="${INK}"/><circle cx="69" cy="52" r="2.8" fill="${INK}"/>
+        <path d="M54,58 L60,72 L66,58 Q60,55 54,58Z" fill="#f2b33a" stroke="${INK}" stroke-width="1.6" stroke-linejoin="round"/>
+      </g>`, 'npc teba');
+  }
+  function riju() {
+    // the young Gerudo chief: bright red hair in a topknot, golden circlet and jewellery, deep blue and white outfit
+    const g = id('rj');
+    return svg('0 0 120 150', `<defs>${lg(g, '#ff7a4a', '#c2381c')}</defs>${shadow(60, 145, 26)}
+      <g class="h-body">
+        <path d="M48,112 Q46,126 46,142 h12 l2,-30 M64,112 l2,30 h12 q0,-16 -2,-30" fill="#f4f2ea" stroke="${INK}" stroke-width="2"/>
+        <path d="M44,138 h14 v6 h-14z M64,138 h14 v6 h-14z" fill="#c9a227" stroke="${INK}" stroke-width="1.4"/>
+        <path d="M44,96 Q60,92 76,96 L80,116 Q60,122 40,116 Z" fill="#2b3f8a" stroke="${INK}" stroke-width="2"/>
+        <path d="M42,100 h36" stroke="#c9a227" stroke-width="3"/>
+        <path d="M46,72 Q60,66 74,72 L76,90 Q60,94 44,90Z" fill="#2b3f8a" stroke="${INK}" stroke-width="2"/>
+        <path d="M46,90 Q60,96 74,90 L74,98 Q60,100 46,98Z" fill="#9a6a42" stroke="${INK}" stroke-width="1.4"/>
+        <path d="M46,74 Q36,90 40,104 M74,74 Q84,90 80,104" stroke="${INK}" stroke-width="7" stroke-linecap="round" fill="none"/><path d="M46,74 Q36,90 40,104 M74,74 Q84,90 80,104" stroke="#9a6a42" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+        <path d="M37,92 h6 M77,92 h6" stroke="#c9a227" stroke-width="3"/>
+        <path d="M44,40 Q40,22 60,18 Q80,22 76,40 Q72,30 60,30 Q48,30 44,40Z" fill="url(#${g})" stroke="${INK}" stroke-width="2"/>
+        <path d="M52,18 Q56,2 66,4 Q74,10 68,20 Q62,14 52,18Z" fill="url(#${g})" stroke="${INK}" stroke-width="1.8"/>
+        <ellipse cx="60" cy="46" rx="15" ry="17" fill="#9a6a42" stroke="${INK}" stroke-width="2.2"/>
+        <path d="M45,32 Q60,26 75,32" stroke="#c9a227" stroke-width="3" fill="none"/><path d="M57,30 l3,-6 l3,6z" fill="#3fe0ff" stroke="${INK}" stroke-width=".8"/>
+        <path d="M44,40 Q40,56 46,66 M76,40 Q80,56 74,66" stroke="#c2381c" stroke-width="4" fill="none" stroke-linecap="round"/>
+        <ellipse cx="54" cy="47" rx="2.6" ry="3.4" fill="#fff"/><ellipse cx="66" cy="47" rx="2.6" ry="3.4" fill="#fff"/><circle cx="54.4" cy="47.4" r="1.8" fill="#3b8d4f"/><circle cx="66.4" cy="47.4" r="1.8" fill="#3b8d4f"/>
+        <path d="M51,42 q3,-1.6 6,0 M63,42 q3,-1.6 6,0" stroke="#5a2a1a" stroke-width="1.4" fill="none"/>
+        <path d="M56,55 q4,2 8,0" stroke="#5a2a1a" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+        <circle cx="45" cy="52" r="2" fill="#c9a227"/><circle cx="75" cy="52" r="2" fill="#c9a227"/>
+      </g>`, 'npc riju');
+  }
+  function sandSeal() {
+    // a sand seal towing Link on his shield, seen from the side
+    return svg('0 0 160 90', `<ellipse cx="80" cy="82" rx="70" ry="6" fill="#000" opacity=".22"/>
+      <path d="M8,74 Q40,80 64,74" stroke="#d8b26a" stroke-width="4" fill="none" opacity=".7"/>
+      <path d="M70,72 Q72,48 96,44 Q128,40 146,54 Q154,62 146,70 Q120,80 76,78Z" fill="#c9a26a" stroke="${INK}" stroke-width="2.2"/>
+      <path d="M84,74 Q110,68 140,70" stroke="#f0dcb0" stroke-width="5" fill="none" stroke-linecap="round"/>
+      <path d="M100,60 Q112,54 124,58 M92,66 Q112,62 132,64" stroke="#a87a4a" stroke-width="2" fill="none"/>
+      <path d="M128,44 Q140,36 150,46 Q156,56 146,58 Q136,58 128,52Z" fill="#c9a26a" stroke="${INK}" stroke-width="2"/>
+      <circle cx="142" cy="47" r="2.4" fill="${INK}"/><path d="M150,52 l6,-1 M150,54 l6,2" stroke="${INK}" stroke-width="1"/>
+      <path d="M112,48 Q118,40 126,44" stroke="#c63b4f" stroke-width="4" fill="none"/>
+      <path d="M66,58 L112,50" stroke="#7a5230" stroke-width="1.6"/>
+      <ellipse cx="44" cy="74" rx="24" ry="5" fill="#2f55b5" stroke="${INK}" stroke-width="2"/>
+      <path d="M38,72 L36,52 M50,72 L50,52" stroke="#5a3a22" stroke-width="5" stroke-linecap="round"/>
+      <path d="M34,54 Q44,46 54,54 L56,36 Q44,30 34,36Z" fill="#2e73d9" stroke="${INK}" stroke-width="1.8"/>
+      <path d="M54,40 L66,56" stroke="#f5cfa8" stroke-width="4" stroke-linecap="round"/>
+      <circle cx="46" cy="26" r="9" fill="#f8d6b3" stroke="${INK}" stroke-width="1.8"/><path d="M37,26 Q36,14 46,15 Q56,15 55,24 Q48,20 44,22 Q40,20 37,26Z" fill="#e6c160" stroke="${INK}" stroke-width="1.4"/>
+      <path d="M38,22 Q28,24 26,34 Q32,30 38,28" fill="#e6c160" stroke="${INK}" stroke-width="1.2"/><circle cx="50" cy="27" r="1.4" fill="#2e6fbf"/>`, 'sandseal');
+  }
+  function masterCycle(withHero = true) {
+    // the Master Cycle Zero: an ancient Sheikah motorcycle with glowing blue lines and Divine-Beast-style plating
+    const hero = withHero ? `<g class="mc-hero">
+        <path d="M84,46 L96,62 L82,66" stroke="#5a3a22" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M70,28 Q84,22 92,32 L88,50 Q76,54 70,48Z" fill="#2e73d9" stroke="${INK}" stroke-width="1.8"/>
+        <path d="M70,46 h20" stroke="#7a5230" stroke-width="2.4"/>
+        <path d="M88,32 L112,38" stroke="#f5cfa8" stroke-width="5" stroke-linecap="round"/><path d="M88,32 L104,36" stroke="#2e73d9" stroke-width="5" stroke-linecap="round"/>
+        <circle cx="84" cy="18" r="9" fill="#f8d6b3" stroke="${INK}" stroke-width="1.8"/>
+        <path d="M75,18 Q74,6 84,7 Q94,7 93,16 Q86,12 82,14 Q78,12 75,18Z" fill="#e6c160" stroke="${INK}" stroke-width="1.4"/>
+        <path d="M76,14 Q62,14 58,20 Q66,20 76,18" fill="#e6c160" stroke="${INK}" stroke-width="1.2"/><path d="M76,18 L70,12 L78,16Z" fill="#f8d6b3" stroke="${INK}" stroke-width="1"/>
+        <circle cx="89" cy="19" r="1.4" fill="#2e6fbf"/>
+      </g>` : '';
+    const wheel = cx => `<circle cx="${cx}" cy="72" r="15" fill="#2b2f38" stroke="${INK}" stroke-width="2.4"/><circle cx="${cx}" cy="72" r="9" fill="#5a5a50" stroke="${INK}" stroke-width="1.4"/><circle cx="${cx}" cy="72" r="11.5" fill="none" stroke="#3fe0ff" stroke-width="1.6" class="mc-glow"/><circle cx="${cx}" cy="72" r="3" fill="#ff9a2e"/>`;
+    return svg('0 0 160 92', `<ellipse cx="80" cy="88" rx="64" ry="4" fill="#000" opacity=".25"/>
+      ${wheel(36)}${wheel(124)}
+      <path d="M36,72 L58,52 M124,72 L112,38" stroke="#6f6a5c" stroke-width="5" stroke-linecap="round"/>
+      <path d="M40,56 Q50,40 74,42 L104,44 Q118,46 122,56 L110,62 Q80,66 54,64 Z" fill="#b2ab95" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/>
+      <path d="M48,58 Q80,52 112,56" stroke="#3fe0ff" stroke-width="2" fill="none" class="mc-glow"/>
+      <path d="M96,44 Q108,26 122,28 L118,40 Q110,40 104,46Z" fill="#8c8674" stroke="${INK}" stroke-width="2"/>
+      <path d="M104,36 q6,-6 12,-4" stroke="#3fe0ff" stroke-width="1.6" fill="none"/>
+      <path d="M112,30 L118,22" stroke="${INK}" stroke-width="3" stroke-linecap="round"/><circle cx="122" cy="34" r="3" fill="#ff9a2e" stroke="${INK}" stroke-width="1"/>
+      <path d="M40,56 Q28,52 20,58 L30,62 Z" fill="#8c8674" stroke="${INK}" stroke-width="1.8"/>
+      <path d="M62,52 q6,-4 12,0 q-6,4 -12,0z" fill="none" stroke="#ff9a2e" stroke-width="1.4"/><circle cx="68" cy="52" r="1.6" fill="#ff9a2e"/>
+      ${hero}`, 'mastercycle');
+  }
+
+  window.ART = { yunobo, goronBall, sidon, teba, riju, sandSeal, masterCycle, glider, pet, horse, hero, zelda, oldMan, monk, korok, hestu, beedle, goddess, chuchu, keese, bokoblin, moblin, lizalfos, guardianScout, lynel, blight, calamity, darkBeast, icons, beast, worldMap, EL };
 })();
 </script>
 <script>
@@ -4628,6 +4784,12 @@ Symin`,
     { id: 'm-medoh', name: 'Vah Medoh Model', emoji: '🦅', price: null, mastery: 'verbal', x: 8, y: 20 },
     { id: 'm-naboris', name: 'Vah Naboris Model', emoji: '🐪', price: null, mastery: 'nonverbal', x: 92, y: 18 },
     { id: 'm-triforce', name: 'The Triforce', emoji: '🔺', price: null, mastery: 'all', x: 60, y: 50 },
+    // Regional trophies from the Divine Beast regions' side quests
+    { id: 'goronruby', name: 'Goron Ruby Statue', emoji: '💎', price: null, x: 14, y: 54 },
+    { id: 'zorafountain', name: 'Zora Fountain', emoji: '⛲', price: null, x: 86, y: 86 },
+    { id: 'ritochime', name: 'Rito Wind Chime', emoji: '🎐', price: null, x: 64, y: 8 },
+    { id: 'sealfigure', name: 'Sand Seal Figurine', emoji: '🦭', price: null, x: 30, y: 86 },
+    { id: 'cycletrophy', name: 'Master Cycle Trophy', emoji: '🏍️', price: null, x: 40, y: 64 },
     { id: 'goldstatue', name: 'Golden Hero Statue', emoji: '🏅', price: 6000, x: 50, y: 46, desc: 'A shining statue of you. Only true heroes can afford it!' },
   ];
 
@@ -4654,10 +4816,11 @@ Symin`,
       lines: [['Revali', 'Three stars in every shrine around Rito Village? Hmph. I suppose even I must admit… that\'s impressive.'], ['Revali', 'Take my Great Eagle Bow, and a paraglider made with my colours. Try not to embarrass me.']] },
     nonverbal: { champion: 'Urbosa', title: 'Champion of the Gerudo Desert', reward: { weapon: 'scimitar', shield: 'daybreaker', decor: 'm-naboris', rupees: 1000 },
       lines: [['Urbosa', 'Every shrine in the desert, all three stars. Now THAT is the mark of a true warrior, little one.'], ['Urbosa', 'The Scimitar of the Seven and the Daybreaker are the pride of the Gerudo. Today, they are yours.']] },
-    all: { champion: 'Zelda', title: 'Hero of Hyrule', reward: { theme: 'triforce', glider: 'golden', decor: 'm-triforce', rupees: 5000 },
-      lines: [['Zelda', 'You did it… three stars in every shrine, in every corner of Hyrule. No hero has ever done this before.'], ['Zelda', 'The goddess has chosen to reward you with the Triforce itself. Wear its light with pride!']] },
+    all: { champion: 'Zelda', title: 'Hero of Hyrule', reward: { relic: 'mastercycle', theme: 'triforce', glider: 'golden', decor: 'm-triforce', rupees: 5000 },
+      lines: [['Zelda', 'You did it… three stars in every shrine, in every corner of Hyrule. No hero has ever done this before.'], ['Zelda', 'The goddess has chosen to reward you with the Triforce itself. Wear its light with pride!'], ['Zelda', 'And one more thing… the Master Cycle Zero, the final Divine Beast. Ride it anywhere in Hyrule!']] },
   };
   C.RELICS = {
+    mastercycle: { name: 'Master Cycle Zero', emoji: '🏍️', art: 'masterCycle', desc: 'The final Divine Beast: an ancient Sheikah motorcycle! Find the Master Cycle Run on the map.' },
     eaglebow: { name: 'Great Eagle Bow', emoji: '🏹', desc: 'Revali\'s bow. Every boss battle starts with 3 free Bomb Arrows.' },
   };
 
@@ -4685,6 +4848,16 @@ Symin`,
     { id: 'q-house', npc: 'Hudson', icon: '🏠', title: 'Home Sweet Home', text: 'Buy the house in Hateno Village!', goal: ['house', 1], reward: { rupees: 200, decor: 'bed' } },
     { id: 'q-bond', npc: 'Stable Master', icon: '💞', title: 'Best Friends', text: 'Raise any horse to full bond (5 hearts).', goal: ['maxBond', 5], reward: { rupees: 300, ingredient: { carrot: 5 } } },
     { id: 'q-spend', npc: 'Beedle', icon: '💰', title: 'Big Spender', text: 'Spend 3,000 rupees in my shop. Thank you! Please come again!', goal: ['spent', 3000], reward: { rupees: 500, pet: 'dog' } },
+    // Regional quests: these NPCs only appear once that region's Divine Beast is free (region: subject id, or 'all' for the Master Cycle)
+    { id: 'q-rockroll', region: 'maths', npc: 'Yunobo', icon: '🪨', title: 'Roll, Goro, Roll!', text: 'Goro! Collect 30 gems in one run of my Rock Roll down Death Mountain!', goal: ['rockBest', 30], reward: { rupees: 300, tickets: 3, decor: 'goronruby' } },
+    { id: 'q-bludo', region: 'maths', npc: 'Bludo', icon: '⛏️', title: 'The Boss\'s Sums', text: 'The Gorons need sharp miners! Answer 40 Maths questions correctly in Master (★★★) trials.', goal: ['m_maths', 40], reward: { rupees: 600, ingredient: { pepper: 5, truffle: 3 } } },
+    { id: 'q-fishing', region: 'english', npc: 'Sidon', icon: '🎣', title: 'A Splendid Catch', text: 'My friend! Catch 15 fish in the reservoir. I believe in you!', goal: ['fishCaught', 15], reward: { rupees: 300, tickets: 3, decor: 'zorafountain' } },
+    { id: 'q-dorephan', region: 'english', npc: 'King Dorephan', icon: '👑', title: 'The King\'s Library', text: 'Answer 40 English questions correctly in Master (★★★) trials, young hero.', goal: ['m_english', 40], reward: { rupees: 600, ingredient: { salmon: 5, crab: 3 } } },
+    { id: 'q-bowling', region: 'verbal', npc: 'Teba', icon: '☃️', title: 'Snowball Strikes', text: 'Bowl 3 strikes at the Snowball Bowling lane. Show me your aim!', goal: ['strikes', 3], reward: { rupees: 300, tickets: 3, decor: 'ritochime' } },
+    { id: 'q-kaneli', region: 'verbal', npc: 'Elder Kaneli', icon: '🪶', title: 'Riddles of the Elder', text: 'Answer 40 Verbal Reasoning questions correctly in Master (★★★) trials.', goal: ['m_verbal', 40], reward: { rupees: 600, ingredient: { bird: 5, egg: 3 } } },
+    { id: 'q-sealrally', region: 'nonverbal', npc: 'Riju', icon: '🦭', title: 'Sand Seal Rally', text: 'Ride through 25 flag gates in a single Sand Seal Rally!', goal: ['sealBest', 25], reward: { rupees: 300, tickets: 3, decor: 'sealfigure' } },
+    { id: 'q-buliara', region: 'nonverbal', npc: 'Buliara', icon: '🗡️', title: 'Guard Training', text: 'A Gerudo guard spots every pattern. Answer 40 Non-Verbal questions correctly in Master (★★★) trials.', goal: ['m_nonverbal', 40], reward: { rupees: 600, ingredient: { melon: 5, voltfruit: 3 } } },
+    { id: 'q-cycle', region: 'all', npc: 'Zelda', icon: '🏍️', title: 'The Final Divine Beast', text: 'Ride the Master Cycle Zero 2,000 metres in a single run!', goal: ['cycleBest', 2000], reward: { rupees: 2000, tickets: 10, decor: 'cycletrophy' } },
     { id: 'q-blights', npc: 'Zelda', icon: '👑', title: 'The Four Champions', text: 'Free all four Divine Beasts.', goal: ['bosses', 4], reward: { rupees: 1000, pet: 'fairy' } },
   ];
 
@@ -4793,14 +4966,15 @@ Symin`,
         default: return c[key] || 0;
       }
     },
-    questsReady() { return CATALOG.QUESTS.filter(q => !this.s.quests[q.id] && this.questValue(q.goal[0]) >= q.goal[1]).length; },
+    questOpen(q) { return !q.region || (q.region === 'all' ? !!this.s.mastered.all : !!this.s.bosses[q.region]); },
+    questsReady() { return CATALOG.QUESTS.filter(q => this.questOpen(q) && !this.s.quests[q.id] && this.questValue(q.goal[0]) >= q.goal[1]).length; },
     timerBonus() { return this.s.stamina * 6; },
 
     /* ---- mastery ---- */
     record(topicId, lv, correct) {
       const m = (this.s.mastery[topicId] = this.s.mastery[topicId] || []);
       m.push({ l: lv, c: correct ? 1 : 0 }); if (m.length > 30) m.shift();
-      const st = this.s.stats; st.answered++; if (correct) { st.correct++; this.s.daily.correct++; const subj = SUBJECTS.find(x => CONTENT[x].some(t => t.id === topicId)); if (subj) this.count('c_' + subj); }
+      const st = this.s.stats; st.answered++; if (correct) { st.correct++; this.s.daily.correct++; const subj = SUBJECTS.find(x => CONTENT[x].some(t => t.id === topicId)); if (subj) { this.count('c_' + subj); if (lv >= 3) this.count('m_' + subj); } }
     },
     // 0..100 — recent accuracy, weighted so that hard questions count for more
     mastery(topicId) {
@@ -4934,7 +5108,7 @@ Symin`,
   }
 
   /* ---------------- Dialogue (BotW-style box with portrait) ---------------- */
-  const PORTRAIT = { Zelda: ART.zelda, 'Old Man': ART.oldMan, Monk: ART.monk, Hestu: ART.hestu, Beedle: ART.beedle, Korok: ART.korok };
+  const PORTRAIT = { Yunobo: ART.yunobo, Sidon: ART.sidon, 'Prince Sidon': ART.sidon, Teba: ART.teba, Riju: ART.riju, Zelda: ART.zelda, 'Old Man': ART.oldMan, Monk: ART.monk, Hestu: ART.hestu, Beedle: ART.beedle, Korok: ART.korok };
   function dialogue(lines, done) {
     const ov = $('#overlay'); ov.className = 'dlg-wrap'; let i = 0; let typing = null; let full = '';
     const show = () => {
@@ -5017,7 +5191,7 @@ Symin`,
   }
 
   /* =========================================================== MAP */
-  const PINS = { maths: [77, 21], english: [86, 52], verbal: [20, 26], nonverbal: [20, 80], castle: [50, 44], woods: [49, 17], plateau: [50, 79], hateno: [76, 79], blood: [33, 62], stable: [38, 53], house: [89, 70], range: [27, 41], kass: [63, 30] };
+  const PINS = { maths: [77, 21], english: [86, 52], verbal: [20, 26], nonverbal: [20, 80], castle: [50, 44], woods: [49, 17], plateau: [50, 79], hateno: [76, 79], blood: [33, 62], stable: [38, 53], house: [89, 70], range: [27, 41], kass: [63, 30], cycle: [66, 63] };
   function map() {
     const s = S();
     if (!s.flags.introSeen) return intro();
@@ -5051,6 +5225,7 @@ Symin`,
           <button class="pin small side" style="left:${PINS.house[0]}%;top:${PINS.house[1]}%" id="house"><span class="pin-art sm">${IC.house()}</span><span class="pin-lbl"><b>Hateno House</b></span></button>
           <button class="pin small side" style="left:${PINS.range[0]}%;top:${PINS.range[1]}%" id="range"><span class="pin-art sm">${IC.range()}</span><span class="pin-lbl"><b>Flight Range</b></span></button>
           <button class="pin small side" style="left:${PINS.kass[0]}%;top:${PINS.kass[1]}%" id="kass"><span class="pin-art sm">${IC.kass()}</span><span class="pin-lbl"><b>Kass's Song</b></span></button>
+          ${s.mastered.all ? `<button class="pin small side cycle-pin" style="left:${PINS.cycle[0]}%;top:${PINS.cycle[1]}%" id="cycle"><span class="pin-art sm">${ART.masterCycle(false)}</span><span class="pin-lbl"><b>Master Cycle Run</b></span></button>` : ''}
           ${bloodMoon ? `<button class="pin bloodmoon" style="left:${PINS.blood[0]}%;top:${PINS.blood[1]}%" id="blood"><span class="pin-art sm">🌕</span><span class="pin-lbl"><b>Blood Moon!</b><small>${s.mistakes.length} mistakes return</small></span></button>` : ''}
           <div class="me" id="me" style="left:${here[0]}%;top:${here[1]}%">${ART.hero({ armour: s.armour, shield: s.shield, weapon: s.weapon })}</div>
         </div></div>
@@ -5085,7 +5260,7 @@ Symin`,
     on('#blood', bloodMoonIntro);
     on('#stable', () => travel('stable', World.stable)); on('#house', () => travel('house', World.house));
     on('#range', () => travel('range', World.archeryIntro)); on('#kass', () => travel('kass', World.kassIntro));
-    on('#quests', World.quests); on('#bag', () => World.bag());
+    on('#quests', World.quests); on('#cycle', () => travel('cycle', Regions.cycleIntro)); on('#bag', () => World.bag());
     on('#claim', () => {
       const bonus = 50 + Math.min(50, s.streak.days * 5);
       s.rupees += bonus; s.seeds++; s.seedsTotal++; s.tickets += 2; s.daily.claimed = true; State.save();
@@ -5193,7 +5368,8 @@ Symin`,
           <small>${beaten ? `✔ ${r.champion} is free! Rematch?` : unlocked ? `${r.boss} awaits!` : `🔒 Clear Trial 1 everywhere and earn ${need} ★ (${Math.min(stars, need)}/${need})`}</small>
         </button>
         ${nodes}
-      </div>${World.masteryPanel(r)}</div>`, id, id);
+      </div>${Regions.regionPanel(r)}${World.masteryPanel(r)}</div>`, id, id);
+    Regions.bindRegionPanel(r);
     on('#back', map);
     on('[data-t]', (e, el) => shrineScreen(el.dataset.t));
     on('#boss', () => (unlocked ? bossPrep(r) : toast(`Earn ${need} ★ in ${r.name} to board the Divine Beast.`)));
@@ -5948,7 +6124,7 @@ Symin`,
 
   // free static hosts like Netlify can overlay a badge in the bottom corner
   if (/netlify\.app$|netlify\.com$/.test(location.hostname)) document.documentElement.classList.add('host-badge');
-  window.Game = { title, map, statue, ui: { screen, on, onKey, hud, toast, confetti, dialogue, modal, sequence, gainXp, heartsHtml, heroArt, speak, addInterval: id => intervals.push(id) } };
+  window.Game = { title, map, statue, regionScreen, ui: { screen, on, onKey, hud, toast, confetti, dialogue, modal, sequence, gainXp, heartsHtml, heroArt, speak, addInterval: id => intervals.push(id) } };
   title();
 })();
 </script>
@@ -6005,7 +6181,7 @@ Symin`,
     if (r.theme) { if (!s.ownedThemes.includes(r.theme)) s.ownedThemes.push(r.theme); if (r.theme === 'triforce') { s.theme = 'triforce'; applyTheme(); } const A = K.THEMES.find(x => x.id === r.theme); steps.push(n => FX.itemGet(`<span class="emo big">${A.emoji}</span>`, `New Sheikah Slate colour: ${A.name}!`, 'Choose it in the shop\'s Style tab.', n)); }
     if (r.weapon) { if (!s.ownedWeapons.includes(r.weapon)) s.ownedWeapons.push(r.weapon); s.weapon = r.weapon; const A = K.WEAPONS.find(x => x.id === r.weapon); steps.push(n => FX.itemGet(`<div class="pet-get">${ART.hero({ armour: s.armour, shield: s.shield, weapon: r.weapon })}</div>`, `You got the ${A.name}!`, `${A.desc} Boss damage: ${A.dmg}.`, n)); }
     if (r.shield) { if (!s.ownedShields.includes(r.shield)) s.ownedShields.push(r.shield); s.shield = r.shield; const A = K.SHIELDS.find(x => x.id === r.shield); steps.push(n => FX.itemGet(`<div class="pet-get">${ART.hero({ armour: s.armour, shield: r.shield, weapon: s.weapon })}</div>`, `You got the ${A.name}!`, A.desc, n)); }
-    if (r.relic) { const A = K.RELICS[r.relic]; steps.push(n => FX.itemGet(`<span class="emo big">${A.emoji}</span>`, `You got the ${A.name}!`, A.desc, n)); }
+    if (r.relic) { const A = K.RELICS[r.relic]; steps.push(n => FX.itemGet(A.art ? `<div class="pet-get wide">${ART[A.art]()}</div>` : `<span class="emo big">${A.emoji}</span>`, `You got the ${A.name}!`, A.desc, n)); }
     if (r.glider) { if (!s.ownedGliders.includes(r.glider)) s.ownedGliders.push(r.glider); s.glider = r.glider; const A = K.GLIDERS.find(x => x.id === r.glider); steps.push(n => FX.itemGet(`<div class="pet-get wide">${ART.glider(r.glider)}</div>`, `You got ${A.name}!`, 'You\'ll see it every time you fly across the map.', n)); }
     if (r.decor) { if (!s.house.decor.includes(r.decor)) s.house.decor.push(r.decor); const A = K.DECOR.find(x => x.id === r.decor); steps.push(n => FX.itemGet(`<span class="emo big">${A.emoji}</span>`, `${A.name} for your house!`, s.house.owned ? '' : 'It will appear once you own the Hateno house.', n)); }
     State.save(); return steps;
@@ -6430,10 +6606,12 @@ Symin`,
   /* ---------------- SIDE QUESTS ---------------- */
   function quests() {
     const s = S(); const { screen, hud, on, sequence } = UI();
-    const list = K.QUESTS.map(q => { const v = State.questValue(q.goal[0]); const done = v >= q.goal[1]; const claimed = s.quests[q.id]; return { q, v: Math.min(v, q.goal[1]), done, claimed }; })
+    const lockedRegions = STORY.regions.filter(r => !s.bosses[r.id]);
+    const list = K.QUESTS.filter(q => State.questOpen(q)).map(q => { const v = State.questValue(q.goal[0]); const done = v >= q.goal[1]; const claimed = s.quests[q.id]; return { q, v: Math.min(v, q.goal[1]), done, claimed }; })
       .sort((a, b) => (a.claimed - b.claimed) || (b.done - a.done));
     const rewardTxt = r => [r.rupees && `${fmt(r.rupees)} rupees`, r.tickets && `${r.tickets} tickets`, r.armour && K.ARMOUR.find(x => x.id === r.armour).name, r.saddle && K.SADDLES.find(x => x.id === r.saddle).name, r.pet && 'companion: ' + K.PETS.find(x => x.id === r.pet).name, r.theme && 'Slate colour: ' + K.THEMES.find(x => x.id === r.theme).name, r.decor && K.DECOR.find(x => x.id === r.decor).name, r.item && Object.keys(r.item).map(k => K.ITEMS.find(x => x.id === k).name).join(', '), r.ingredient && Object.keys(r.ingredient).map(k => ING(k).name).join(', ')].filter(Boolean).join(' · ');
     screen(`${hud()}<div class="page"><div class="page-head">${back()}<h2>Side Quests</h2><span class="pill">${Object.keys(s.quests).length}/${K.QUESTS.length} done</span></div>
+      ${lockedRegions.map(r => `<div class="quest slate locked-q"><span class="q-ico">🔒</span><div><h3>${r.name}</h3><p class="muted">Free ${r.beast} to meet the locals and unlock their quests and mini-game.</p></div></div>`).join('')}
       <div class="quests">${list.map(({ q, v, done, claimed }) => `<div class="quest slate ${claimed ? 'claimed' : done ? 'ready' : ''}">
         <span class="q-ico">${q.icon}</span><div><h3>${q.title}</h3><p><b>${q.npc}:</b> "${q.text}"</p>
         <div class="bar"><i style="width:${(v / q.goal[1]) * 100}%"></i></div><small class="muted">${fmt(v)}/${fmt(q.goal[1])} · Reward: ${rewardTxt(q.reward)}</small></div>
@@ -6470,8 +6648,411 @@ Symin`,
     });
   }
 
-  window.World = { checkMastery, masteryPanel, masteryProgress, applyTheme, shop, bag, kitchen, stable, wildField, archeryIntro, kassIntro, leafIntro, house, quests, fairy, trialDrops, grant, mealInfo };
+  window.World = { ticketGate, checkMastery, masteryPanel, masteryProgress, applyTheme, shop, bag, kitchen, stable, wildField, archeryIntro, kassIntro, leafIntro, house, quests, fairy, trialDrops, grant, mealInfo };
   if (S()) applyTheme();
+})();
+</script>
+<script>
+// Regional activities that open once a Divine Beast is freed, plus the Master Cycle Zero run (the reward for 3-starring all of Hyrule).
+// Each game draws to a high-DPI canvas; characters are the SVG artwork rendered to images so they stay sharp.
+(function () {
+  const $ = (s, el = document) => el.querySelector(s);
+  const S = () => State.s;
+  const UI = () => Game.ui;
+  const K = CATALOG;
+  const today = () => new Date().toISOString().slice(0, 10);
+  const back = label => `<button class="btn ghost" id="back">${label}</button>`;
+
+  /* ---------------- canvas helpers ---------------- */
+  const imgs = {};
+  function sprite(key, svgStr, w, h) {
+    if (imgs[key]) return imgs[key];
+    const im = new Image();
+    im.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgStr.replace('<svg ', `<svg width="${w * 3}" height="${h * 3}" `));
+    return (imgs[key] = im);
+  }
+  const ready = im => im.complete && im.naturalWidth > 0;
+  function stage(el, aspect) {
+    const cv = document.createElement('canvas'); el.appendChild(cv);
+    const dpr = Math.min(3, window.devicePixelRatio || 1);
+    const W = Math.min(el.clientWidth || 360, 560), H = Math.round(W * aspect);
+    cv.width = W * dpr; cv.height = H * dpr; cv.style.width = W + 'px'; cv.style.height = H + 'px';
+    const ctx = cv.getContext('2d'); ctx.scale(dpr, dpr);
+    return { cv, ctx, W, H };
+  }
+  function loop(cv, fn) {
+    let last = performance.now();
+    const tick = now => { if (!cv.isConnected) return; const dt = Math.min(0.05, (now - last) / 1000); last = now; if (fn(dt) !== false) requestAnimationFrame(tick); };
+    requestAnimationFrame(tick);
+  }
+  function rr(ctx, x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
+  function rupee(ctx, x, y, s, c1 = '#5ce06a', c2 = '#1f8f3a') {
+    ctx.save(); ctx.translate(x, y); ctx.scale(s, s);
+    ctx.beginPath(); ctx.moveTo(0, -12); ctx.lineTo(7, -6); ctx.lineTo(7, 6); ctx.lineTo(0, 12); ctx.lineTo(-7, 6); ctx.lineTo(-7, -6); ctx.closePath();
+    ctx.fillStyle = c1; ctx.fill(); ctx.lineWidth = 1.4; ctx.strokeStyle = '#123'; ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0, -7); ctx.lineTo(3, -4); ctx.lineTo(3, 4); ctx.lineTo(0, 7); ctx.lineTo(-3, 4); ctx.lineTo(-3, -4); ctx.closePath(); ctx.fillStyle = c2; ctx.globalAlpha = 0.55; ctx.fill(); ctx.globalAlpha = 1;
+    ctx.restore();
+  }
+  function hud(ctx, W, items) {
+    ctx.save(); ctx.font = '700 15px Lexend, system-ui, sans-serif'; ctx.textBaseline = 'middle';
+    let x = 10;
+    for (const t of items) { const w = ctx.measureText(t).width + 20; rr(ctx, x, 8, w, 28, 14); ctx.fillStyle = 'rgba(9,20,31,.78)'; ctx.fill(); ctx.strokeStyle = 'rgba(150,230,255,.4)'; ctx.lineWidth = 1; ctx.stroke(); ctx.fillStyle = '#eef7fd'; ctx.fillText(t, x + 10, 22); x += w + 6; }
+    ctx.restore();
+  }
+  function bindKeys(map) { UI().onKey(e => { const f = map[e.key]; if (f) { e.preventDefault(); f(); } }); }
+  function finish(title, html, onDone) { setTimeout(() => UI().modal(`<h3>${title}</h3>${html}`, [{ label: 'Done', cls: 'primary', fn: onDone }]), 500); }
+
+  /* ---------------- shared intro screen ---------------- */
+  function intro(cfg) {
+    const s = S(); const { screen, hud: topHud, on } = UI();
+    screen(`${topHud()}<div class="page center"><div class="page-head">${back(cfg.backLabel)}<h2>${cfg.title}</h2>${cfg.free ? '' : `<span class="pill">🎫 ${s.tickets}</span>`}</div>
+      <div class="npc-stand big">${cfg.art}</div>
+      <p class="intro slate"><b>${cfg.npc}:</b> "${cfg.text}"</p>
+      <p class="muted">${cfg.best}</p>
+      <button class="btn big primary glow" id="go">${cfg.free ? '▶ Ride!' : '▶ Play (🎫1)'}</button></div>`, cfg.theme, cfg.music);
+    on('#back', cfg.onBack);
+    on('#go', () => (cfg.free ? cfg.play() : World.ticketGate(cfg.title, cfg.play)));
+  }
+  const toRegion = id => () => Game.regionScreen(id);
+  function gameScreen(title, extra, theme, music) {
+    UI().screen(`<div class="page center mg-page"><h2>${title}</h2><div class="mg-stage" id="mg"></div>${extra}</div>`, theme, music);
+    return $('#mg');
+  }
+
+  /* ======================= DEATH MOUNTAIN: Yunobo's Rock Roll ======================= */
+  // Roll down the mountain in three lanes: dodge lava boulders, scoop up gems.
+  function rockRoll() {
+    const el = gameScreen('Yunobo\'s Rock Roll', '<div class="mg-ctrl"><button class="btn big" id="l">◀</button><button class="btn big" id="r">▶</button></div>', 'maths', 'battle');
+    const { cv, ctx, W, H } = stage(el, 1.25);
+    const ball = sprite('goronBall', ART.goronBall(), 80, 80);
+    const lanes = [W * 0.25, W * 0.5, W * 0.75]; let lane = 1, px = lanes[1], spin = 0;
+    let t = 45, gems = 0, hearts = 3, speed = 190, spawn = 0, scroll = 0, inv = 0, over = false;
+    const objs = [], sparks = [];
+    const move = d => { if (!over) lane = Math.max(0, Math.min(2, lane + d)); };
+    UI().on('#l', () => move(-1)); UI().on('#r', () => move(1));
+    cv.addEventListener('pointerdown', e => { const r = cv.getBoundingClientRect(); move(e.clientX - r.left < r.width / 2 ? -1 : 1); });
+    bindKeys({ ArrowLeft: () => move(-1), ArrowRight: () => move(1), a: () => move(-1), d: () => move(1) });
+    const py = H - 70;
+    loop(cv, dt => {
+      if (!over) {
+        t -= dt; speed += dt * 6; scroll = (scroll + speed * dt) % 60; spin += dt * speed / 30; inv = Math.max(0, inv - dt);
+        spawn -= dt;
+        if (spawn <= 0) { spawn = Math.max(0.38, 0.85 - (45 - t) * 0.009); const l = U.int(0, 2); objs.push({ l, y: -30, kind: Math.random() < 0.58 ? 'rock' : 'gem', c: U.pick(['#ff4a5a', '#3fb0ff', '#ffd23d']) }); if (Math.random() < 0.25) objs.push({ l: (l + U.int(1, 2)) % 3, y: -90, kind: 'rock' }); }
+        px += (lanes[lane] - px) * Math.min(1, dt * 14);
+        for (const o of objs) {
+          o.y += speed * dt;
+          if (!o.hit && Math.abs(o.y - py) < 30 && Math.abs(lanes[o.l] - px) < 30) {
+            o.hit = true;
+            if (o.kind === 'gem') { gems++; U.sfx.coin(); for (let i = 0; i < 10; i++) sparks.push({ x: lanes[o.l], y: o.y, vx: (Math.random() - 0.5) * 220, vy: -Math.random() * 220, life: 0.6, c: o.c }); }
+            else if (!inv) { hearts--; inv = 1.2; U.sfx.hurt(); FX.shake(1); for (let i = 0; i < 14; i++) sparks.push({ x: px, y: py, vx: (Math.random() - 0.5) * 260, vy: -Math.random() * 260, life: 0.7, c: '#ff7a1a' }); }
+          }
+        }
+        for (let i = objs.length - 1; i >= 0; i--) if (objs[i].y > H + 40 || (objs[i].hit && objs[i].kind === 'gem')) objs.splice(i, 1);
+        if (t <= 0 || hearts <= 0) {
+          over = true; const s = S(); const best = gems > (s.counters.rockBest || 0); State.countMax('rockBest', gems); const prize = gems * 4; s.rupees += prize; State.save();
+          finish(hearts <= 0 ? 'Bonk! Out of hearts' : 'Made it down the mountain!', `<p>You collected <b>${gems}</b> gems${best ? ' — a new best! 🏆' : ''}.</p><p>Prize: <b>${prize} rupees</b></p>`, rockIntro);
+        }
+      }
+      // mountain slope with lava rivers at the edges
+      const g = ctx.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#5a3328'); g.addColorStop(1, '#3a1f18'); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+      ctx.strokeStyle = 'rgba(0,0,0,.18)'; ctx.lineWidth = 2;
+      for (let y = -60 + scroll; y < H; y += 60) { ctx.beginPath(); ctx.moveTo(W * 0.12, y); ctx.lineTo(W * 0.88, y + 20); ctx.stroke(); }
+      for (const side of [0, 1]) {
+        const x0 = side ? W * 0.88 : 0; const lg2 = ctx.createLinearGradient(x0, 0, x0 + W * 0.12, 0);
+        lg2.addColorStop(side ? 0 : 1, '#ff9a2e'); lg2.addColorStop(side ? 1 : 0, '#c2381c'); ctx.fillStyle = lg2; ctx.fillRect(x0, 0, W * 0.12, H);
+        ctx.fillStyle = 'rgba(255,230,120,.5)'; for (let y = (scroll * 1.5) % 40 - 40; y < H; y += 40) { ctx.beginPath(); ctx.ellipse(x0 + W * 0.06, y, 6, 3, 0, 0, Math.PI * 2); ctx.fill(); }
+      }
+      ctx.setLineDash([10, 14]); ctx.strokeStyle = 'rgba(255,200,150,.18)'; ctx.lineWidth = 2;
+      for (const x of [W * 0.375, W * 0.625]) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+      ctx.setLineDash([]);
+      for (const o of objs) {
+        const x = lanes[o.l];
+        if (o.kind === 'rock') {
+          const rg = ctx.createRadialGradient(x - 6, o.y - 6, 2, x, o.y, 22); rg.addColorStop(0, '#5a4a44'); rg.addColorStop(1, '#2a1f1c');
+          ctx.beginPath(); ctx.arc(x, o.y, 22, 0, Math.PI * 2); ctx.fillStyle = rg; ctx.fill(); ctx.lineWidth = 2.4; ctx.strokeStyle = '#1d1a2b'; ctx.stroke();
+          ctx.strokeStyle = '#ff7a1a'; ctx.lineWidth = 2; ctx.shadowColor = '#ff7a1a'; ctx.shadowBlur = 8;
+          ctx.beginPath(); ctx.moveTo(x - 12, o.y - 4); ctx.lineTo(x - 2, o.y + 2); ctx.lineTo(x + 6, o.y - 8); ctx.moveTo(x - 2, o.y + 2); ctx.lineTo(x + 2, o.y + 14); ctx.stroke(); ctx.shadowBlur = 0;
+        } else {
+          ctx.save(); ctx.translate(x, o.y); ctx.shadowColor = o.c; ctx.shadowBlur = 12;
+          ctx.beginPath(); ctx.moveTo(0, -14); ctx.lineTo(12, -4); ctx.lineTo(0, 14); ctx.lineTo(-12, -4); ctx.closePath(); ctx.fillStyle = o.c; ctx.fill(); ctx.shadowBlur = 0; ctx.lineWidth = 1.6; ctx.strokeStyle = '#1d1a2b'; ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(-12, -4); ctx.lineTo(12, -4); ctx.moveTo(-5, -4); ctx.lineTo(0, 14); ctx.lineTo(5, -4); ctx.strokeStyle = 'rgba(255,255,255,.6)'; ctx.lineWidth = 1; ctx.stroke(); ctx.restore();
+        }
+      }
+      if (ready(ball)) { ctx.save(); ctx.globalAlpha = inv > 0 && Math.floor(inv * 10) % 2 ? 0.35 : 1; ctx.translate(px, py); ctx.rotate(spin); ctx.drawImage(ball, -30, -30, 60, 60); ctx.restore(); }
+      for (let i = sparks.length - 1; i >= 0; i--) { const p = sparks[i]; p.life -= dt; if (p.life <= 0) { sparks.splice(i, 1); continue; } p.x += p.vx * dt; p.y += p.vy * dt; p.vy += 500 * dt; ctx.globalAlpha = Math.min(1, p.life * 2); ctx.fillStyle = p.c; ctx.fillRect(p.x - 2, p.y - 2, 4, 4); ctx.globalAlpha = 1; }
+      hud(ctx, W, [`💎 ${gems}`, `${'❤️'.repeat(Math.max(0, hearts))}`, `⏱ ${Math.max(0, Math.ceil(t))}`]);
+    });
+  }
+  function rockIntro() {
+    const s = S();
+    intro({ title: 'Yunobo\'s Rock Roll', npc: 'Yunobo', art: ART.yunobo(), backLabel: '◀ Death Mountain', onBack: toRegion('maths'), theme: 'maths', music: 'maths', play: rockRoll,
+      text: 'Goro! Curl up and roll down the mountain with me! Dodge the lava boulders and grab every gem you can, goro!', best: `Best run: <b>${s.counters.rockBest || 0}</b> gems. Swipe lanes with ◀ ▶ or tap the left/right side.` });
+  }
+
+  /* ======================= ZORA'S DOMAIN: Zora fishing ======================= */
+  // Cast, wait patiently through the nibbles, then reel in the moment the bobber is pulled under.
+  const FISH = [['fish', 0.55, 'Hyrule Bass'], ['salmon', 0.28, 'Hearty Salmon'], ['crab', 0.17, 'Ironshell Crab']];
+  function fishing() {
+    const el = gameScreen('Zora Fishing', '<p id="fmsg" class="muted">Tap <b>Cast</b> to throw your line.</p><button class="btn big primary" id="act">🎣 Cast</button>', 'english', 'english');
+    const { cv, ctx, W, H } = stage(el, 0.8);
+    const sid = sprite('sidon', ART.sidon(), 120, 150);
+    let casts = 8, caught = 0, state = 'idle', timer = 0, bob = { x: W * 0.62, y: H * 0.55, dip: 0 }, nibbles = 0, flash = 0, splash = [], t = 0;
+    const msg = m => { const e = $('#fmsg'); if (e) e.innerHTML = m; };
+    const btn = () => $('#act');
+    const catches = [];
+    const act = () => {
+      if (state === 'idle' && casts > 0) { casts--; state = 'wait'; timer = 1 + Math.random() * 3; nibbles = U.int(0, 3); bob.x = W * (0.45 + Math.random() * 0.3); bob.y = H * (0.5 + Math.random() * 0.15); U.sfx.click(); msg('Wait for it… don\'t react to the little nibbles!'); btn().textContent = '🐟 Reel!'; for (let i = 0; i < 12; i++) splash.push({ a: i / 12 * Math.PI * 2, r: 2, life: 0.6 }); }
+      else if (state === 'wait' || state === 'nibble') { state = 'idle'; msg('Too early! The fish swam away. 💨'); U.sfx.wrong(); btn().textContent = '🎣 Cast'; endCheck(); }
+      else if (state === 'bite') {
+        state = 'idle'; let r = Math.random(), f = FISH[0]; for (const x of FISH) { if (r < x[1]) { f = x; break; } r -= x[1]; }
+        caught++; State.count('fishCaught'); S().ingredients[f[0]] = (S().ingredients[f[0]] || 0) + 1; State.save(); catches.push(f); flash = 1;
+        U.sfx.correct(); FX.floatText(cv, `${K.INGREDIENTS.find(i => i.id === f[0]).emoji} ${f[2]}!`, 'xp'); msg(`You caught a <b>${f[2]}</b>! It's in your Bag.`); btn().textContent = '🎣 Cast'; endCheck();
+      }
+    };
+    const endCheck = () => { if (casts <= 0 && state === 'idle') { const s = S(); const prize = caught * 10; s.rupees += prize; State.save(); finish('Out of bait!', `<p>You caught <b>${caught}</b> fish: ${catches.map(c => K.INGREDIENTS.find(i => i.id === c[0]).emoji).join(' ') || 'none'}.</p><p>They're in your Bag for cooking, plus <b>${prize} rupees</b> from Sidon.</p>`, fishIntro); } };
+    UI().on('#act', act); bindKeys({ ' ': act, Enter: act });
+    loop(cv, dt => {
+      t += dt;
+      if (state === 'wait') { timer -= dt; if (timer <= 0) { if (nibbles > 0) { nibbles--; state = 'nibble'; timer = 0.35; bob.dip = 3; } else { state = 'bite'; timer = 0.85; bob.dip = 12; U.sfx.tick(); for (let i = 0; i < 16; i++) splash.push({ a: i / 16 * Math.PI * 2, r: 4, life: 0.8 }); } } }
+      else if (state === 'nibble') { timer -= dt; if (timer <= 0) { state = 'wait'; timer = 0.6 + Math.random() * 1.6; bob.dip = 0; } }
+      else if (state === 'bite') { timer -= dt; if (timer <= 0) { state = 'idle'; bob.dip = 0; msg('Too slow! The fish got away. 🐟'); U.sfx.wrong(); const b = btn(); if (b) b.textContent = '🎣 Cast'; endCheck(); } }
+      // East Reservoir Lake under Zora's Domain: luminous stone arches, glowing water, a tiled dock
+      const g = ctx.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#0f3f6a'); g.addColorStop(0.32, '#1e5f94'); g.addColorStop(0.34, '#2c7fb8'); g.addColorStop(1, '#0f3f6a'); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+      ctx.save(); ctx.shadowColor = '#7ff3ff'; ctx.shadowBlur = 10;
+      for (const [x0, w0, h0] of [[W * 0.05, W * 0.3, H * 0.26], [W * 0.38, W * 0.34, H * 0.3], [W * 0.75, W * 0.28, H * 0.24]]) {
+        ctx.beginPath(); ctx.moveTo(x0, H * 0.33); ctx.lineTo(x0, H * 0.33 - h0 * 0.55); ctx.quadraticCurveTo(x0 + w0 / 2, H * 0.33 - h0 * 1.25, x0 + w0, H * 0.33 - h0 * 0.55); ctx.lineTo(x0 + w0, H * 0.33);
+        ctx.lineTo(x0 + w0 - 8, H * 0.33); ctx.lineTo(x0 + w0 - 8, H * 0.33 - h0 * 0.5); ctx.quadraticCurveTo(x0 + w0 / 2, H * 0.33 - h0 * 1.05, x0 + 8, H * 0.33 - h0 * 0.5); ctx.lineTo(x0 + 8, H * 0.33); ctx.closePath();
+        ctx.fillStyle = '#cfe9f2'; ctx.fill(); ctx.strokeStyle = '#7fb9c9'; ctx.lineWidth = 1.4; ctx.stroke();
+      }
+      ctx.restore();
+      ctx.fillStyle = '#7ff3ff'; for (let i = 0; i < 5; i++) { const x = W * (0.12 + i * 0.2); ctx.globalAlpha = 0.6 + Math.sin(t * 2 + i) * 0.3; ctx.beginPath(); ctx.moveTo(x, H * 0.33); ctx.lineTo(x - 4, H * 0.27); ctx.lineTo(x, H * 0.22); ctx.lineTo(x + 4, H * 0.27); ctx.fill(); } ctx.globalAlpha = 1;
+      ctx.fillStyle = '#bfe6ff'; ctx.globalAlpha = 0.2; for (let i = 0; i < 9; i++) { const y = H * 0.36 + (i * 31 + t * 12) % (H * 0.64); ctx.beginPath(); ctx.ellipse((i * 97 + t * 8) % W, y, 36, 3, 0, 0, Math.PI * 2); ctx.fill(); } ctx.globalAlpha = 1;
+      ctx.fillStyle = '#d9eef6'; ctx.beginPath(); ctx.moveTo(0, H * 0.8); ctx.lineTo(W * 0.42, H * 0.8); ctx.lineTo(W * 0.46, H); ctx.lineTo(0, H); ctx.fill(); ctx.strokeStyle = '#7fb9c9'; ctx.lineWidth = 2; ctx.stroke();
+      ctx.strokeStyle = '#9fd0e0'; ctx.lineWidth = 1; for (let x = 0; x < W * 0.44; x += 24) { ctx.beginPath(); ctx.moveTo(x, H * 0.8); ctx.lineTo(x + 3, H); ctx.stroke(); }
+      ctx.fillStyle = '#3fb0e8'; ctx.fillRect(0, H * 0.8, W * 0.42, 4);
+      if (ready(sid)) ctx.drawImage(sid, W * 0.03, H * 0.58, 64, 80);
+      ctx.strokeStyle = '#6b4a2b'; ctx.lineWidth = 4; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(W * 0.28, H * 0.98); ctx.lineTo(W * 0.38, H * 0.4); ctx.stroke(); ctx.lineCap = 'butt';
+      if (state !== 'idle') {
+        ctx.strokeStyle = 'rgba(255,255,255,.7)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(W * 0.38, H * 0.4); ctx.quadraticCurveTo(bob.x - 30, bob.y - 60, bob.x, bob.y - 8 + bob.dip); ctx.stroke();
+        const by = bob.y + bob.dip + Math.sin(t * 3) * 1.5;
+        ctx.fillStyle = 'rgba(255,255,255,.35)'; ctx.beginPath(); ctx.ellipse(bob.x, bob.y + 4, 16, 4, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(bob.x, by - 6, 7, Math.PI, 0); ctx.fillStyle = '#e8402e'; ctx.fill(); ctx.beginPath(); ctx.arc(bob.x, by - 6, 7, 0, Math.PI); ctx.fillStyle = '#fff'; ctx.fill();
+        ctx.lineWidth = 1.4; ctx.strokeStyle = '#1d1a2b'; ctx.beginPath(); ctx.arc(bob.x, by - 6, 7, 0, Math.PI * 2); ctx.stroke();
+        if (state === 'bite') { ctx.font = '900 30px Lexend, sans-serif'; ctx.fillStyle = '#ffd23d'; ctx.strokeStyle = '#1d1a2b'; ctx.lineWidth = 4; ctx.strokeText('!', bob.x - 5, bob.y - 30); ctx.fillText('!', bob.x - 5, bob.y - 30); }
+      }
+      for (let i = splash.length - 1; i >= 0; i--) { const p = splash[i]; p.life -= dt; p.r += dt * 60; if (p.life <= 0) { splash.splice(i, 1); continue; } ctx.globalAlpha = p.life; ctx.fillStyle = '#e8f6ff'; ctx.beginPath(); ctx.arc(bob.x + Math.cos(p.a) * p.r, bob.y + Math.sin(p.a) * p.r * 0.35, 2.4, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = 1; }
+      if (flash > 0) { flash -= dt; ctx.fillStyle = `rgba(255,255,255,${flash * 0.3})`; ctx.fillRect(0, 0, W, H); }
+      hud(ctx, W, [`🪱 ${casts} casts`, `🐟 ${caught}`]);
+    });
+  }
+  function fishIntro() {
+    const s = S();
+    intro({ title: 'Zora Fishing', npc: 'Prince Sidon', art: ART.sidon(), backLabel: '◀ Zora\'s Domain', onBack: toRegion('english'), theme: 'english', music: 'english', play: fishing,
+      text: 'The reservoir is full of fish again, thanks to you! Cast your line, ignore the little nibbles, and reel in the moment the bobber is pulled under. You have 8 casts!', best: `Fish caught so far: <b>${s.counters.fishCaught || 0}</b>. Every catch goes in your Bag for cooking.` });
+  }
+
+  /* ======================= RITO VILLAGE: Snowball Bowling ======================= */
+  // Time your aim as the arrow sweeps, then watch the snowball crash through the pins. 3 balls per game.
+  function bowling() {
+    const el = gameScreen('Snowball Bowling', '<p id="bmsg" class="muted">Tap <b>Roll!</b> when the arrow points where you want to aim.</p><button class="btn big primary" id="act">☃️ Roll!</button>', 'verbal', 'verbal');
+    const { cv, ctx, W, H } = stage(el, 1.3);
+    const L = W * 0.18, R = W * 0.82, top = 60;
+    const rows = [[0], [-1, 1], [-2, 0, 2], [-3, -1, 1, 3]];
+    let pins, ball, aim = 0, dir = 1, state = 'aim', frame = 1, total = 0, strikes = 0, settle = 0, results = [];
+    const msg = m => { const e = $('#bmsg'); if (e) e.innerHTML = m; };
+    const rack = () => { pins = []; const sp = (R - L) / 9; rows.forEach((row, ri) => row.forEach(c => pins.push({ x: W / 2 + c * sp * 0.8, y: top + 26 + ri * sp * 0.85, vx: 0, vy: 0, down: false, a: 0 }))); };
+    rack();
+    const act = () => {
+      if (state !== 'aim') return;
+      state = 'roll'; ball = { x: W / 2 + aim * (R - L) * 0.42, y: H - 50, vx: aim * -10 + (Math.random() - 0.5) * 8, vy: -420, r: 16 }; U.sfx.click();
+    };
+    UI().on('#act', act); bindKeys({ ' ': act, Enter: act });
+    loop(cv, dt => {
+      if (state === 'aim') { aim += dir * dt * 1.25; if (aim > 1 || aim < -1) { dir *= -1; aim = Math.max(-1, Math.min(1, aim)); } }
+      if (state === 'roll' || state === 'settle') {
+        if (ball) { ball.x += ball.vx * dt; ball.y += ball.vy * dt; if (ball.x < L + ball.r || ball.x > R - ball.r) ball.vx *= -0.3, ball.x = Math.max(L + ball.r, Math.min(R - ball.r, ball.x)); if (ball.y < -30) ball = null; }
+        for (const p of pins) {
+          if (ball) { const dx = p.x - ball.x, dy = p.y - ball.y, d = Math.hypot(dx, dy); if (d < ball.r + 9 && d > 0) { const f = 320; p.vx += dx / d * f + ball.vx * 0.3; p.vy += dy / d * f + ball.vy * 0.25; p.down = true; ball.vy *= 0.94; } }
+          p.x += p.vx * dt; p.y += p.vy * dt; p.vx *= 1 - dt * 2.2; p.vy *= 1 - dt * 2.2; if (p.down) p.a += dt * 8;
+        }
+        for (let i = 0; i < pins.length; i++) for (let j = i + 1; j < pins.length; j++) {
+          const a = pins[i], b = pins[j]; const dx = b.x - a.x, dy = b.y - a.y, d = Math.hypot(dx, dy);
+          if (d < 18 && d > 0) { const sa = Math.hypot(a.vx, a.vy), sb = Math.hypot(b.vx, b.vy); if (sa > 40 && !b.down) { b.down = true; b.vx += dx / d * sa * 0.75; b.vy += dy / d * sa * 0.75; } if (sb > 40 && !a.down) { a.down = true; a.vx -= dx / d * sb * 0.75; a.vy -= dy / d * sb * 0.75; } }
+        }
+        if (state === 'roll' && !ball) { state = 'settle'; settle = 1.1; }
+        if (state === 'settle') {
+          settle -= dt;
+          if (settle <= 0) {
+            const n = pins.filter(p => p.down).length; total += n; results.push(n);
+            if (n === 10) { strikes++; State.count('strikes'); FX.banner('STRIKE! ☃️', 'victory'); U.sfx.fanfare(); } else { (n ? U.sfx.coin : U.sfx.wrong)(); FX.floatText(cv, `${n} pin${n === 1 ? '' : 's'}`, 'xp'); }
+            frame++; State.save();
+            if (frame > 3) {
+              state = 'over'; const s = S(); const prize = total * 3 + strikes * 30; s.rupees += prize; State.countMax('bowlBest', total); State.save();
+              finish('Game over!', `<p>Your rolls: <b>${results.join(' · ')}</b> (total ${total}/30)${strikes ? ` with <b>${strikes} strike${strikes > 1 ? 's' : ''}</b>! ☃️` : '.'}</p><p>Prize: <b>${prize} rupees</b></p>`, bowlIntro);
+            } else { state = 'aim'; rack(); msg(`Roll ${frame} of 3. ${n === 10 ? 'Amazing!' : 'Try aiming at the front pin!'}`); }
+          }
+        }
+      }
+      // snowy lane on a Tabantha mountaintop
+      ctx.fillStyle = '#9ec9e8'; ctx.fillRect(0, 0, W, H);
+      ctx.fillStyle = '#f4f8fc'; ctx.beginPath(); ctx.moveTo(L - 30, H); ctx.lineTo(L, 0); ctx.lineTo(R, 0); ctx.lineTo(R + 30, H); ctx.fill();
+      ctx.strokeStyle = '#b8cfe0'; ctx.lineWidth = 2; ctx.stroke();
+      ctx.strokeStyle = 'rgba(160,190,215,.5)'; for (let i = 1; i < 6; i++) { const x = L + (R - L) * i / 6; ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x + (x - W / 2) * 0.08, H); ctx.stroke(); }
+      ctx.fillStyle = '#ffffff'; for (let i = 0; i < 20; i++) { ctx.globalAlpha = 0.6; ctx.beginPath(); ctx.arc((i * 73) % W, ((i * 41) + performance.now() / 30) % H, 1.6, 0, Math.PI * 2); ctx.fill(); } ctx.globalAlpha = 1;
+      for (const p of pins) {
+        ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.down ? Math.min(Math.PI / 2, p.a) * Math.sign(p.vx || 1) : 0); ctx.globalAlpha = p.down ? 0.7 : 1;
+        ctx.beginPath(); ctx.ellipse(0, 6, 8, 10, 0, 0, Math.PI * 2); ctx.ellipse(0, -8, 5, 6, 0, 0, Math.PI * 2); ctx.fillStyle = '#ffffff'; ctx.fill(); ctx.lineWidth = 1.6; ctx.strokeStyle = '#1d1a2b'; ctx.stroke();
+        ctx.fillStyle = '#c63b4f'; ctx.fillRect(-6, -3, 12, 3); ctx.restore();
+      }
+      if (ball) { const rg = ctx.createRadialGradient(ball.x - 5, ball.y - 5, 2, ball.x, ball.y, ball.r); rg.addColorStop(0, '#ffffff'); rg.addColorStop(1, '#c8dcec'); ctx.beginPath(); ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI * 2); ctx.fillStyle = rg; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = '#1d1a2b'; ctx.stroke(); }
+      if (state === 'aim') {
+        const ax = W / 2 + aim * (R - L) * 0.42, ay = H - 50;
+        ctx.beginPath(); ctx.arc(ax, ay, 16, 0, Math.PI * 2); ctx.fillStyle = '#f4f8fc'; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = '#1d1a2b'; ctx.stroke();
+        ctx.strokeStyle = '#c63b4f'; ctx.lineWidth = 4; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(ax, ay - 24); ctx.lineTo(ax - aim * 10, ay - 70); ctx.stroke();
+        ctx.fillStyle = '#c63b4f'; ctx.beginPath(); ctx.moveTo(ax - aim * 10, ay - 82); ctx.lineTo(ax - aim * 10 - 9, ay - 66); ctx.lineTo(ax - aim * 10 + 9, ay - 66); ctx.fill();
+      }
+      hud(ctx, W, [`Roll ${Math.min(frame, 3)}/3`, `Pins ${total}`, `☃️ ${strikes}`]);
+    });
+  }
+  function bowlIntro() {
+    const s = S();
+    intro({ title: 'Snowball Bowling', npc: 'Teba', art: ART.teba(), backLabel: '◀ Rito Village', onBack: toRegion('verbal'), theme: 'verbal', music: 'verbal', play: bowling,
+      text: 'The skies are clear thanks to you. Fancy a game? Watch the arrow sweep and roll your snowball at just the right moment. Ten pins down is a strike!', best: `Best game: <b>${s.counters.bowlBest || 0}</b> pins · Strikes: <b>${s.counters.strikes || 0}</b>` });
+  }
+
+  /* ======================= GERUDO DESERT: Sand Seal Rally ======================= */
+  // Surf the dunes behind a sand seal and steer through the flag gates. Each gate adds time.
+  function sealRally() {
+    const el = gameScreen('Sand Seal Rally', '<div class="mg-ctrl"><button class="btn big" id="u">▲</button><button class="btn big" id="d">▼</button></div>', 'nonverbal', 'battle');
+    const { cv, ctx, W, H } = stage(el, 0.75);
+    const seal = sprite('sandSeal', ART.sandSeal(), 160, 90);
+    const rowsY = [H * 0.38, H * 0.56, H * 0.74]; let row = 1, py = rowsY[1];
+    let t = 22, gatesHit = 0, missed = 0, speed = 200, spawn = 0.6, scroll = 0, over = false;
+    const gates = [], dust = [];
+    const move = d => { if (!over) row = Math.max(0, Math.min(2, row + d)); };
+    UI().on('#u', () => move(-1)); UI().on('#d', () => move(1));
+    cv.addEventListener('pointerdown', e => { const r = cv.getBoundingClientRect(); move(e.clientY - r.top < r.height / 2 ? -1 : 1); });
+    bindKeys({ ArrowUp: () => move(-1), ArrowDown: () => move(1), w: () => move(-1), s: () => move(1) });
+    const px = W * 0.22;
+    loop(cv, dt => {
+      if (!over) {
+        t -= dt; speed += dt * 5; scroll += speed * dt; spawn -= dt;
+        if (spawn <= 0) { spawn = Math.max(0.55, 1.0 - gatesHit * 0.015); gates.push({ x: W + 40, r: U.int(0, 2) }); }
+        py += (rowsY[row] - py) * Math.min(1, dt * 10);
+        for (const g of gates) {
+          g.x -= speed * dt;
+          if (!g.done && g.x < px + 10) { g.done = true; if (Math.abs(rowsY[g.r] - py) < 26) { gatesHit++; t += 1.6; U.sfx.coin(); g.ok = true; for (let i = 0; i < 12; i++) dust.push({ x: px + 30, y: py, vx: (Math.random() - 0.3) * 160, vy: (Math.random() - 0.5) * 160, life: 0.5, c: '#ffd23d' }); } else { missed++; U.sfx.wrong(); } }
+        }
+        for (let i = gates.length - 1; i >= 0; i--) if (gates[i].x < -40) gates.splice(i, 1);
+        if (Math.random() < dt * 30) dust.push({ x: px - 50, y: py + 22, vx: -speed * 0.6, vy: -Math.random() * 40, life: 0.5, c: '#e8c88a' });
+        if (t <= 0) {
+          over = true; const s = S(); const best = gatesHit > (s.counters.sealBest || 0); State.countMax('sealBest', gatesHit); const prize = gatesHit * 5; s.rupees += prize; State.save();
+          finish('Time\'s up!', `<p>You rode through <b>${gatesHit}</b> gate${gatesHit === 1 ? '' : 's'}${best ? ' — a new best! 🏆' : ''}.</p><p>Prize: <b>${prize} rupees</b></p>`, sealIntro);
+        }
+      }
+      const sky = ctx.createLinearGradient(0, 0, 0, H); sky.addColorStop(0, '#ffcf7a'); sky.addColorStop(0.35, '#ffe2a8'); sky.addColorStop(0.36, '#e8b862'); sky.addColorStop(1, '#c8903e'); ctx.fillStyle = sky; ctx.fillRect(0, 0, W, H);
+      ctx.fillStyle = '#d9a456'; ctx.beginPath(); ctx.moveTo(0, H * 0.36); for (let x = 0; x <= W; x += 20) ctx.lineTo(x, H * 0.33 + Math.sin((x + scroll * 0.2) / 60) * 8); ctx.lineTo(W, H * 0.4); ctx.lineTo(0, H * 0.4); ctx.fill();
+      ctx.fillStyle = '#b07a3a'; ctx.beginPath(); ctx.arc(W * 0.8, H * 0.22, 16, 0, Math.PI * 2); ctx.globalAlpha = 0.25; ctx.fill(); ctx.globalAlpha = 1;
+      ctx.strokeStyle = 'rgba(120,70,20,.25)'; ctx.lineWidth = 2; for (let i = 0; i < 8; i++) { const x = ((i * 90) - scroll) % (W + 90); const xx = x < -90 ? x + W + 90 : x; ctx.beginPath(); ctx.moveTo(xx, H * 0.5 + (i % 3) * 30); ctx.quadraticCurveTo(xx + 30, H * 0.47 + (i % 3) * 30, xx + 60, H * 0.5 + (i % 3) * 30); ctx.stroke(); }
+      for (const g of gates) {
+        const y = rowsY[g.r];
+        for (const dy of [-30, 30]) { ctx.strokeStyle = '#5a3a22'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(g.x, y + dy + 14); ctx.lineTo(g.x, y + dy - 18); ctx.stroke(); ctx.fillStyle = g.ok ? '#7ee35a' : '#c63b4f'; ctx.beginPath(); ctx.moveTo(g.x, y + dy - 18); ctx.lineTo(g.x + 16, y + dy - 12); ctx.lineTo(g.x, y + dy - 6); ctx.fill(); ctx.strokeStyle = '#1d1a2b'; ctx.lineWidth = 1; ctx.stroke(); }
+      }
+      for (let i = dust.length - 1; i >= 0; i--) { const p = dust[i]; p.life -= dt; if (p.life <= 0) { dust.splice(i, 1); continue; } p.x += p.vx * dt; p.y += p.vy * dt; ctx.globalAlpha = p.life * 1.6; ctx.fillStyle = p.c; ctx.beginPath(); ctx.arc(p.x, p.y, 3, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = 1; }
+      if (ready(seal)) ctx.drawImage(seal, px - 70, py - 46, 140, 79);
+      hud(ctx, W, [`🚩 ${gatesHit}`, `⏱ ${Math.max(0, Math.ceil(t))}`]);
+    });
+  }
+  function sealIntro() {
+    const s = S();
+    intro({ title: 'Sand Seal Rally', npc: 'Riju', art: ART.riju(), backLabel: '◀ Gerudo Desert', onBack: toRegion('nonverbal'), theme: 'nonverbal', music: 'nonverbal', play: sealRally,
+      text: 'Thanks to you, Vah Naboris sleeps peacefully. Grab a shield and let my sand seal tow you through the flag gates! Each gate you pass gives you more time.', best: `Best rally: <b>${s.counters.sealBest || 0}</b> gates. Steer with ▲ ▼ or tap the top/bottom half.` });
+  }
+
+  /* ======================= MASTER CYCLE ZERO ======================= */
+  // Ride across Hyrule: jump (tap / Space, double-jump in the air) over boulders and Bokoblins, collect rupees.
+  function cycleRun() {
+    const s = S();
+    if ((s.cycleDay || {}).day !== today()) s.cycleDay = { day: today(), runs: 0 };
+    s.cycleDay.runs++; State.save(); const paid = s.cycleDay.runs <= 3;
+    const el = gameScreen('Master Cycle Run', '<p class="muted">Tap the track or press Space to jump. You can jump again in mid-air!</p>', 'map', 'castle');
+    const { cv, ctx, W, H } = stage(el, 0.62);
+    const bike = sprite('masterCycle', ART.masterCycle(), 160, 92), boko = sprite('bokoRed', ART.bokoblin('red'), 130, 150);
+    const ground = H - 40; let y = ground, vy = 0, jumps = 0, dist = 0, speed = 260, coins = 0, hearts = 3, inv = 0, over = false, spawn = 1, scroll = 0, t = 0;
+    const obs = [], gems = [];
+    const jump = () => { if (over || jumps >= 2) return; vy = jumps ? -520 : -600; jumps++; U.sfx.click(); };
+    cv.addEventListener('pointerdown', jump); bindKeys({ ' ': jump, ArrowUp: jump, Enter: jump });
+    const bx = W * 0.18;
+    loop(cv, dt => {
+      t += dt;
+      if (!over) {
+        speed += dt * 8; dist += speed * dt / 12; scroll += speed * dt; inv = Math.max(0, inv - dt);
+        vy += 1600 * dt; y += vy * dt; if (y >= ground) { y = ground; vy = 0; jumps = 0; }
+        spawn -= dt;
+        if (spawn <= 0) {
+          spawn = Math.max(0.7, 1.6 - dist / 3000) + Math.random() * 0.6;
+          obs.push({ x: W + 40, kind: Math.random() < 0.55 ? 'rock' : 'boko' });
+          const high = Math.random() < 0.5; for (let i = 0; i < 3; i++) gems.push({ x: W + 140 + i * 28, y: high ? ground - 120 : ground - 40 });
+        }
+        for (const o of obs) {
+          o.x -= speed * dt;
+          const w = o.kind === 'rock' ? 22 : 24, h = o.kind === 'rock' ? 26 : 50;
+          if (!o.hit && !inv && Math.abs(o.x - bx) < w + 14 && y > ground - h) { o.hit = true; hearts--; inv = 1.2; U.sfx.hurt(); FX.shake(1); }
+        }
+        for (const g of gems) { g.x -= speed * dt; if (!g.got && Math.abs(g.x - bx) < 24 && Math.abs(g.y - (y - 30)) < 34) { g.got = true; coins++; U.sfx.coin(); } }
+        for (let i = obs.length - 1; i >= 0; i--) if (obs[i].x < -60) obs.splice(i, 1);
+        for (let i = gems.length - 1; i >= 0; i--) if (gems[i].x < -20 || gems[i].got) gems.splice(i, 1);
+        if (hearts <= 0) {
+          over = true; const m = Math.floor(dist); const best = m > (s.counters.cycleBest || 0); State.countMax('cycleBest', m);
+          const prize = paid ? coins * 5 + (best ? Math.floor(m / 20) : 0) : 0; s.rupees += prize; State.save();
+          finish('Crash! 🏍️💨', `<p>You rode <b>${m.toLocaleString('en-GB')} m</b>${best ? ' — a new record! 🏆' : ''} and grabbed ${coins} rupee${coins === 1 ? '' : 's'}.</p><p>${paid ? `Prize: <b>${prize} rupees</b>` : 'Your rupee pouch is full from today\'s rides. Ride for fun, and come back tomorrow for more prizes!'}</p>`, cycleIntro);
+        }
+      }
+      // Hyrule Field at sunset, Hyrule Castle in the distance
+      const sky = ctx.createLinearGradient(0, 0, 0, H); sky.addColorStop(0, '#5a7fc9'); sky.addColorStop(0.6, '#ffc58a'); sky.addColorStop(1, '#ffdcae'); ctx.fillStyle = sky; ctx.fillRect(0, 0, W, H);
+      ctx.fillStyle = '#7a6a9a'; ctx.beginPath(); ctx.moveTo(0, H * 0.62); for (let x = 0; x <= W + 40; x += 40) ctx.lineTo(x, H * 0.5 + Math.sin((x + scroll * 0.1) / 90) * 18); ctx.lineTo(W, H); ctx.lineTo(0, H); ctx.fill();
+      const cx = W * 0.7 - (scroll * 0.03) % (W * 1.6); ctx.fillStyle = '#5a4a6a';
+      ctx.fillRect(cx - 20, H * 0.42, 40, 24); ctx.fillRect(cx - 4, H * 0.32, 8, 14); ctx.beginPath(); ctx.moveTo(cx - 6, H * 0.32); ctx.lineTo(cx, H * 0.26); ctx.lineTo(cx + 6, H * 0.32); ctx.fill();
+      for (const dx of [-16, 12]) { ctx.fillRect(cx + dx, H * 0.37, 6, 8); ctx.beginPath(); ctx.moveTo(cx + dx - 1, H * 0.37); ctx.lineTo(cx + dx + 3, H * 0.34); ctx.lineTo(cx + dx + 7, H * 0.37); ctx.fill(); }
+      ctx.fillStyle = '#5c8f48'; ctx.beginPath(); ctx.moveTo(0, H * 0.72); for (let x = 0; x <= W + 30; x += 30) ctx.lineTo(x, H * 0.66 + Math.sin((x + scroll * 0.35) / 50) * 10); ctx.lineTo(W, H); ctx.lineTo(0, H); ctx.fill();
+      ctx.fillStyle = '#2f6b3a'; for (let i = 0; i < 7; i++) { const x = ((i * 120) - scroll * 0.5) % (W + 120); const xx = x < -60 ? x + W + 120 : x; ctx.beginPath(); ctx.moveTo(xx, H * 0.62); ctx.lineTo(xx + 12, H * 0.74); ctx.lineTo(xx - 12, H * 0.74); ctx.fill(); }
+      ctx.fillStyle = '#8f7a52'; ctx.fillRect(0, ground, W, H - ground); ctx.fillStyle = '#6b5a3a'; for (let x = -(scroll % 40); x < W; x += 40) ctx.fillRect(x, ground + 8, 20, 3);
+      ctx.fillStyle = '#7d9e5c'; ctx.fillRect(0, ground - 2, W, 4);
+      for (const g of gems) rupee(ctx, g.x, g.y, 1.1, '#5cb8ff', '#1f5fbf');
+      for (const o of obs) {
+        if (o.kind === 'rock') { const rg = ctx.createRadialGradient(o.x - 6, ground - 20, 2, o.x, ground - 12, 26); rg.addColorStop(0, '#a8a090'); rg.addColorStop(1, '#5a5448'); ctx.beginPath(); ctx.ellipse(o.x, ground - 12, 24, 16, 0, Math.PI, 0); ctx.lineTo(o.x + 24, ground); ctx.lineTo(o.x - 24, ground); ctx.fillStyle = rg; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = '#1d1a2b'; ctx.stroke(); }
+        else if (ready(boko)) ctx.drawImage(boko, o.x - 26, ground - 60, 52, 60);
+      }
+      if (ready(bike)) { ctx.save(); ctx.globalAlpha = inv > 0 && Math.floor(inv * 10) % 2 ? 0.35 : 1; ctx.translate(bx, y); ctx.rotate(vy < 0 ? -0.12 : vy > 100 ? 0.08 : 0); ctx.drawImage(bike, -64, -72, 128, 74); ctx.restore(); }
+      ctx.strokeStyle = 'rgba(63,224,255,.6)'; ctx.lineWidth = 2; for (let i = 0; i < 3; i++) { ctx.beginPath(); ctx.moveTo(bx - 70 - i * 14, y - 20 - i * 8); ctx.lineTo(bx - 100 - i * 14 - Math.random() * 20, y - 20 - i * 8); ctx.stroke(); }
+      hud(ctx, W, [`${Math.floor(dist).toLocaleString('en-GB')} m`, `${'❤️'.repeat(Math.max(0, hearts))}`, `💎 ${coins}`]);
+    });
+  }
+  function cycleIntro() {
+    const s = S(); const runs = (s.cycleDay || {}).day === today() ? s.cycleDay.runs : 0;
+    intro({ title: 'Master Cycle Run', npc: 'Zelda', art: `<div class="mc-art">${ART.masterCycle()}</div>`, backLabel: '◀ Map', onBack: Game.map, theme: 'map', music: 'castle', play: cycleRun, free: true,
+      text: 'The Master Cycle Zero, the final Divine Beast, is yours! Ride it as far as you can across Hyrule. Jump over boulders and Bokoblins, and grab the rupees!', best: `Record: <b>${(s.counters.cycleBest || 0).toLocaleString('en-GB')} m</b> · Rupee prizes for your first 3 rides each day (${Math.max(0, 3 - runs)} left today). No tickets needed!` });
+  }
+
+  /* ---------------- region panel (shown on each region's saga screen) ---------------- */
+  const ACT = {
+    maths: { game: 'Yunobo\'s Rock Roll', art: () => ART.yunobo(), people: 'Goron', open: rockIntro },
+    english: { game: 'Zora Fishing', art: () => ART.sidon(), people: 'Zora', open: fishIntro },
+    verbal: { game: 'Snowball Bowling', art: () => ART.teba(), people: 'Rito', open: bowlIntro },
+    nonverbal: { game: 'Sand Seal Rally', art: () => ART.riju(), people: 'Gerudo', open: sealIntro },
+  };
+  function regionPanel(r) {
+    const s = S(); const A = ACT[r.id]; const free = !!s.bosses[r.id];
+    const qs = K.QUESTS.filter(q => q.region === r.id); const doneQ = qs.filter(q => s.quests[q.id]).length;
+    return `<div class="region-act slate ${free ? '' : 'locked'}">
+      <div class="ra-art">${A.art()}</div>
+      <div><h3>${free ? `🎉 New in ${r.name}` : `🔒 ${r.beast}`}</h3>
+        <p>${free ? `With ${r.beast.replace('Divine Beast ', '')} free, the ${A.people}s have new things for you to do!` : `Free ${r.beast} to unlock <b>${A.game}</b> and ${qs.length} new ${A.people} side quests.`}</p>
+        ${free ? `<div class="row"><button class="btn primary" id="ra-play">▶ ${A.game}</button><button class="btn" id="ra-q">📜 ${A.people} quests (${doneQ}/${qs.length})</button></div>` : ''}</div></div>`;
+  }
+  function bindRegionPanel(r) { UI().on('#ra-play', () => ACT[r.id].open()); UI().on('#ra-q', () => World.quests()); }
+
+  window.Regions = { regionPanel, bindRegionPanel, cycleIntro, rockIntro, fishIntro, bowlIntro, sealIntro };
 })();
 </script>
 </body>

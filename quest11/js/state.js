@@ -99,14 +99,15 @@
         default: return c[key] || 0;
       }
     },
-    questsReady() { return CATALOG.QUESTS.filter(q => !this.s.quests[q.id] && this.questValue(q.goal[0]) >= q.goal[1]).length; },
+    questOpen(q) { return !q.region || (q.region === 'all' ? !!this.s.mastered.all : !!this.s.bosses[q.region]); },
+    questsReady() { return CATALOG.QUESTS.filter(q => this.questOpen(q) && !this.s.quests[q.id] && this.questValue(q.goal[0]) >= q.goal[1]).length; },
     timerBonus() { return this.s.stamina * 6; },
 
     /* ---- mastery ---- */
     record(topicId, lv, correct) {
       const m = (this.s.mastery[topicId] = this.s.mastery[topicId] || []);
       m.push({ l: lv, c: correct ? 1 : 0 }); if (m.length > 30) m.shift();
-      const st = this.s.stats; st.answered++; if (correct) { st.correct++; this.s.daily.correct++; const subj = SUBJECTS.find(x => CONTENT[x].some(t => t.id === topicId)); if (subj) this.count('c_' + subj); }
+      const st = this.s.stats; st.answered++; if (correct) { st.correct++; this.s.daily.correct++; const subj = SUBJECTS.find(x => CONTENT[x].some(t => t.id === topicId)); if (subj) { this.count('c_' + subj); if (lv >= 3) this.count('m_' + subj); } }
     },
     // 0..100 — recent accuracy, weighted so that hard questions count for more
     mastery(topicId) {
