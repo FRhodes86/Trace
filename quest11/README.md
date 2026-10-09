@@ -42,6 +42,7 @@ The hero (named by the player, default "Link") wakes on the Great Plateau and ha
 
 - Everything is drawn in code, with no image files:
   - Hand-drawn SVG characters: Link (his outfit, sword and shield change with what you equip), Zelda, the Old Man, the Monks, Koroks, Hestu and Beedle.
+  - Every item has its own drawn icon in the game's style, replacing the emoji: all 16 weapons, 9 shields, 13 armour sets, elixirs, the fairy, bomb arrows, 23 cooking ingredients, monster parts, 24 plated meals, saddles and house furniture.
   - Nine kinds of monster, the four Blights, Calamity Ganon and Dark Beast Ganon.
 - Each region has an animated painted landscape on a canvas:
   - Embers and lava glow on Death Mountain, rain at Zora's Domain, snow at Rito Village.
@@ -145,6 +146,7 @@ quest11/
   js/story.js           all names, dialogue and story text (easy to rename characters)
   js/state.js           save data, progression rules, mastery
   js/catalog.js         every ownable thing: gear, items, ingredients, recipes, cosmetics, decor, horses, side quests
+  js/items.js           game-style SVG icons for every item (weapons, shields, armour, elixirs, ingredients, monster parts, meals, saddles, furniture)
   js/game.js            screens, battle engine, story
   js/world.js           side content: shop, bag, cooking, horses, mini-games, house, side quests, Great Fairy
   js/regions.js         regional mini-games unlocked by freeing each Divine Beast, and the Master Cycle Run (canvas)

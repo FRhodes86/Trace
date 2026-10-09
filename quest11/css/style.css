@@ -778,3 +778,17 @@ button.opt:active:not(:disabled) { transform: translateY(1px); box-shadow: 0 1px
 .cycle-pin .pin-art.sm svg { width: 100%; height: 100%; }
 .art .mc-glow, .mastercycle .mc-glow { animation: eye 1.2s ease-in-out infinite; }
 @media (max-width: 600px) { .region-act { grid-template-columns: 70px 1fr; } .region-act .ra-art { width: 70px; height: 90px; } }
+
+/* game-style item icons (sized relative to the text around them) */
+.ii { display: inline-block; width: 1.3em; height: 1.3em; vertical-align: -0.3em; overflow: visible; }
+.emo .ii, .si .ii { filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.35)); }
+.emo.big .ii { filter: drop-shadow(0 0 18px rgba(255, 230, 150, 0.7)); }
+.loot-item .ii { width: 28px; height: 28px; }
+.pot-slots .slot .ii { width: 34px; height: 34px; vertical-align: middle; }
+.ing span .ii { width: 2.2rem; height: 2.2rem; }
+.deco .ii { width: 1.4em; height: 1.4em; }
+.deco-extra .ii { width: 1em; height: 1em; }
+.toast .ii { width: 1.4em; height: 1.4em; }
+.pet-ii svg { width: 100%; height: 100%; }
+.pot .ii { width: 1.1em; height: 1.1em; }
+html { overflow-x: hidden; overflow-x: clip; }

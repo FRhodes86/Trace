@@ -788,6 +788,20 @@ button.opt:active:not(:disabled) { transform: translateY(1px); box-shadow: 0 1px
 .cycle-pin .pin-art.sm svg { width: 100%; height: 100%; }
 .art .mc-glow, .mastercycle .mc-glow { animation: eye 1.2s ease-in-out infinite; }
 @media (max-width: 600px) { .region-act { grid-template-columns: 70px 1fr; } .region-act .ra-art { width: 70px; height: 90px; } }
+
+/* game-style item icons (sized relative to the text around them) */
+.ii { display: inline-block; width: 1.3em; height: 1.3em; vertical-align: -0.3em; overflow: visible; }
+.emo .ii, .si .ii { filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.35)); }
+.emo.big .ii { filter: drop-shadow(0 0 18px rgba(255, 230, 150, 0.7)); }
+.loot-item .ii { width: 28px; height: 28px; }
+.pot-slots .slot .ii { width: 34px; height: 34px; vertical-align: middle; }
+.ing span .ii { width: 2.2rem; height: 2.2rem; }
+.deco .ii { width: 1.4em; height: 1.4em; }
+.deco-extra .ii { width: 1em; height: 1em; }
+.toast .ii { width: 1.4em; height: 1.4em; }
+.pet-ii svg { width: 100%; height: 100%; }
+.pot .ii { width: 1.1em; height: 1.1em; }
+html { overflow-x: hidden; overflow-x: clip; }
 </style>
 </head>
 <body>
@@ -4865,6 +4879,251 @@ Symin`,
 })();
 </script>
 <script>
+// Game-style SVG icons for every ownable item. At load time each catalog entry's `emoji` is replaced with its icon, so every
+// screen that shows an item (shop, bag, kitchen, loot, rewards, house) picks up the artwork. Icons are sized in `em`, so they
+// scale with the surrounding text. The original emoji is kept as `glyph`.
+(function () {
+  const K = window.CATALOG; if (!K) return;
+  const I = '#1d1a2b';
+  let n = 0; const gid = p => `ii${p}${++n}`;
+  const sv = (inner, defs = '') => `<svg class="ii" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">${defs ? `<defs>${defs}</defs>` : ''}${inner}</svg>`;
+  const lin = (id, a, b, v = true) => `<linearGradient id="${id}" x1="0" y1="0" x2="${v ? 0 : 1}" y2="${v ? 1 : 0}"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient>`;
+  const rad = (id, a, b) => `<radialGradient id="${id}" cx="38%" cy="32%"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></radialGradient>`;
+  const glow = (id, c) => `<filter id="${id}" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="1.1" result="b"/><feFlood flood-color="${c}"/><feComposite in2="b" operator="in"/><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>`;
+  const shine = (x, y, l = 4) => `<path d="M${x},${y} l${l * 0.6},${-l}" stroke="#fff" stroke-width="1.1" stroke-linecap="round" opacity=".85"/>`;
+
+  /* ======================= WEAPONS ======================= */
+  // Swords are drawn upright on a 32×32 grid, then tilted 45° so they read like the game's inventory art.
+  function sword(o) {
+    const g = gid('w'); const tilt = inner => `<g transform="translate(16 16) scale(1.16) rotate(45) translate(-16 -16)">${inner}</g>`;
+    const blade = o.blade || `<path d="M14.6,21 L14.8,4.5 L16,2 L17.2,4.5 L17.4,21 Z" fill="url(#${g})" stroke="${I}" stroke-width="1"/><path d="M16,4.5 V20" stroke="${o.fuller || '#a9b8c6'}" stroke-width=".7"/>`;
+    const guard = o.guard || `<path d="M11.5,21 h9 v1.8 h-9z" fill="${o.gc || '#8a8478'}" stroke="${I}" stroke-width=".9"/>`;
+    const grip = `<rect x="15" y="22.8" width="2" height="5.4" fill="${o.grip || '#6b4423'}" stroke="${I}" stroke-width=".8"/><path d="M15,24.4 l2,.8 M15,26.2 l2,.8" stroke="${o.wrap || '#3a2618'}" stroke-width=".6"/>`;
+    const pommel = `<circle cx="16" cy="29.2" r="1.3" fill="${o.pc || o.gc || '#8a8478'}" stroke="${I}" stroke-width=".8"/>`;
+    return sv(tilt(`${o.under || ''}${blade}${guard}${grip}${pommel}${o.over || ''}`), `${lin(g, o.b1 || '#f2f6fa', o.b2 || '#b9c6d2', false)}${o.defs || ''}`);
+  }
+  const fl = gid('f'), fr = gid('f'), th = gid('f'), gd = gid('f'), bl = gid('f');
+  const WEAPONS = {
+    traveler: sword({}),
+    boko: sv(`<path d="M9,27 Q7,15 15,6 Q19,3 22,6 Q24,10 20,13 Q14,19 13,28 Z" fill="#9c6b3d" stroke="${I}" stroke-width="1.2" stroke-linejoin="round"/>
+      <path d="M17,7 l-3,-2 M21,11 l3,1 M16,14 l-3,-1 M13,20 l3,1" stroke="#5a3a22" stroke-width="1.3" stroke-linecap="round"/><path d="M10,24 Q11,16 15,10" stroke="#c8a06a" stroke-width=".9" fill="none"/>
+      <path d="M8,26 l6,2" stroke="#7a5230" stroke-width="2.4" stroke-linecap="round"/>`),
+    soldier: sword({ blade: `<path d="M13.8,21 L14,5 L16,2 L18,5 L18.2,21 Z" fill="#eef3f8" stroke="${I}" stroke-width="1"/><path d="M16,5 V20" stroke="#a9b8c6" stroke-width=".9"/>`, gc: '#4a5a7a', grip: '#2f3a52' }),
+    knight: sword({ blade: `<path d="M14.2,21 L14.3,3.5 L16,1 L17.7,3.5 L17.8,21 Z" fill="#eef3f8" stroke="${I}" stroke-width="1"/><path d="M16,3.5 V20" stroke="#a9b8c6" stroke-width=".8"/>`,
+      guard: `<path d="M10,20.5 Q13,22 16,21 Q19,22 22,20.5 L21,23 Q16,22 11,23 Z" fill="#2f4a8a" stroke="${I}" stroke-width=".9"/><circle cx="16" cy="21.8" r="1" fill="#c9a227"/>`, grip: '#2f4a8a', pc: '#c9a227' }),
+    flame: sword({ b1: '#ffc07a', b2: '#e8562a', fuller: '#fff0b0', gc: '#7a2010', grip: '#4a1a10', defs: glow(fl, '#ff7a2a'),
+      over: `<path d="M14.4,16 q-2,-3 0,-6 q1,2 2,1 M17.6,12 q2,-3 0,-6 q-1,2 -2,1" stroke="#ffd23d" stroke-width=".9" fill="none" filter="url(#${fl})"/>` }),
+    frost: sword({ b1: '#e8fbff', b2: '#7fd0f0', fuller: '#ffffff', gc: '#1f4f8a', grip: '#163a66', defs: glow(fr, '#9fe8ff'),
+      over: `<path d="M13.6,9 l-2,-1 l2,-1 M18.4,14 l2,-1 l-2,-1 M13.6,17 l-1.6,-.8" stroke="#bff6ff" stroke-width=".9" fill="none" filter="url(#${fr})"/>` }),
+    thunder: sword({ blade: `<path d="M14.6,21 L15.2,15 L13.8,14 L15.4,8 L14.2,7.4 L16,2 L17.6,7 L16.8,7.6 L18.2,13 L17,13.8 L17.4,21 Z" fill="#fff3a0" stroke="${I}" stroke-width="1" stroke-linejoin="round"/>`,
+      gc: '#8a6a10', grip: '#5a4410', defs: glow(th, '#ffe866'), over: `<path d="M16,4 l-.8,4 l1.4,1 l-1,5" stroke="#fffbe0" stroke-width=".7" fill="none" filter="url(#${th})"/>` }),
+    eightfold: sword({ blade: `<path d="M15,21 Q14.4,12 15.6,2.5 Q17.4,6 17,21 Z" fill="#f4f8fb" stroke="${I}" stroke-width="1"/><path d="M15.6,6 Q15,13 15.8,20" stroke="#b9c6d2" stroke-width=".6" fill="none"/>`,
+      guard: `<ellipse cx="16" cy="21.8" rx="3" ry="1.2" fill="#3a2a2a" stroke="${I}" stroke-width=".8"/>`, grip: '#2a2222', wrap: '#e8e0c8', pc: '#3a2a2a' }),
+    royal: sword({ b1: '#fdf6dc', b2: '#d8c890', fuller: '#3fe0ff', gc: '#c9a227', grip: '#2f3f8a', defs: glow(gd, '#3fe0ff'),
+      guard: `<path d="M10.5,21 Q16,18.6 21.5,21 L20.5,23 Q16,21.6 11.5,23 Z" fill="#c9a227" stroke="${I}" stroke-width=".9"/><circle cx="16" cy="21.6" r="1.1" fill="#3fe0ff" filter="url(#${gd})"/>` }),
+    lynel: sword({ blade: `<path d="M13.4,21 L13.4,6 L15,3.4 L16,1.4 L17.4,4 L18.6,6 L18.6,21 L17.6,19.4 L18.6,17.6 L17.6,15.8 L18.6,14 L17.6,12.2 L18.6,10.4 Z" fill="#e8d8c4" stroke="${I}" stroke-width="1" stroke-linejoin="round"/><path d="M14.6,6 V20" stroke="#b5462c" stroke-width="1"/>`,
+      gc: '#6a2a1a', grip: '#4a1a10', wrap: '#b5462c' }),
+    biggoron: sword({ blade: `<path d="M13,21 L13,4 L16,0.6 L19,4 L19,21 Z" fill="#f4f8fb" stroke="${I}" stroke-width="1"/><path d="M16,3 V20 M14.4,6 V20" stroke="#b9c6d2" stroke-width=".7"/>`,
+      guard: `<path d="M9.5,20.6 h13 l-1,2.6 h-11z" fill="#4a3a8a" stroke="${I}" stroke-width=".9"/><path d="M14,21.8 h4" stroke="#c9a227" stroke-width="1"/>`, grip: '#4a3a8a', pc: '#c9a227' }),
+    goddess: sword({ b1: '#ffffff', b2: '#e8ecf6', fuller: '#3fe0ff', defs: glow(bl, '#fff6c8'), under: `<path d="M16,1 V21" stroke="#fff6c8" stroke-width="5" opacity=".35" filter="url(#${bl})"/>`,
+      guard: `<path d="M10,20.5 Q12,18 14,21 h4 Q20,18 22,20.5 L20,23 h-8z" fill="#3fe0ff" stroke="${I}" stroke-width=".9"/>`, grip: '#2f63c4', pc: '#f2d16b' }),
+    master: sword({ b1: '#f6faff', b2: '#c4d4e8', fuller: '#9fb4d8',
+      guard: `<path d="M16,20.6 C13,20.6 10.6,19.6 9.2,17 C10,21 12.6,23.2 15,23.4 Z M16,20.6 C19,20.6 21.4,19.6 22.8,17 C22,21 19.4,23.2 17,23.4 Z" fill="#3a5fd0" stroke="${I}" stroke-width=".9" stroke-linejoin="round"/><path d="M16,20.8 l1.1,1.3 l-1.1,1.3 l-1.1,-1.3z" fill="#f2d16b" stroke="${I}" stroke-width=".5"/>`,
+      grip: '#4a4fb8', wrap: '#2c2f7a', pc: '#f2d16b' }),
+    boulder: sv(`<g transform="translate(16 16) scale(1.16) rotate(45) translate(-16 -16)"><path d="M12.6,22 L12.4,4 L16,0.6 L19.6,4 L19.4,22 Z" fill="#9a9488" stroke="${I}" stroke-width="1.1"/><path d="M14,6 l2,3 l-1.4,3 l2,3 l-1,4 M18,5 l-1,3" stroke="#ff9a2e" stroke-width=".9" fill="none"/>
+      <path d="M10,21.6 h12 v2.2 h-12z" fill="#c2381c" stroke="${I}" stroke-width=".9"/><rect x="14.8" y="23.8" width="2.4" height="5" fill="#5a3a22" stroke="${I}" stroke-width=".8"/><circle cx="16" cy="29.6" r="1.4" fill="#c2381c" stroke="${I}" stroke-width=".8"/></g>`),
+    trident: sv(`<g transform="translate(16 16) scale(1.16) rotate(45) translate(-16 -16)"><path d="M16,31 V9" stroke="${I}" stroke-width="2.6" stroke-linecap="round"/><path d="M16,31 V9" stroke="#c9302c" stroke-width="1.4" stroke-linecap="round"/>
+      <path d="M11.6,10 h8.8 M12,10 V5 M20,10 V5 M16,10 V2" stroke="${I}" stroke-width="2.4" stroke-linecap="round"/><path d="M11.6,10 h8.8 M12,10 V5 M20,10 V5 M16,10 V2" stroke="#c8f4ff" stroke-width="1.2" stroke-linecap="round"/>
+      <path d="M11,5.4 l1,-3 l1,3 M19,5.4 l1,-3 l1,3 M15,2.6 l1,-2.4 l1,2.4" fill="#e8fbff" stroke="${I}" stroke-width=".7"/><circle cx="16" cy="10" r="1.3" fill="#c9302c" stroke="${I}" stroke-width=".6"/></g>`),
+    scimitar: sv(`<g transform="translate(16 16) scale(1.16) rotate(45) translate(-16 -16)"><path d="M15,21 Q10,12 16.6,1.6 Q15.2,11 17.4,21 Z" fill="#f6ecc0" stroke="${I}" stroke-width="1" stroke-linejoin="round"/><path d="M15.4,18 Q12.8,11 15.6,5" stroke="#c9a227" stroke-width=".7" fill="none"/>
+      <path d="M12,21 h8 l-.8,1.8 h-6.4z" fill="#c9a227" stroke="${I}" stroke-width=".9"/><rect x="15" y="22.8" width="2" height="5.4" fill="#7a2a1a" stroke="${I}" stroke-width=".8"/><circle cx="16" cy="29.2" r="1.4" fill="#3fe0ff" stroke="${I}" stroke-width=".8"/></g>`),
+  };
+
+  /* ======================= SHIELDS ======================= */
+  const sg = gid('s'), hg = gid('s'), mg = gid('s'), rg2 = gid('s');
+  const SHIELDS = {
+    none: sv(`<ellipse cx="16" cy="17" rx="13" ry="12" fill="url(#${sg})" stroke="${I}" stroke-width="1.3"/><ellipse cx="16" cy="17" rx="8.5" ry="7.8" fill="none" stroke="#6f6f68" stroke-width="1"/><rect x="13.5" y="13" width="5" height="3" rx="1.5" fill="#6f6f68" stroke="${I}" stroke-width=".8"/>${shine(8, 13)}`, rad(sg, '#c8c8c0', '#8c8c84')),
+    wooden: sv(`<circle cx="16" cy="16.5" r="13" fill="#b07a42" stroke="${I}" stroke-width="1.3"/><path d="M9,6.5 V26.5 M16,3.5 V29.5 M23,6.5 V26.5" stroke="#7a5230" stroke-width="1.2"/><path d="M4,12 h24 M4,21 h24" stroke="#5a3a22" stroke-width="1.6"/><circle cx="9" cy="12" r=".8" fill="#ccc"/><circle cx="23" cy="21" r=".8" fill="#ccc"/>`),
+    traveler: sv(`<circle cx="16" cy="16.5" r="13" fill="#8a5a2b" stroke="${I}" stroke-width="1.3"/><circle cx="16" cy="16.5" r="11" fill="none" stroke="#b8b8b8" stroke-width="1.6"/><circle cx="16" cy="16.5" r="7.5" fill="none" stroke="#5e3b1a" stroke-width="1.2"/><circle cx="16" cy="16.5" r="3" fill="#c8c8c8" stroke="${I}" stroke-width=".9"/>${[0, 60, 120, 180, 240, 300].map(a => `<circle cx="${(16 + Math.cos(a * Math.PI / 180) * 11).toFixed(1)}" cy="${(16.5 + Math.sin(a * Math.PI / 180) * 11).toFixed(1)}" r=".9" fill="#ddd" stroke="${I}" stroke-width=".4"/>`).join('')}`),
+    soldier: sv(`<path d="M5,5 Q16,2 27,5 L25.5,19 Q16,30 6.5,19 Z" fill="#3a6aa8" stroke="${I}" stroke-width="1.3" stroke-linejoin="round"/><path d="M6.6,6.4 Q16,4 25.4,6.4" stroke="#c8d4e4" stroke-width="1.4" fill="none"/><path d="M16,6 V25 M8,13 H24" stroke="#c8d4e4" stroke-width="2"/>`),
+    hylian: sv(`<path d="M4.5,4 Q16,1 27.5,4 L26.5,20 Q16,31.5 5.5,20 Z" fill="url(#${hg})" stroke="#9aa6b5" stroke-width="2" stroke-linejoin="round"/><path d="M4.5,4 Q16,1 27.5,4 L26.5,20 Q16,31.5 5.5,20 Z" fill="none" stroke="${I}" stroke-width=".9"/>
+      <path d="M10,10 L16,6 L22,10 L19,13 L16,11 L13,13 Z" fill="#c9302c" stroke="${I}" stroke-width=".6"/><path d="M16,11 L18.6,14 L16,21 L13.4,14 Z M9,13 Q12,15 13.4,14 M23,13 Q20,15 18.6,14" fill="#c9302c" stroke="${I}" stroke-width=".6"/>
+      <path d="M14.4,26 l1.6,-2.6 l1.6,2.6 z M12.8,26 l1.6,-2.6 M19.2,26 l-1.6,-2.6" fill="#f4d03f" stroke="#a88a10" stroke-width=".4"/><path d="M5.5,6 H26.5" stroke="#c8d0dc" stroke-width="1.2"/>`, lin(hg, '#3a6ad0', '#1f3f9a')),
+    royal: sv(`<path d="M4.5,4 Q16,1 27.5,4 L26.5,20 Q16,31.5 5.5,20 Z" fill="#23367a" stroke="#e2b33c" stroke-width="2.2" stroke-linejoin="round"/><path d="M4.5,4 Q16,1 27.5,4 L26.5,20 Q16,31.5 5.5,20 Z" fill="none" stroke="${I}" stroke-width=".8"/>
+      <path d="M11,9 l2,3 l3,-4 l3,4 l2,-3 v5 h-10z" fill="#e2b33c" stroke="${I}" stroke-width=".6"/><path d="M16,15 l3,4 l-3,5 l-3,-5z" fill="#3fe0ff" stroke="${I}" stroke-width=".6"/>`),
+    lynel: sv(`<path d="M3,9 L8,3 L12,6 L16,2 L20,6 L24,3 L29,9 L27,21 L16,30 L5,21 Z" fill="#8a2a1a" stroke="${I}" stroke-width="1.3" stroke-linejoin="round"/><path d="M6,10 L16,6 L26,10 L24.6,20 L16,27 L7.4,20 Z" fill="none" stroke="#c23b22" stroke-width="1.2"/>
+      <circle cx="16" cy="16" r="5.4" fill="#e8c483" stroke="${I}" stroke-width="1"/><path d="M13.6,15 h1.4 M17,15 h1.4 M14.6,18.4 q1.4,1 2.8,0" stroke="${I}" stroke-width=".9" fill="none"/><path d="M11,12 l-1.6,-3 M21,12 l1.6,-3" stroke="#f3e2b8" stroke-width="1.6" stroke-linecap="round"/>`),
+    mirror: sv(`<ellipse cx="16" cy="16.5" rx="12.5" ry="14" fill="#aab8c6" stroke="${I}" stroke-width="1.3"/><ellipse cx="16" cy="16.5" rx="10" ry="11.5" fill="url(#${mg})" stroke="#6a7a8a" stroke-width=".8"/><path d="M9.5,9 l5,-3.4 M10.5,13 l3,-2" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/>`, lin(mg, '#ffffff', '#c4d8ea')),
+    daybreaker: sv(`<circle cx="16" cy="16" r="14" fill="url(#${rg2})" stroke="${I}" stroke-width="1.3"/><circle cx="16" cy="16" r="10" fill="#c2381c" stroke="#7a2010" stroke-width=".9"/>
+      <path d="M16,6.6 l2,6 l6,-2 l-4,5 l4,5 l-6,-2 l-2,6 l-2,-6 l-6,2 l4,-5 l-4,-5 l6,2 z" fill="#ffe17a" stroke="#7a2010" stroke-width=".6"/><circle cx="16" cy="16" r="2.6" fill="#3fe0ff" stroke="${I}" stroke-width=".6"/>`, rad(rg2, '#ffe17a', '#c9962a')),
+  };
+
+  /* ======================= ARMOUR (tunic icons) ======================= */
+  function tunic(c, extra = '', under = '') {
+    const g = gid('a');
+    return sv(`${under}<path d="M11,4 L6,6.5 L2.5,14 L6.5,16 L8.5,12 L9,28.5 Q16,30.5 23,28.5 L23.5,12 L25.5,16 L29.5,14 L26,6.5 L21,4 Q16,7.5 11,4Z" fill="url(#${g})" stroke="${I}" stroke-width="1.2" stroke-linejoin="round"/>
+      <path d="M11,4 Q16,9 21,4" stroke="${c.trim}" stroke-width="1.6" fill="none"/><path d="M9,26 Q16,28 23,26" stroke="${c.trim}" stroke-width="1.4" fill="none"/>
+      <path d="M8.8,20 h14.4" stroke="#6b4423" stroke-width="2"/><rect x="14.6" y="19" width="2.8" height="2.2" rx=".5" fill="#c9a227" stroke="${I}" stroke-width=".5"/>${extra}`, lin(g, c.tunic, c.shade));
+  }
+  const A = (tunic_, shade, trim) => ({ tunic: tunic_, shade, trim });
+  const ARMOUR = {
+    tunic: tunic(A('#4f86c6', '#3a6699', '#efe6c8')),
+    sheikah: tunic(A('#26345e', '#18213f', '#c63b4f'), `<path d="M13,11 q3,2.6 6,0" stroke="#c63b4f" stroke-width="1" fill="none"/><path d="M14.4,13 l1.6,1.6 l1.6,-1.6 l-1.6,-1.2z" fill="#c63b4f"/>`),
+    climbing: tunic(A('#4a7a8a', '#335a66', '#e8d8a8'), `<path d="M7,10 L25,10" stroke="#c8402a" stroke-width="2"/><path d="M12,14 h3 M17,14 h3" stroke="#e8d8a8" stroke-width="1"/>`),
+    champion: tunic(A('#2e73d9', '#1f55a8', '#ffffff'), `<path d="M9.4,24.6 l1.6,-1.6 l1.6,1.6 l1.6,-1.6 l1.6,1.6 l1.6,-1.6 l1.6,1.6 l1.6,-1.6 l1.6,1.6 l1.6,-1.6" stroke="#fff" stroke-width=".8" fill="none"/><path d="M14,8 L16,11 L18,8" stroke="#fff" stroke-width="1" fill="none"/>`),
+    royalguard: tunic(A('#22336e', '#16224a', '#e2b33c'), `<path d="M6,6.5 L10,5 L9,9 Z M26,6.5 L22,5 L23,9 Z" fill="#e2b33c" stroke="${I}" stroke-width=".6"/><path d="M16,12 v6" stroke="#e2b33c" stroke-width="1.2"/>`),
+    barbarian: tunic(A('#7a4a2a', '#5a321a', '#d0302a'), `<path d="M8,6 Q16,12 24,6 Q22,9.5 16,10.5 Q10,9.5 8,6Z" fill="#e8e0c8" stroke="${I}" stroke-width=".7"/><path d="M12,14 l2,4 M20,14 l-2,4" stroke="#d0302a" stroke-width="1.4" stroke-linecap="round"/>`),
+    flamebreaker: tunic(A('#6a4a3a', '#4a2e22', '#ff7a2a'), `<path d="M10,12 h5 v4 h-5z M17,12 h5 v4 h-5z M11,22 h10 v3 h-10z" fill="#8c8674" stroke="${I}" stroke-width=".6"/><path d="M10.6,13 l3,2 M17.6,13 l3,2" stroke="#ff7a2a" stroke-width=".7"/>`),
+    zora: tunic(A('#3a8ad0', '#25639c', '#e8f6ff'), `${[12, 16, 20].map(y => `<path d="M10,${y} q1.5,-2 3,0 q1.5,-2 3,0 q1.5,-2 3,0 q1.5,-2 3,0" stroke="#bfe6ff" stroke-width=".8" fill="none"/>`).join('')}<circle cx="16" cy="9" r="1.2" fill="#3fe0ff"/>`),
+    snowquill: tunic(A('#e8eef6', '#b8c4d4', '#c63b4f'), `<path d="M7,8 q2,-3 4,0 q2,-3 4,0 M17,8 q2,-3 4,0 q2,-3 4,0" stroke="#fff" stroke-width="1.6" fill="none"/><path d="M9,16 l3,2 l3,-2 l3,2 l3,-2" stroke="#9aa6b5" stroke-width=".8" fill="none"/>`),
+    desert: tunic(A('#e8c070', '#c09a48', '#7a3aa0'), `<path d="M11,4 Q16,1 21,4 L20,8 Q16,10 12,8Z" fill="#7a3aa0" stroke="${I}" stroke-width=".7"/><path d="M10,14 h12" stroke="#7a3aa0" stroke-width="1.6"/><circle cx="16" cy="16.6" r="1.2" fill="#3fe0ff"/>`),
+    time: tunic(A('#3c9a3c', '#2a6e2a', '#f0e0a0'), `<path d="M23,1 Q30,2 31,10 Q27,6 24,7 Z" fill="#3c9a3c" stroke="${I}" stroke-width=".8"/><path d="M14,9 h4" stroke="#f0e0a0" stroke-width="1"/>`),
+    wild: tunic(A('#2a4aa8', '#1a3070', '#ffd23d'), `<path d="M11,12 q5,4 10,0 M11,16 q5,4 10,0" stroke="#ffd23d" stroke-width=".9" fill="none"/><path d="M16,10.6 l1.4,2.4 h-2.8z" fill="#ffd23d"/>`, `<ellipse cx="16" cy="16" rx="15" ry="15" fill="#ffd23d" opacity=".25"/>`),
+    deity: tunic(A('#f2f2f2', '#c8c8d0', '#c62a2a'), `<path d="M10,9 L22,24 M22,9 L10,24" stroke="#c62a2a" stroke-width="1.8"/><circle cx="16" cy="16.5" r="1.8" fill="#3fb0ff" stroke="${I}" stroke-width=".5"/>`, `<ellipse cx="16" cy="16" rx="15" ry="15" fill="#ff5a5a" opacity=".22"/>`),
+  };
+
+  /* ======================= CONSUMABLES ======================= */
+  function bottle(liquid, liq2, symbol) {
+    const g = gid('b');
+    return sv(`<path d="M12.4,3 h7.2 v2.6 h-7.2z" fill="#a8703e" stroke="${I}" stroke-width=".9"/><path d="M13.4,5.6 V10 Q6.6,13 6.6,20.4 Q6.6,29.4 16,29.4 Q25.4,29.4 25.4,20.4 Q25.4,13 18.6,10 V5.6" fill="#eaf4fa" fill-opacity=".55" stroke="${I}" stroke-width="1.2"/>
+      <path d="M7.4,18 Q16,15.6 24.6,18 Q25,28.6 16,28.6 Q7,28.6 7.4,18Z" fill="url(#${g})"/>${symbol}<path d="M10,14.6 Q8.6,17 8.8,20" stroke="#fff" stroke-width="1.3" fill="none" stroke-linecap="round" opacity=".9"/>`, lin(g, liquid, liq2));
+  }
+  const ITEMS = {
+    hearty: bottle('#ff6a7a', '#c2203a', `<path d="M16,26 C12,23 11,21.4 11,20 A2.4,2.4 0 0 1 16,19.4 A2.4,2.4 0 0 1 21,20 C21,21.4 20,23 16,26Z" fill="#fff" opacity=".9"/>`),
+    hasty: bottle('#9ff0d8', '#2fae8a', `<path d="M11,21.6 q4,-3 8,0 M12,24.6 q4,-2.4 9,0" stroke="#fff" stroke-width="1.3" fill="none" stroke-linecap="round" opacity=".9"/>`),
+    mighty: bottle('#ffb36b', '#d8501f', `<path d="M16,19.4 V26 M13.6,23.8 h4.8" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity=".9"/>`),
+    fairy: sv(`<ellipse cx="9.4" cy="13" rx="6.6" ry="4.4" transform="rotate(-24 9.4 13)" fill="#ffd0ec" fill-opacity=".85" stroke="#ff9ad0" stroke-width=".8"/><ellipse cx="22.6" cy="13" rx="6.6" ry="4.4" transform="rotate(24 22.6 13)" fill="#ffd0ec" fill-opacity=".85" stroke="#ff9ad0" stroke-width=".8"/>
+      <ellipse cx="11" cy="20" rx="4.4" ry="3" transform="rotate(24 11 20)" fill="#ffe0f2" fill-opacity=".8" stroke="#ff9ad0" stroke-width=".7"/><ellipse cx="21" cy="20" rx="4.4" ry="3" transform="rotate(-24 21 20)" fill="#ffe0f2" fill-opacity=".8" stroke="#ff9ad0" stroke-width=".7"/>
+      <circle cx="16" cy="16" r="5.6" fill="#ff9ad0" opacity=".45"/><circle cx="16" cy="16" r="3.6" fill="#fff" stroke="#ff7ac0" stroke-width=".9"/><path d="M6,5 l.6,1.6 l1.6,.6 l-1.6,.6 l-.6,1.6 l-.6,-1.6 l-1.6,-.6 l1.6,-.6z M26,25 l.5,1.3 l1.3,.5 l-1.3,.5 l-.5,1.3 l-.5,-1.3 l-1.3,-.5 l1.3,-.5z" fill="#fff6a0"/>`),
+    bombarrow: sv(`<path d="M5,27 L21,11" stroke="${I}" stroke-width="2.4" stroke-linecap="round"/><path d="M5,27 L21,11" stroke="#c8a06a" stroke-width="1.2" stroke-linecap="round"/>
+      <path d="M4,24 l-1,5 l5,-1 M6.6,21.4 l-2.6,-.6 M10.6,25.4 l.6,2.6" fill="#e8402e" stroke="#e8402e" stroke-width="1.2"/>
+      <circle cx="23" cy="9" r="5.6" fill="#2b2f38" stroke="${I}" stroke-width="1.1"/><path d="M20.6,6.6 q1.4,-1.6 3,-1" stroke="#7a8090" stroke-width="1" fill="none"/><path d="M26.6,5.4 l2,-2.4" stroke="#7a5230" stroke-width="1.2"/><circle cx="29" cy="2.8" r="1.4" fill="#ffb547"/>`),
+    ticket: sv(`<path d="M3,9 h26 v4 a2.6,2.6 0 0 0 0,6 v4 h-26 v-4 a2.6,2.6 0 0 0 0,-6z" fill="#f4ead0" stroke="${I}" stroke-width="1.2"/><path d="M21,9.6 V22.4" stroke="#c9b07a" stroke-width="1" stroke-dasharray="1.4 1.2"/>
+      <path d="M7.6,16 q4.4,-4.4 8.8,0 q-4.4,4.4 -8.8,0z" fill="none" stroke="#3a7fc9" stroke-width="1.1"/><circle cx="12" cy="16" r="1.6" fill="#3a7fc9"/><path d="M12,18.6 l-.9,2 h1.8z" fill="#3a7fc9"/><path d="M23.4,13 h3.4 M23.4,16 h3.4 M23.4,19 h3.4" stroke="#c9b07a" stroke-width=".9"/>`),
+    luckycharm: sv(`${[0, 90, 180, 270].map(a => `<path transform="rotate(${a} 16 14)" d="M16,14 C12,12 10,7 13,5 C15,4 16,6 16,7 C16,6 17,4 19,5 C22,7 20,12 16,14Z" fill="#4fbf4a" stroke="${I}" stroke-width=".9"/>`).join('')}<path d="M16,14 Q17,22 21,28" stroke="#3a8a2e" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="16" cy="14" r="1.3" fill="#2f7a2a"/>`),
+    goldnugget: sv(`<path d="M5,22 L8,14 L14,10 L21,11 L27,16 L26,23 L18,27 L9,26 Z" fill="url(#GN)" stroke="${I}" stroke-width="1.2" stroke-linejoin="round"/><path d="M8,14 L14,17 L21,11 M14,17 L18,27 M14,17 L26,23" stroke="#c99a0c" stroke-width=".8" fill="none"/>${shine(10, 17, 3)}`.replace('GN', 'ii-iign'), lin('ii-iign', '#fff0a0', '#d8a822')),
+  };
+  const RELICS = {
+    eaglebow: sv(`<path d="M8,3 Q28,8 26,28" stroke="${I}" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M8,3 Q28,8 26,28" stroke="#3a7fc9" stroke-width="1.6" fill="none" stroke-linecap="round"/><path d="M8,3 L26,28" stroke="#e8eef6" stroke-width=".7"/>
+      <path d="M8,3 l-4,-1 l3,3 M26,28 l1,4 l-3,-3" fill="#f4f6fa" stroke="${I}" stroke-width=".6"/><path d="M19.4,9.4 l2.6,-1.4 M23.2,16 l2.8,-.4 M24.6,22 l2.6,.6" stroke="#c63b4f" stroke-width="1.2" stroke-linecap="round"/><path d="M15,6.4 q3,-.6 4,1" stroke="#fff" stroke-width="1.2" fill="none"/>`),
+  };
+
+  /* ======================= INGREDIENTS ======================= */
+  const r = (id, a, b) => rad(id, a, b);
+  const FOOD = {
+    apple: sv(`<path d="M16,9 C10,6 4,10 5,18 C6,26 12,29 16,27 C20,29 26,26 27,18 C28,10 22,6 16,9Z" fill="url(#ii-ap)" stroke="${I}" stroke-width="1.1"/><path d="M16,9 Q16,5 18,2.4" stroke="#6b4423" stroke-width="1.4" fill="none" stroke-linecap="round"/><path d="M17,5 Q22,2 24,5 Q20,7 17,5Z" fill="#5fae3e" stroke="${I}" stroke-width=".7"/>${shine(9, 15)}`, r('ii-ap', '#ff6a5a', '#b81f2f')),
+    berry: sv(`${[[11, 18], [19, 17], [15, 24], [21, 24], [10, 25]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="5" fill="url(#ii-bb)" stroke="${I}" stroke-width=".9"/><circle cx="${x - 1.6}" cy="${y - 1.6}" r="1" fill="#fff" opacity=".8"/>`).join('')}<path d="M14,13 Q15,7 19,5 M17,9 Q22,6 25,8 Q21,11 17,9Z" stroke="#3f8f2d" stroke-width="1.2" fill="#5fae3e"/>`, r('ii-bb', '#ff5a8a', '#8a1a4a')),
+    banana: sv(`${[0, 1, 2].map(i => `<path d="M8,${8 + i * 3} Q${18 + i},${10 + i * 3} ${26 - i},${24 + i}" stroke="${I}" stroke-width="5.4" fill="none" stroke-linecap="round"/><path d="M8,${8 + i * 3} Q${18 + i},${10 + i * 3} ${26 - i},${24 + i}" stroke="#ffd84a" stroke-width="3.6" fill="none" stroke-linecap="round"/>`).join('')}<path d="M5,7 l4,2" stroke="#6b4423" stroke-width="2.6" stroke-linecap="round"/><path d="M10,9.6 Q18,11 24,22" stroke="#fff3b0" stroke-width=".8" fill="none"/>`),
+    melon: sv(`<ellipse cx="16" cy="17" rx="12.5" ry="11.5" fill="url(#ii-ml)" stroke="${I}" stroke-width="1.2"/><path d="M16,5.6 Q10,17 16,28.4 M16,5.6 Q22,17 16,28.4 M6,12 Q16,16 26,12" stroke="#2a7a6a" stroke-width="1.4" fill="none"/><path d="M16,5.6 l0,-3 l3,1" stroke="#6b4423" stroke-width="1.2" fill="none"/>${shine(8, 13)}`, r('ii-ml', '#9ff0d8', '#2f9a7a')),
+    voltfruit: sv(`<path d="M16,4 C24,4 27,12 26,19 C25,26 20,29 16,29 C12,29 7,26 6,19 C5,12 8,4 16,4Z" fill="url(#ii-vf)" stroke="${I}" stroke-width="1.1"/>${[[11, 11], [20, 10], [16, 17], [9, 20], [22, 20], [15, 25]].map(([x, y]) => `<path d="M${x},${y} l-1.4,-1.4 M${x},${y} l1.4,-1.4 M${x},${y} l0,-2" stroke="#fff3b0" stroke-width=".8"/>`).join('')}<path d="M13,4.4 l3,-2.4 l3,2.4" fill="#5fae3e" stroke="${I}" stroke-width=".8"/>`, r('ii-vf', '#ffe866', '#e8902a')),
+    pepper: sv(`<path d="M12,8 C20,7 24,13 22,20 C20,27 13,30 8,29 C12,25 14,20 12,8Z" fill="url(#ii-sp)" stroke="${I}" stroke-width="1.1"/><path d="M10,8.6 Q14,5 18,7.4 Q15,10 10,8.6Z" fill="#3f8f2d" stroke="${I}" stroke-width=".8"/><path d="M14,7 Q14,3 17,2" stroke="#3f8f2d" stroke-width="1.4" fill="none"/>${shine(16, 16, 5)}`, r('ii-sp', '#ff7a5a', '#c2201a')),
+    carrot: sv(`<path d="M9,10 L23,7 L12,29 Z" fill="url(#ii-ca)" stroke="${I}" stroke-width="1.1" stroke-linejoin="round"/><path d="M12,13 l4,1 M11.6,18 l3.6,1 M12,23 l2.6,.6" stroke="#c2501a" stroke-width=".9"/><path d="M15,9 Q12,2 14,1 M17,8.6 Q18,2 21,2 M19,8 Q24,4 26,6" stroke="#4fbf4a" stroke-width="2" fill="none" stroke-linecap="round"/>`, lin('ii-ca', '#ffb347', '#e8702a', false)),
+    radish: sv(`<path d="M16,11 C25,12 26,21 20,26 Q17,28 16,31 Q15,28 12,26 C6,21 7,12 16,11Z" fill="url(#ii-rd)" stroke="${I}" stroke-width="1.1"/><path d="M16,11 Q10,4 6,5 Q9,10 15,11 M16,11 Q16,2 19,1 Q21,7 17,11 M16,11 Q23,5 27,7 Q23,11 17,11" fill="#4fbf4a" stroke="${I}" stroke-width=".8"/>${shine(11, 18, 3)}`, r('ii-rd', '#ffffff', '#f08aa8')),
+    shroom: sv(`<path d="M13,18 h6 l1,10 q-4,2 -8,0z" fill="#f4ead0" stroke="${I}" stroke-width="1"/><path d="M3,18 Q4,6 16,5 Q28,6 29,18 Q16,21 3,18Z" fill="url(#ii-hs)" stroke="${I}" stroke-width="1.1"/><circle cx="10" cy="12" r="1.6" fill="#fff6dc"/><circle cx="18" cy="9.6" r="1.3" fill="#fff6dc"/><circle cx="23" cy="14" r="1.6" fill="#fff6dc"/>`, r('ii-hs', '#d8a86a', '#8a5a2b')),
+    truffle: sv(`<path d="M5,21 C3,13 9,8 14,10 C16,5 24,6 25,12 C30,14 29,24 23,26 C18,29 9,28 5,21Z" fill="url(#ii-ht)" stroke="${I}" stroke-width="1.1"/><path d="M10,16 q2,-2 4,0 M17,13 q2,-2 4,0 M15,21 q2,-2 4,0" stroke="#f0c8b0" stroke-width="1" fill="none"/>`, r('ii-ht', '#e8a888', '#9a5a4a')),
+    meat: sv(`<path d="M5,15 C4,8 13,4 20,6 C27,8 29,15 26,21 C23,27 14,29 8,25 C5,23 5,19 5,15Z" fill="url(#ii-rm)" stroke="${I}" stroke-width="1.1"/><path d="M9,14 Q15,10 21,13 Q16,17 9,14Z" fill="#fff0e8" opacity=".85"/><path d="M8,21 Q15,18 23,20" stroke="#fff0e8" stroke-width="1.4" fill="none" opacity=".7"/>`, r('ii-rm', '#ff7a7a', '#b8302f')),
+    bird: sv(`<path d="M18,4 C26,4 29,12 25,17 C22,21 17,20 14,18 Z" fill="url(#ii-dr)" stroke="${I}" stroke-width="1.1"/><path d="M15,17 L8,24" stroke="#f4ead0" stroke-width="3.4" stroke-linecap="round"/><path d="M15,17 L8,24" stroke="${I}" stroke-width=".7" fill="none" stroke-linecap="round" opacity=".5"/><circle cx="6.4" cy="24" r="2.2" fill="#f4ead0" stroke="${I}" stroke-width=".9"/><circle cx="8" cy="26.4" r="2.2" fill="#f4ead0" stroke="${I}" stroke-width=".9"/>${shine(20, 10, 3)}`, r('ii-dr', '#ffb0a0', '#c86a5a')),
+    fish: sv(`<path d="M3,16 Q11,7 21,10 L28,5 L26,16 L28,27 L21,22 Q11,25 3,16Z" fill="url(#ii-fs)" stroke="${I}" stroke-width="1.1" stroke-linejoin="round"/><path d="M8,16 Q14,13 21,16" stroke="#dfe8c8" stroke-width="1" fill="none"/><circle cx="8" cy="14" r="1.4" fill="${I}"/><path d="M13,12 Q16,9 18,11" stroke="#4a6a3a" stroke-width="1" fill="none"/>`, lin('ii-fs', '#9ab86a', '#4f7a4a')),
+    salmon: sv(`<path d="M3,16 Q11,7 21,10 L28,5 L26,16 L28,27 L21,22 Q11,25 3,16Z" fill="url(#ii-hsm)" stroke="${I}" stroke-width="1.1" stroke-linejoin="round"/><path d="M8,17 Q15,14 22,17" stroke="#fff0e8" stroke-width="1.2" fill="none"/><circle cx="8" cy="14" r="1.4" fill="${I}"/><path d="M11,11 l1,2 M15,10 l1,2 M19,11 l.8,2" stroke="#c2385a" stroke-width=".8"/>`, lin('ii-hsm', '#ff9a8a', '#d8506a')),
+    crab: sv(`<ellipse cx="16" cy="19" rx="10" ry="7" fill="url(#ii-cr)" stroke="${I}" stroke-width="1.1"/><path d="M8,15 Q4,10 6,6 M24,15 Q28,10 26,6" stroke="${I}" stroke-width="1.2" fill="none"/><path d="M3.6,6 Q6,2 8.4,6 Q6,8 3.6,6Z M23.6,6 Q26,2 28.4,6 Q26,8 23.6,6Z" fill="#5a7a9a" stroke="${I}" stroke-width=".9"/>
+      <path d="M7,22 l-4,3 M9,24 l-3,4 M25,22 l4,3 M23,24 l3,4" stroke="${I}" stroke-width="1.2"/><circle cx="13.6" cy="14.6" r="1.1" fill="#fff" stroke="${I}" stroke-width=".6"/><circle cx="18.4" cy="14.6" r="1.1" fill="#fff" stroke="${I}" stroke-width=".6"/>`, r('ii-cr', '#7a9aba', '#3a4a6a')),
+    rice: sv(`<path d="M8,12 Q6,26 12,29 h8 Q26,26 24,12 Z" fill="#c8a06a" stroke="${I}" stroke-width="1.1"/><path d="M8,12 Q16,8 24,12 Q16,16 8,12Z" fill="#f6f2e4" stroke="${I}" stroke-width="1"/>${[[12, 11.6], [15, 10.4], [18, 11.4], [20.4, 12.2], [14, 13], [17, 13.4], [11, 12.8]].map(([x, y]) => `<ellipse cx="${x}" cy="${y}" rx="1" ry=".55" fill="#fff" stroke="#c8c0a8" stroke-width=".3"/>`).join('')}<path d="M8,16 Q16,19 24,16" stroke="#8a6a3a" stroke-width="1.4" fill="none"/>`),
+    wheat: sv(`${[-6, 0, 6].map(dx => `<path d="M16,30 Q${16 + dx * 0.6},18 ${16 + dx},6" stroke="#c99a3a" stroke-width="1.1" fill="none"/>${[0, 1, 2, 3].map(i => `<ellipse cx="${16 + dx + (i % 2 ? 1.4 : -1.4)}" cy="${7 + i * 2.6}" rx="1.4" ry="2.2" transform="rotate(${i % 2 ? 24 : -24} ${16 + dx} ${7 + i * 2.6})" fill="#f2c860" stroke="#a87a1a" stroke-width=".5"/>`).join('')}`).join('')}<path d="M12,22 Q16,24 20,22" stroke="#c63b4f" stroke-width="1.8" fill="none"/>`),
+    butter: sv(`<path d="M4,18 L16,12 L28,18 L16,24Z" fill="#fff4b0" stroke="${I}" stroke-width="1"/><path d="M4,18 V23 L16,29 V24Z" fill="#f2d860" stroke="${I}" stroke-width="1"/><path d="M28,18 V23 L16,29 V24Z" fill="#e8c840" stroke="${I}" stroke-width="1"/><path d="M8,9 Q16,4 24,9 L28,18 L16,12 L4,18Z" fill="#e8dcc0" stroke="${I}" stroke-width=".9" opacity=".9"/><path d="M14,10 l2,-3 l2,3" stroke="#a87a4a" stroke-width="1" fill="none"/>`),
+    milk: sv(`<path d="M11,3 h10 v3 l2,4 V27 Q16,30 9,27 V10 l2,-4z" fill="#f6f8fa" stroke="${I}" stroke-width="1.1"/><path d="M9,14 h14 v8 h-14z" fill="#7ab0e0" stroke="${I}" stroke-width=".8"/><path d="M13,18 q3,-3 6,0" stroke="#fff" stroke-width="1" fill="none"/><rect x="11" y="2" width="10" height="2.6" fill="#c8a06a" stroke="${I}" stroke-width=".7"/>${shine(11, 25, 4)}`),
+    egg: sv(`<path d="M16,3 C23,3 27,14 27,20 C27,26 22,30 16,30 C10,30 5,26 5,20 C5,14 9,3 16,3Z" fill="url(#ii-eg)" stroke="${I}" stroke-width="1.1"/><circle cx="12" cy="18" r=".9" fill="#c8b48a"/><circle cx="19" cy="13" r=".7" fill="#c8b48a"/><circle cx="20" cy="23" r="1" fill="#c8b48a"/>${shine(9, 15, 4)}`, r('ii-eg', '#ffffff', '#e8dcc4')),
+    sugar: sv(`<path d="M7,12 Q5,27 16,29 Q27,27 25,12 Q16,9 7,12Z" fill="#c8a06a" stroke="${I}" stroke-width="1.1"/><path d="M7,12 Q16,6 25,12 Q16,15 7,12Z" fill="#fff8ee" stroke="${I}" stroke-width=".9"/><path d="M10,10.4 l1.4,-1 l1.4,1 M15,9 l1.4,-1 l1.4,1 M20,10 l1.4,-1 l1.4,1" stroke="#e8dcc4" stroke-width=".8" fill="none"/><path d="M11,17 Q16,15 21,17" stroke="#f4ead0" stroke-width="1.4" fill="none"/><path d="M16,5 V9" stroke="#c63b4f" stroke-width="1.6"/>`),
+    honey: sv(`${[[10, 11], [16, 8], [22, 11], [10, 18], [16, 15], [22, 18], [16, 22]].map(([x, y]) => `<path d="M${x},${y - 4} l3.4,2 v4 l-3.4,2 l-3.4,-2 v-4z" fill="url(#ii-hy)" stroke="${I}" stroke-width=".9"/>`).join('')}<path d="M16,26 Q15,29 16,30 Q17,29 16,26Z" fill="#f2b33a" stroke="${I}" stroke-width=".6"/>`, lin('ii-hy', '#ffe17a', '#e8902a')),
+    salt: sv(`<path d="M5,24 L8,13 L14,9 L19,13 L23,8 L28,14 L27,25 L17,29 L8,28Z" fill="url(#ii-sl)" stroke="${I}" stroke-width="1.1" stroke-linejoin="round"/><path d="M8,13 L13,19 L14,9 M13,19 L17,29 M13,19 L19,13 L23,20 L28,14 M23,20 L27,25" stroke="#b8c4d4" stroke-width=".8" fill="none"/>${shine(9, 18, 3)}`, lin('ii-sl', '#ffffff', '#cfd8e4')),
+  };
+
+  /* ======================= MONSTER PARTS ======================= */
+  const MATS = {
+    jelly: sv(`<path d="M5,24 Q4,10 16,7 Q28,10 27,24 Q16,29 5,24Z" fill="url(#ii-jl)" fill-opacity=".9" stroke="${I}" stroke-width="1.1"/><path d="M9,14 Q11,10 15,10" stroke="#fff" stroke-width="1.6" fill="none" stroke-linecap="round" opacity=".85"/><ellipse cx="18" cy="20" rx="5" ry="3" fill="#2f63c4" opacity=".25"/>`, r('ii-jl', '#bfe6ff', '#3f7fd8')),
+    keesewing: sv(`<path d="M28,8 Q18,4 4,10 Q8,12 6,16 Q11,15 11,20 Q15,17 17,22 Q20,15 28,14Z" fill="#3d2d57" stroke="${I}" stroke-width="1.1" stroke-linejoin="round"/><path d="M28,9 L5,11 M28,10 L7,16 M28,11.6 L11,20 M28,13 L17,21" stroke="#6b5490" stroke-width=".8"/>`),
+    bokohorn: sv(`<path d="M8,28 Q6,18 12,10 Q18,3 25,3 Q20,8 18,14 Q16,22 16,28Z" fill="url(#ii-bh)" stroke="${I}" stroke-width="1.1"/><path d="M10,22 q3,-1 5,0 M11,17 q3,-1 6,0 M14,12 q3,-1 5,0" stroke="#c8b48a" stroke-width=".9" fill="none"/><path d="M8,28 h8" stroke="#a8352f" stroke-width="2.4" stroke-linecap="round"/>`, lin('ii-bh', '#fff4dc', '#d8c49a')),
+    lizaltail: sv(`<path d="M27,6 Q20,8 16,14 Q12,22 4,27 Q12,26 17,21 Q22,15 28,12Z" fill="url(#ii-lt)" stroke="${I}" stroke-width="1.1" stroke-linejoin="round"/><path d="M24,8 l1,3 M20,11 l1.4,2.4 M16,16 l1.6,2 M11,21 l1.6,1.6" stroke="#2f7f3a" stroke-width="1"/><path d="M25,7 l4,-2 l-1,5" fill="#6fcf6a" stroke="${I}" stroke-width=".8"/>`, lin('ii-lt', '#8fe08a', '#2f7f3a', false)),
+    moblinhorn: sv(`<path d="M7,29 Q4,16 10,8 Q14,3 19,3 Q16,8 15,13 Q20,10 26,10 Q21,14 18,20 Q16,25 16,29Z" fill="url(#ii-mh)" stroke="${I}" stroke-width="1.1" stroke-linejoin="round"/><path d="M8,22 q4,-1 7,0 M9,16 q3,-1 6,0" stroke="#a89878" stroke-width=".9" fill="none"/><path d="M7,29 h9" stroke="#334f96" stroke-width="2.4" stroke-linecap="round"/>`, lin('ii-mh', '#f0e6c8', '#c8b48a')),
+    screw: sv(`<path d="M11,4 h10 l2,4 h-14z" fill="#8c8674" stroke="${I}" stroke-width="1"/><rect x="13" y="8" width="6" height="18" fill="url(#ii-sc)" stroke="${I}" stroke-width="1"/>${[10, 13, 16, 19, 22].map(y => `<path d="M12.4,${y + 1} L19.6,${y - 1}" stroke="#5a564c" stroke-width="1"/>`).join('')}<path d="M13,26 l3,4 l3,-4" fill="#8c8674" stroke="${I}" stroke-width="1"/><circle cx="16" cy="6" r="1.4" fill="#3fe0ff"/><path d="M14,9 V25" stroke="#3fe0ff" stroke-width=".7" opacity=".8"/>`, lin('ii-sc', '#b2ab95', '#6f6a5c', false)),
+    lynelhoof: sv(`<path d="M8,6 Q16,2 24,6 L26,22 Q16,26 6,22Z" fill="url(#ii-lh)" stroke="${I}" stroke-width="1.1"/><path d="M6,22 Q16,26 26,22 L27,27 Q16,31 5,27Z" fill="#3a2a1a" stroke="${I}" stroke-width="1"/><path d="M16,24.6 V29.6" stroke="#6a5a4a" stroke-width="1"/><path d="M9,10 Q16,8 23,10" stroke="#c23b22" stroke-width="2" fill="none"/>`, lin('ii-lh', '#e2b86f', '#9b6f33')),
+  };
+
+  /* ======================= MEALS (served on a plate or in a bowl) ======================= */
+  const plate = (food, bowl = false) => bowl
+    ? sv(`<ellipse cx="16" cy="28" rx="11" ry="2" fill="#000" opacity=".2"/><path d="M3,15 Q4,28 16,28.6 Q28,28 29,15Z" fill="#f4f2ea" stroke="${I}" stroke-width="1.1"/><path d="M5,20 Q16,23 27,20" stroke="#5a8ac8" stroke-width="1.2" fill="none"/><ellipse cx="16" cy="15" rx="13" ry="4" fill="#e8e4d8" stroke="${I}" stroke-width="1"/>${food}`)
+    : sv(`<ellipse cx="16" cy="22" rx="14.4" ry="6" fill="#f4f2ea" stroke="${I}" stroke-width="1.1"/><ellipse cx="16" cy="21.6" rx="10.6" ry="4.2" fill="none" stroke="#5a8ac8" stroke-width=".9"/>${food}`);
+  const soup = (c1, c2, bits = '') => plate(`<ellipse cx="16" cy="15" rx="11.6" ry="3.2" fill="${c1}"/><path d="M8,15 q4,-1.6 8,0 q4,1.6 8,0" stroke="${c2}" stroke-width="1" fill="none"/>${bits}<path d="M12,9 q-1,-3 1,-5 M18,9 q-1,-3 1,-5" stroke="#fff" stroke-width="1" fill="none" opacity=".6"/>`, true);
+  const skewer = (pieces) => plate(`<path d="M4,22 L28,12" stroke="#c8a06a" stroke-width="1.2"/>${pieces.map((c, i) => `<ellipse cx="${8 + i * 6}" cy="${20.4 - i * 2.4}" rx="3.4" ry="3" fill="${c}" stroke="${I}" stroke-width=".8"/>`).join('')}`);
+  const MEALS = {
+    applepie: plate(`<path d="M5,20 Q6,12 16,11 Q26,12 27,20 Q16,24 5,20Z" fill="#e8b86a" stroke="${I}" stroke-width="1"/><path d="M9,15 l14,4 M8,18 l12,-6 M14,12 l10,6" stroke="#c88a3a" stroke-width="1.2"/><path d="M5,20 Q16,24 27,20" stroke="#a86a2a" stroke-width="1.4" fill="none"/>`),
+    eggtart: plate(`<path d="M7,19 Q8,13 16,12.4 Q24,13 25,19 Q16,23 7,19Z" fill="#d8a050" stroke="${I}" stroke-width="1"/><ellipse cx="16" cy="16.4" rx="6.6" ry="3" fill="#ffe17a" stroke="#e8a830" stroke-width=".7"/><circle cx="14" cy="15.6" r="1" fill="#fff6c8"/>`),
+    carrotcake: plate(`<path d="M8,20 V12 L24,9 V18 Z" fill="#e8a060" stroke="${I}" stroke-width="1"/><path d="M8,12 L24,9 L26,10 L10,13Z" fill="#fff8ee" stroke="${I}" stroke-width=".9"/><path d="M8,16 L24,13" stroke="#fff8ee" stroke-width="1.4"/><path d="M15,10.4 l3,-.6 l-1,-3z" fill="#ff8a2a" stroke="${I}" stroke-width=".5"/>`),
+    fruitcake: plate(`<path d="M7,19 V12 Q16,8 25,12 V19 Q16,23 7,19Z" fill="#c8804a" stroke="${I}" stroke-width="1"/><path d="M7,12 Q16,16 25,12" stroke="#fff8ee" stroke-width="1.6" fill="none"/><circle cx="12" cy="9.6" r="1.6" fill="#ff4a5a" stroke="${I}" stroke-width=".5"/><circle cx="16" cy="8.6" r="1.6" fill="#7a3aa0" stroke="${I}" stroke-width=".5"/><circle cx="20" cy="9.6" r="1.6" fill="#ffd23d" stroke="${I}" stroke-width=".5"/>`),
+    curry: soup('#d8901a', '#f2c040', `<path d="M5,14 Q10,12 14,14" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><circle cx="19" cy="14.6" r="1.4" fill="#a8352f"/><circle cx="23" cy="15" r="1.2" fill="#e8502a"/>`),
+    meatrice: soup('#fff8ee', '#e8e0d0', `<path d="M10,14 q3,-3 6,0 q3,-3 6,0" fill="#b8503a" stroke="${I}" stroke-width=".7"/>`),
+    seafoodrice: soup('#f2d080', '#e8b850', `<path d="M10,15 q2,-3 4,0z M18,14 q2,-3 4,0z" fill="#ff8a6a" stroke="${I}" stroke-width=".6"/><circle cx="15" cy="15.6" r=".9" fill="#5fae3e"/>`),
+    omelet: plate(`<path d="M5,20 Q6,11 16,11 Q26,11 27,20 Q16,17 5,20Z" fill="#ffe17a" stroke="${I}" stroke-width="1"/><path d="M8,16 Q16,13 24,16" stroke="#f2c040" stroke-width="1" fill="none"/><path d="M12,13.6 q2,-2 4,0" stroke="#d8402a" stroke-width="1.2" fill="none"/>`),
+    creamysoup: soup('#f6eedc', '#e0d4bc', `<circle cx="12" cy="15" r="1.6" fill="#b8503a"/><circle cx="20" cy="14.6" r="1.4" fill="#b8503a"/><circle cx="16" cy="15.8" r=".8" fill="#5fae3e"/>`),
+    mushroomsoup: soup('#e8dcc0', '#c8b48a', `<path d="M10,15 q2,-3 4,0z M17,14.6 q2,-3 4,0z" fill="#a8703e" stroke="${I}" stroke-width=".5"/>`),
+    crabstir: plate(`<path d="M6,19 Q8,12 16,12 Q24,12 26,19 Q16,22 6,19Z" fill="#e86a3a" stroke="${I}" stroke-width="1"/><path d="M9,16 l3,-2 M14,17 l2,-3 M20,16 l2,-2" stroke="#ffb07a" stroke-width="1.4" stroke-linecap="round"/><path d="M11,14 Q9,10 11,8 M21,14 Q23,10 21,8" stroke="#c2381c" stroke-width="1.4" fill="none"/>`),
+    peppersteak: plate(`<path d="M6,19 Q5,12 14,11 Q24,10 26,16 Q25,21 16,21 Q9,21 6,19Z" fill="#8a3a2a" stroke="${I}" stroke-width="1"/><path d="M9,15 l8,-2 M10,18 l10,-2" stroke="#5a1a10" stroke-width="1"/><path d="M18,12 Q24,10 25,14 Q21,15 18,12Z" fill="#e8402e" stroke="${I}" stroke-width=".7"/>`),
+    meatstew: soup('#a8502a', '#d8803a', `<rect x="10" y="13.6" width="3" height="2.4" fill="#7a2a1a" stroke="${I}" stroke-width=".4"/><rect x="18" y="13.4" width="3" height="2.4" fill="#ff8a2a" stroke="${I}" stroke-width=".4"/>`),
+    saltmeat: plate(`<path d="M6,19 Q5,12 14,11 Q24,10 26,16 Q25,21 16,21 Q9,21 6,19Z" fill="#b8603a" stroke="${I}" stroke-width="1"/><path d="M9,15 l8,-2 M10,18 l10,-2" stroke="#7a3a1a" stroke-width="1.2"/>${[[12, 14], [18, 16], [21, 13]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r=".7" fill="#fff"/>`).join('')}`),
+    saltfish: plate(`<path d="M4,17 Q11,10 20,12 L27,8 L25,16 L27,23 L20,20 Q11,23 4,17Z" fill="#c8904a" stroke="${I}" stroke-width="1"/><path d="M10,14 l2,4 M14,13 l2,5 M18,13 l2,5" stroke="#8a5a2a" stroke-width="1"/><circle cx="7.6" cy="15.6" r="1" fill="${I}"/>`),
+    meatmush: skewer(['#b8503a', '#d8a86a', '#b8503a', '#d8a86a']),
+    meatskewer: skewer(['#b8503a', '#a8402a', '#b8503a', '#a8402a']),
+    fishskewer: skewer(['#c8904a', '#d8a060', '#c8904a', '#d8a060']),
+    honeyapple: plate(`<path d="M16,10 C11,8 7,11 8,16 C9,21 13,22 16,21 C19,22 23,21 24,16 C25,11 21,8 16,10Z" fill="#e8402e" stroke="${I}" stroke-width="1"/><path d="M10,12 Q16,9 22,12 Q20,15 16,14 Q12,15 10,12Z" fill="#f2b33a" opacity=".85"/><path d="M16,10 Q16,7 18,5" stroke="#6b4423" stroke-width="1.2" fill="none"/>`),
+    honeycandy: plate(`<path d="M16,6 l5,3 v6 l-5,3 l-5,-3 v-6z" fill="url(#hc)" stroke="${I}" stroke-width="1"/><path d="M13,10 l3,-2" stroke="#fff" stroke-width="1.2" stroke-linecap="round"/>`.replace('url(#hc)', '#f2b33a')),
+    mushroomskewer: skewer(['#d8a86a', '#c8904a', '#d8a86a', '#c8904a']),
+    veggies: plate(`<circle cx="11" cy="17" r="3.4" fill="#ff8a2a" stroke="${I}" stroke-width=".8"/><circle cx="17" cy="15" r="3.6" fill="#4fbf4a" stroke="${I}" stroke-width=".8"/><circle cx="22" cy="18" r="3" fill="#f08aa8" stroke="${I}" stroke-width=".8"/><path d="M8,14 Q16,10 24,14" stroke="#f2b33a" stroke-width="1" fill="none" opacity=".8"/>`),
+    simmeredfruit: soup('#d8402e', '#ff8a6a', `<circle cx="12" cy="14.6" r="1.6" fill="#ffd23d"/><circle cx="19" cy="15" r="1.6" fill="#7a3aa0"/>`),
+    mixedskewer: plate(`<path d="M6,19 Q8,12 16,12 Q24,12 26,19 Q16,22 6,19Z" fill="#8a7a5a" stroke="${I}" stroke-width="1"/><circle cx="11" cy="16" r="1.8" fill="#b8503a"/><circle cx="16" cy="14.6" r="1.8" fill="#4fbf4a"/><circle cx="21" cy="16.4" r="1.8" fill="#d8a86a"/>`),
+  };
+
+  /* ======================= SADDLES ======================= */
+  const saddle = c => sv(`<path d="M3,14 Q4,8 10,10 Q16,13 22,10 Q28,8 29,14 Q26,20 16,20 Q6,20 3,14Z" fill="${c}" stroke="${I}" stroke-width="1.1"/><path d="M6,13 Q16,17 26,13" stroke="#fff" stroke-width=".8" fill="none" opacity=".5"/>
+    <path d="M11,19 V27 M21,19 V27" stroke="#5a3a22" stroke-width="1.4"/><path d="M9,27 h4 v2 h-4z M19,27 h4 v2 h-4z" fill="#c8c8c8" stroke="${I}" stroke-width=".7"/><path d="M8,10 Q8,5 12,6" stroke="${I}" stroke-width="1.2" fill="none"/>`);
+
+  /* ======================= HOUSE DECOR ======================= */
+  const DECOR = {
+    bed: sv(`<rect x="3" y="14" width="26" height="9" rx="1.6" fill="#f4f2ea" stroke="${I}" stroke-width="1"/><rect x="3" y="17" width="26" height="6" fill="#3a6ad0" stroke="${I}" stroke-width=".9"/><rect x="4" y="12" width="7" height="5" rx="1.6" fill="#fff" stroke="${I}" stroke-width=".9"/><path d="M2,8 V28 M30,14 V28" stroke="#7a5230" stroke-width="2.4" stroke-linecap="round"/><path d="M2,23 h28" stroke="#7a5230" stroke-width="2"/>`),
+    rug: sv(`<ellipse cx="16" cy="18" rx="14" ry="8" fill="#c63b4f" stroke="${I}" stroke-width="1"/><ellipse cx="16" cy="18" rx="10" ry="5.4" fill="none" stroke="#ffd23d" stroke-width="1.2"/><path d="M13,18 l3,-3 l3,3 l-3,3z" fill="#2f55b5"/>`),
+    table: sv(`<path d="M3,12 h26 v3 h-26z" fill="#9c6b3d" stroke="${I}" stroke-width="1"/><path d="M6,15 V28 M26,15 V28" stroke="#7a5230" stroke-width="2"/><path d="M1,20 h5 v8 M26,20 h5 v8" stroke="#8a5a2b" stroke-width="1.6" fill="none"/><path d="M1,14 V20 M31,14 V20" stroke="#8a5a2b" stroke-width="1.6"/><circle cx="12" cy="10.6" r="1.6" fill="#e8402e"/><path d="M18,9 h4 v3 h-4z" fill="#f4f2ea" stroke="${I}" stroke-width=".6"/>`),
+    pot: sv(`<path d="M5,14 Q4,28 16,28 Q28,28 27,14Z" fill="#3a3a40" stroke="${I}" stroke-width="1.1"/><ellipse cx="16" cy="14" rx="11" ry="3" fill="#d8901a" stroke="${I}" stroke-width="1"/><path d="M9,28 l-2,3 M23,28 l2,3 M16,28 v3" stroke="#3a3a40" stroke-width="1.6"/><path d="M12,9 q-1,-3 1,-6 M18,9 q-1,-3 1,-6" stroke="#cfd8e4" stroke-width="1.2" fill="none"/><path d="M8,30 q2,-3 4,0 q2,-3 4,0 q2,-3 4,0 q2,-3 4,0" fill="#ff9a2e" stroke="#c2381c" stroke-width=".6"/>`),
+    plant: sv(`<path d="M10,20 h12 l-2,10 h-8z" fill="#c8704a" stroke="${I}" stroke-width="1"/><path d="M16,20 Q8,14 6,6 Q14,8 16,20 Q18,6 26,4 Q24,14 16,20 Q13,10 16,2 Q19,10 16,20" fill="#4fbf4a" stroke="${I}" stroke-width=".8"/>`),
+    books: sv(`<rect x="3" y="3" width="26" height="27" fill="#7a5230" stroke="${I}" stroke-width="1"/><path d="M3,16 h26" stroke="#5a3a22" stroke-width="1.6"/>${[[5, '#c63b4f'], [8, '#2f55b5'], [11, '#4f9a34'], [14, '#c9a227'], [18, '#7a3aa0'], [21, '#c63b4f'], [24, '#2f55b5']].map(([x, c], i) => `<rect x="${x}" y="${i % 2 ? 6 : 5}" width="2.6" height="${i % 2 ? 9 : 10}" fill="${c}" stroke="${I}" stroke-width=".5"/><rect x="${x}" y="${i % 3 ? 19 : 18}" width="2.6" height="${i % 3 ? 10 : 11}" fill="${c}" stroke="${I}" stroke-width=".5"/>`).join('')}`),
+    painting: sv(`<rect x="4" y="3" width="24" height="26" fill="#c9a227" stroke="${I}" stroke-width="1"/><rect x="7" y="6" width="18" height="20" fill="#9ec9e8"/><path d="M10,26 Q10,16 16,15 Q22,16 22,26Z" fill="#2f55b5"/><circle cx="16" cy="12" r="3.6" fill="#f8d6b3" stroke="${I}" stroke-width=".6"/><path d="M12,13 Q11,6 16,7 Q21,6 20,13 Q19,9 16,9 Q13,9 12,13Z" fill="#f2c860"/>`),
+    lamp: sv(`<path d="M16,1 V8" stroke="#5a3a22" stroke-width="1.2"/><path d="M5,13 Q16,8 27,13 Q16,17 5,13Z" fill="#c9a227" stroke="${I}" stroke-width="1"/>${[7, 12, 20, 25].map(x => `<path d="M${x},${x === 7 || x === 25 ? 12 : 11} v-4" stroke="#f4f2ea" stroke-width="2"/><path d="M${x},${x === 7 || x === 25 ? 7 : 6} q-1,-2 0,-3 q1,1 0,3" fill="#ffd23d"/>`).join('')}<path d="M10,15 L16,22 L22,15" stroke="#c9a227" stroke-width="1" fill="none"/>`),
+    rack: sv(`<path d="M4,6 h24 M4,26 h24" stroke="#7a5230" stroke-width="2.4" stroke-linecap="round"/><path d="M6,6 V26 M26,6 V26" stroke="#5a3a22" stroke-width="1.6"/>${[10, 16, 22].map((x, i) => `<path d="M${x},8 V24" stroke="${['#d7dde4', '#9fb4d8', '#e8d8c4'][i]}" stroke-width="2.2"/><path d="M${x - 2},20 h4" stroke="${['#7a5230', '#3a5fd0', '#6a2a1a'][i]}" stroke-width="1.6"/>`).join('')}`),
+    trophies: sv(`<path d="M3,26 h26" stroke="#7a5230" stroke-width="2.4"/><path d="M9,8 h14 v4 Q23,19 16,19 Q9,19 9,12Z" fill="#ffd23d" stroke="${I}" stroke-width="1"/><path d="M9,10 Q4,10 5,14 Q6,17 10,16 M23,10 Q28,10 27,14 Q26,17 22,16" stroke="#c9a227" stroke-width="1.4" fill="none"/><path d="M14,19 h4 v3 h3 v3 h-10 v-3 h3z" fill="#c9a227" stroke="${I}" stroke-width=".8"/>${shine(11, 13, 3)}`),
+    fire: sv(`<path d="M3,30 V8 h26 V30" fill="#8c8674" stroke="${I}" stroke-width="1"/><path d="M3,8 h26 v-3 h-26z" fill="#6f6a5c" stroke="${I}" stroke-width="1"/><path d="M8,30 V16 Q16,10 24,16 V30" fill="#2a1f1c" stroke="${I}" stroke-width=".9"/><path d="M10,30 Q9,24 13,20 Q13,24 16,22 Q16,18 19,17 Q20,22 22,23 Q24,27 22,30Z" fill="#ff9a2e" stroke="#c2381c" stroke-width=".7"/><path d="M14,30 Q14,26 16,25 Q18,27 18,30Z" fill="#ffe17a"/>`),
+    korokstatue: sv(`<path d="M8,30 h16 l-2,-4 h-12z" fill="#8f8a7a" stroke="${I}" stroke-width=".9"/><circle cx="16" cy="13" r="8" fill="#a8a290" stroke="${I}" stroke-width="1"/><path d="M16,5 Q24,9 22,17 Q16,22 10,17 Q8,9 16,5Z" fill="#cfc9b6" stroke="${I}" stroke-width=".9"/><circle cx="13" cy="12.6" r="1.6" fill="${I}"/><circle cx="19" cy="12.6" r="1.6" fill="${I}"/><ellipse cx="16" cy="17" rx="1.3" ry="1.6" fill="${I}"/><path d="M14,21 h4 v5 h-4z" fill="#a8a290" stroke="${I}" stroke-width=".8"/>`),
+    aquarium: sv(`<rect x="3" y="6" width="26" height="20" rx="2" fill="#7fc8ec" fill-opacity=".85" stroke="${I}" stroke-width="1.1"/><path d="M3,10 h26" stroke="#bfe6ff" stroke-width="1"/><path d="M8,20 q4,-4 8,0 q-4,4 -8,0z M16,20 l3,-2 v4z" fill="#ff8a2a" stroke="${I}" stroke-width=".6"/><path d="M19,14 q3,-3 6,0 q-3,3 -6,0z" fill="#3fb0ff" stroke="${I}" stroke-width=".6"/><path d="M6,26 Q8,20 7,17 M24,26 Q26,22 25,19" stroke="#4fbf4a" stroke-width="1.4" fill="none"/><rect x="2" y="26" width="28" height="3" fill="#7a5230" stroke="${I}" stroke-width=".8"/>`),
+    goldstatue: sv(`<path d="M7,30 h18 l-2,-4 h-14z" fill="#8f8a7a" stroke="${I}" stroke-width=".9"/><path d="M11,26 V14 Q16,10 21,14 V26Z" fill="url(#ii-gs)" stroke="${I}" stroke-width="1"/><circle cx="16" cy="8" r="4.4" fill="url(#ii-gs)" stroke="${I}" stroke-width="1"/><path d="M21,14 L26,3" stroke="#e8c840" stroke-width="2" stroke-linecap="round"/><path d="M11.6,7 L8,5 L12,9.6" fill="#e8c840" stroke="${I}" stroke-width=".7"/>${shine(13, 18, 3)}`, lin('ii-gs', '#fff0a0', '#c99a0c')),
+    'm-rudania': sv(`<path d="M3,26 h26" stroke="#8f8a7a" stroke-width="2.4"/><path d="M4,20 Q6,12 14,12 L19,10 Q26,9 27,14 Q30,14 30,11 Q31,17 26,18 L24,23 h-3 l-1,-3 h-6 l-1,3 h-3 l0,-3 Q5,22 4,20Z" fill="#d9d3c0" stroke="#3fe0ff" stroke-width="1"/><circle cx="25" cy="13" r="1.2" fill="#3fe0ff"/>`),
+    'm-ruta': sv(`<path d="M3,26 h26" stroke="#8f8a7a" stroke-width="2.4"/><path d="M6,24 Q4,13 12,9 Q19,6 24,10 Q26,11 27,14 Q29,12 30,8 Q31,15 27,17 L26,24 h-3 v-4 h-11 v4 h-3Z" fill="#d9d3c0" stroke="#3fe0ff" stroke-width="1"/><circle cx="21" cy="12" r="1.2" fill="#3fe0ff"/>`),
+    'm-medoh': sv(`<path d="M3,28 h26" stroke="#8f8a7a" stroke-width="2.4"/><path d="M1,14 Q8,8 14,11 Q16,7 18,11 Q25,7 31,13 Q25,13 22,16 Q20,19 17,20 L18,25 L15,22 L13,25 L14,20 Q11,19 10,16 Q6,13 1,14Z" fill="#d9d3c0" stroke="#3fe0ff" stroke-width="1"/><circle cx="16" cy="13" r="1.1" fill="#3fe0ff"/>`),
+    'm-naboris': sv(`<path d="M3,29 h26" stroke="#8f8a7a" stroke-width="2.4"/><path d="M5,17 Q6,11 11,11 Q13,6 16,9 Q19,6 21,11 Q24,11 25,13 L27,7 Q29,5 31,7 L29,9 L28,16 Q27,18 25,18 L24,27 h-2 l-.6,-7 h-9 l-1,7 h-2 v-7 Q5,19 5,17Z" fill="#d9d3c0" stroke="#3fe0ff" stroke-width="1"/><circle cx="29" cy="8" r="1" fill="#3fe0ff"/>`),
+    'm-triforce': sv(`<path d="M16,2 L30,28 H2Z" fill="url(#ii-tf)" stroke="${I}" stroke-width="1.2" stroke-linejoin="round"/><path d="M9,15 H23 L16,28Z" fill="#1d1a2b" opacity=".85"/><path d="M16,2 L30,28 H2Z" fill="none" stroke="#fff6c8" stroke-width=".6"/>`, lin('ii-tf', '#fff6a0', '#e8b830')),
+    goronruby: sv(`<path d="M8,30 h16 l-2,-4 h-12z" fill="#8a5a2b" stroke="${I}" stroke-width=".9"/><path d="M16,3 L26,11 L22,25 H10 L6,11Z" fill="url(#ii-gr)" stroke="${I}" stroke-width="1.1" stroke-linejoin="round"/><path d="M6,11 H26 M16,3 L12,11 L16,25 L20,11Z" stroke="#ff9aa8" stroke-width=".8" fill="none"/>`, lin('ii-gr', '#ff6a7a', '#a8102a')),
+    zorafountain: sv(`<ellipse cx="16" cy="25" rx="13" ry="4" fill="#cfe9f2" stroke="${I}" stroke-width="1"/><ellipse cx="16" cy="24" rx="10" ry="2.6" fill="#7fc8ec"/><path d="M14,24 V12 h4 V24" fill="#cfe9f2" stroke="${I}" stroke-width=".9"/><path d="M16,12 Q10,4 6,14 M16,12 Q22,4 26,14 M16,12 V3" stroke="#7fc8ec" stroke-width="1.6" fill="none"/><circle cx="16" cy="12" r="1.6" fill="#3fe0ff"/>`),
+    ritochime: sv(`<path d="M16,1 V6" stroke="#7a5230" stroke-width="1.2"/><path d="M8,12 Q8,6 16,6 Q24,6 24,12Z" fill="#3a7fc9" stroke="${I}" stroke-width="1"/>${[10, 14, 18, 22].map((x, i) => `<path d="M${x},12 V${18 + i % 2 * 3}" stroke="#c9a227" stroke-width="1.6"/>`).join('')}<path d="M16,12 V24" stroke="#7a5230" stroke-width=".8"/><path d="M13,24 Q16,31 19,24Z" fill="#f4f6fa" stroke="${I}" stroke-width=".8"/>`),
+    sealfigure: sv(`<path d="M5,30 h22 l-2,-3 h-18z" fill="#8f8a7a" stroke="${I}" stroke-width=".9"/><path d="M4,26 Q4,16 14,14 Q24,12 27,18 Q30,24 24,26Z" fill="#c9a26a" stroke="${I}" stroke-width="1.1"/><path d="M22,15 Q26,9 30,14 Q31,19 27,19" fill="#c9a26a" stroke="${I}" stroke-width="1"/><circle cx="27" cy="14" r="1" fill="${I}"/><path d="M8,24 Q16,21 24,24" stroke="#f0dcb0" stroke-width="1.6" fill="none"/>`),
+    cycletrophy: sv(`<path d="M6,30 h20 l-2,-4 h-16z" fill="#c9a227" stroke="${I}" stroke-width=".9"/><circle cx="9" cy="20" r="4.4" fill="#2b2f38" stroke="#3fe0ff" stroke-width="1"/><circle cx="23" cy="20" r="4.4" fill="#2b2f38" stroke="#3fe0ff" stroke-width="1"/><path d="M8,16 Q12,10 18,11 L24,12 Q27,13 26,17 Q16,18 8,16Z" fill="#b2ab95" stroke="${I}" stroke-width="1"/><path d="M10,15 Q16,13 24,15" stroke="#3fe0ff" stroke-width=".8" fill="none"/>`),
+  };
+
+  // swap emoji for artwork
+  const apply = (list, map) => list.forEach(x => { if (map[x.id]) { x.glyph = x.emoji; x.emoji = map[x.id]; } });
+  apply(K.WEAPONS, WEAPONS); apply(K.SHIELDS, SHIELDS); apply(K.ARMOUR, ARMOUR); apply(K.ITEMS, ITEMS);
+  apply(K.INGREDIENTS, FOOD); apply(K.MATERIALS, MATS); apply(K.RECIPES, MEALS); apply(K.DECOR, DECOR);
+  K.SADDLES.forEach(x => { x.emoji = saddle(x.color); });
+  K.PETS.forEach(x => { if (x.id !== 'none') { x.glyph = x.emoji; x.emoji = `<span class="ii pet-ii">${window.ART.pet(x.id)}</span>`; } });
+  for (const [id, svgStr] of Object.entries(RELICS)) if (K.RELICS[id]) { K.RELICS[id].glyph = K.RELICS[id].emoji; K.RELICS[id].emoji = svgStr; }
+  window.ITEM_ICONS = { WEAPONS, SHIELDS, ARMOUR, ITEMS, FOOD, MATS, MEALS, DECOR, RELICS, ticket: ITEMS.ticket, dubious: plate(`<path d="M6,19 Q8,12 16,12 Q24,12 26,19 Q16,22 6,19Z" fill="#6a5a7a" stroke="${I}" stroke-width="1"/><path d="M10,12 q1,-4 3,-1 M18,11 q2,-4 3,0" stroke="#9a8aaa" stroke-width="1.2" fill="none"/>`) };
+})();
+</script>
+<script>
 // Save data, progression rules and mastery tracking.
 (function () {
   const KEY = 'botk-save-v1';
@@ -5264,7 +5523,7 @@ Symin`,
     on('#claim', () => {
       const bonus = 50 + Math.min(50, s.streak.days * 5);
       s.rupees += bonus; s.seeds++; s.seedsTotal++; s.tickets += 2; s.daily.claimed = true; State.save();
-      FX.chest([{ icon: IC.rupee('red'), label: `${bonus} rupees` }, { icon: IC.seed(), label: 'Korok seed' }, { icon: '<span class="emo">🎫</span>', label: '2 Adventure Tickets' }], map, 'Daily Quest complete!');
+      FX.chest([{ icon: IC.rupee('red'), label: `${bonus} rupees` }, { icon: IC.seed(), label: 'Korok seed' }, { icon: `<span class="emo">${ITEM_ICONS.ticket}</span>`, label: '2 Adventure Tickets' }], map, 'Daily Quest complete!');
     });
     on('#shop', () => World.shop()); on('#statue', () => statue()); on('#hestu', () => hestu()); on('#log', () => adventureLog()); on('#gear', settings);
     if (!s.flags.mapSeen) {
@@ -5452,7 +5711,7 @@ Symin`,
             if (lv === 3) rewards.push(...World.checkMastery());
           }
           const drops = World.trialDrops(subj, foe.name, lv, false);
-          if (r.B.wrong === 0) { s.tickets++; drops.push({ icon: '<span class="emo">🎫</span>', label: 'Perfect run: +1 ticket' }); }
+          if (r.B.wrong === 0) { s.tickets++; drops.push({ icon: `<span class="emo">${ITEM_ICONS.ticket}</span>`, label: 'Perfect run: +1 ticket' }); }
           if (loot.length) loot.push(...drops); else rewards.push(n => FX.chest(drops, n, 'Monster loot!'));
           s.stats.trials++; endTrialBuffs(); State.save();
           results(r, { rewards, retry: () => trial(topicId, lv), next: () => shrineScreen(topicId), nextLabel: 'Back to shrine' });
@@ -6165,18 +6424,18 @@ Symin`,
     const part = Object.keys(K.FOE_DROPS).find(k => (foeName || '').includes(k));
     if (part) got[K.FOE_DROPS[part]] = (got[K.FOE_DROPS[part]] || 0) + (isBoss ? 2 : 1);
     for (const [id, c] of Object.entries(got)) { addIng(id, c); const I = ING(id); loot.push({ icon: `<span class="emo">${I.emoji}</span>`, label: `${I.name}${c > 1 ? ' ×' + c : ''}` }); }
-    const t = isBoss ? 3 : 1 + (lv >= 3 ? 1 : 0); s.tickets += t; loot.push({ icon: '<span class="emo">🎫</span>', label: `${t} Adventure Ticket${t > 1 ? 's' : ''}` });
+    const t = isBoss ? 3 : 1 + (lv >= 3 ? 1 : 0); s.tickets += t; loot.push({ icon: `<span class="emo">${ITEM_ICONS.ticket}</span>`, label: `${t} Adventure Ticket${t > 1 ? 's' : ''}` });
     State.save(); return loot;
   }
   // apply a quest/reward object; returns a list of item-get steps
   function grant(r) {
     const s = S(); const steps = [];
     if (r.rupees) { s.rupees += r.rupees; steps.push(n => FX.itemGet(IC.rupee(r.rupees >= 500 ? 'gold' : r.rupees >= 200 ? 'purple' : 'red'), `${fmt(r.rupees)} rupees!`, '', n)); }
-    if (r.tickets) { s.tickets += r.tickets; steps.push(n => FX.itemGet('<span class="emo big">🎫</span>', `${r.tickets} Adventure Tickets!`, 'Spend them on mini-games and horse races.', n)); }
+    if (r.tickets) { s.tickets += r.tickets; steps.push(n => FX.itemGet(`<span class="emo big">${ITEM_ICONS.ticket}</span>`, `${r.tickets} Adventure Tickets!`, 'Spend them on mini-games and horse races.', n)); }
     if (r.ingredient) for (const [id, c] of Object.entries(r.ingredient)) { addIng(id, c); const I = ING(id); steps.push(n => FX.itemGet(`<span class="emo big">${I.emoji}</span>`, `${I.name} ×${c}`, '', n)); }
     if (r.item) for (const [id, c] of Object.entries(r.item)) { s.items[id] = (s.items[id] || 0) + c; const I = K.ITEMS.find(x => x.id === id); steps.push(n => FX.itemGet(`<span class="emo big">${I.emoji}</span>`, `${I.name} ×${c}`, I.desc, n)); }
     if (r.armour) { if (!s.ownedArmour.includes(r.armour)) s.ownedArmour.push(r.armour); const A = K.ARMOUR.find(x => x.id === r.armour); steps.push(n => FX.itemGet(`<span class="emo big">${A.emoji}</span>`, `You got the ${A.name}!`, A.desc + ' Equip it in Beedle\'s shop.', n)); }
-    if (r.saddle) { if (!s.ownedSaddles.includes(r.saddle)) s.ownedSaddles.push(r.saddle); const A = K.SADDLES.find(x => x.id === r.saddle); steps.push(n => FX.itemGet('<span class="emo big">🐎</span>', `You got the ${A.name}!`, 'Put it on a horse at the stable.', n)); }
+    if (r.saddle) { if (!s.ownedSaddles.includes(r.saddle)) s.ownedSaddles.push(r.saddle); const A = K.SADDLES.find(x => x.id === r.saddle); steps.push(n => FX.itemGet(`<span class="emo big">${A.emoji}</span>`, `You got the ${A.name}!`, 'Put it on a horse at the stable.', n)); }
     if (r.pet) { if (!s.ownedPets.includes(r.pet)) s.ownedPets.push(r.pet); const A = K.PETS.find(x => x.id === r.pet); steps.push(n => FX.itemGet(`<div class="pet-get">${ART.pet(r.pet)}</div>`, `New companion: ${A.name}!`, (A.desc || '') + ' Choose companions in the shop\'s Style tab.', n)); }
     if (r.theme) { if (!s.ownedThemes.includes(r.theme)) s.ownedThemes.push(r.theme); if (r.theme === 'triforce') { s.theme = 'triforce'; applyTheme(); } const A = K.THEMES.find(x => x.id === r.theme); steps.push(n => FX.itemGet(`<span class="emo big">${A.emoji}</span>`, `New Sheikah Slate colour: ${A.name}!`, 'Choose it in the shop\'s Style tab.', n)); }
     if (r.weapon) { if (!s.ownedWeapons.includes(r.weapon)) s.ownedWeapons.push(r.weapon); s.weapon = r.weapon; const A = K.WEAPONS.find(x => x.id === r.weapon); steps.push(n => FX.itemGet(`<div class="pet-get">${ART.hero({ armour: s.armour, shield: s.shield, weapon: r.weapon })}</div>`, `You got the ${A.name}!`, `${A.desc} Boss damage: ${A.dmg}.`, n)); }
@@ -6244,7 +6503,7 @@ Symin`,
     if (tab === 'style') body = '<h3>Sheikah Slate colour</h3>' + gearRow(K.THEMES, 'theme', 'ownedThemes', 'theme', () => 'Changes the glow colour of the whole game.')
       + '<h3>Battle companion</h3>' + gearRow(K.PETS, 'pet', 'ownedPets', 'pet', p => p.desc || 'Fight on your own.')
       + '<h3>Paraglider fabric</h3>' + gearRow(K.GLIDERS.map(g => ({ ...g, emoji: `<span class="glider-sw">${ART.glider(g.id, false)}</span>` })), 'glider', 'ownedGliders', 'glider', () => 'Shows when you fly across the map.');
-    if (tab === 'horse') body = K.SADDLES.map(sd => row(`<span class="saddle-sw" style="background:${sd.color}"></span>`, sd.name, 'A saddle for your horses. Choose it at the stable.', s.ownedSaddles.includes(sd.id) ? '<span class="tag ok">Owned</span>' : buyBtn('saddle', sd.id, sd.price))).join('')
+    if (tab === 'horse') body = K.SADDLES.map(sd => row(sd.emoji, sd.name, 'A saddle for your horses. Choose it at the stable.', s.ownedSaddles.includes(sd.id) ? '<span class="tag ok">Owned</span>' : buyBtn('saddle', sd.id, sd.price))).join('')
       + K.INGREDIENTS.filter(i => i.id === 'carrot' || i.id === 'apple').map(it => row(it.emoji, it.name, 'Horses love these! Feed them at the stable.', `<span class="muted">Have ${s.ingredients[it.id] || 0}</span>${buyBtn('food', it.id, it.price)}`)).join('');
     if (tab === 'sell') {
       const sellRows = [];
@@ -6269,7 +6528,7 @@ Symin`,
       if (kind === 'food') { addIng(id); State.save(); toast(`Bought ${it.emoji} ${it.name}!`, 'good'); return shop(tab); }
       const own = { weapon: 'ownedWeapons', shield: 'ownedShields', armour: 'ownedArmour', theme: 'ownedThemes', pet: 'ownedPets', glider: 'ownedGliders', saddle: 'ownedSaddles' }[kind];
       s[own].push(id); if (kind !== 'saddle') s[kind] = id; State.save(); applyTheme();
-      FX.itemGet(kind === 'pet' ? `<div class="pet-get">${ART.pet(id)}</div>` : kind === 'glider' ? `<div class="pet-get wide">${ART.glider(id)}</div>` : kind === 'saddle' ? '<span class="emo big">🐎</span>' : `<span class="emo big">${it.emoji}</span>`, `You got the ${it.name}!`, it.desc || (it.dmg ? `Boss damage: ${it.dmg}` : it.blocks ? `Blocks ${it.blocks} hit${it.blocks > 1 ? 's' : ''} per boss battle.` : ''), () => shop(tab));
+      FX.itemGet(kind === 'pet' ? `<div class="pet-get">${ART.pet(id)}</div>` : kind === 'glider' ? `<div class="pet-get wide">${ART.glider(id)}</div>` : kind === 'saddle' ? `<span class="emo big">${it.emoji}</span>` : `<span class="emo big">${it.emoji}</span>`, `You got the ${it.name}!`, it.desc || (it.dmg ? `Boss damage: ${it.dmg}` : it.blocks ? `Blocks ${it.blocks} hit${it.blocks > 1 ? 's' : ''} per boss battle.` : ''), () => shop(tab));
     });
     on('[data-equip]', (e, el) => { s[el.dataset.kind] = el.dataset.equip; State.save(); applyTheme(); shop(tab); });
     on('[data-sell]', (e, el) => {
@@ -6292,7 +6551,7 @@ Symin`,
     }
     if (tab === 'ingredients') body = `<div class="bag-grid">${K.INGREDIENTS.filter(i => s.ingredients[i.id]).map(i => card(i.emoji, `${i.name} ×${s.ingredients[i.id]}`, i.tag ? `${K.EFFECTS[i.tag].icon} Adds the ${K.EFFECTS[i.tag].name} effect` : 'Cooking ingredient')).join('') || '<p class="muted">No ingredients. Win shrine trials to collect them!</p>'}</div>`;
     if (tab === 'materials') body = `<div class="bag-grid">${K.MATERIALS.filter(i => s.materials[i.id]).map(i => card(i.emoji, `${i.name} ×${s.materials[i.id]}`, 'Monster part for Great Fairy upgrades')).join('') || '<p class="muted">Defeat monsters in shrine trials to collect their parts.</p>'}</div>`;
-    if (tab === 'items') body = `<div class="bag-grid">${card('🎫', `Adventure Tickets ×${s.tickets}`, 'Earned from shrines. Spend on mini-games and races.')}${K.ITEMS.filter(i => s.items[i.id]).map(i => card(i.emoji, `${i.name} ×${s.items[i.id]}`, i.desc)).join('')}${s.lucky ? card('🍀', 'Lucky Clover', `Double ingredients for ${s.lucky} more shrine win${s.lucky > 1 ? 's' : ''}`) : ''}</div>`;
+    if (tab === 'items') body = `<div class="bag-grid">${card(ITEM_ICONS.ticket, `Adventure Tickets ×${s.tickets}`, 'Earned from shrines. Spend on mini-games and races.')}${K.ITEMS.filter(i => s.items[i.id]).map(i => card(i.emoji, `${i.name} ×${s.items[i.id]}`, i.desc)).join('')}${s.lucky ? card('🍀', 'Lucky Clover', `Double ingredients for ${s.lucky} more shrine win${s.lucky > 1 ? 's' : ''}`) : ''}</div>`;
     screen(`${hud()}<div class="page"><div class="page-head">${back()}<h2>Bag</h2><span class="pill">🎫 ${s.tickets}</span></div>
       <div class="tabs">${[['meals', '🍲 Meals'], ['ingredients', '🍎 Ingredients'], ['materials', '🦴 Monster parts'], ['items', '🎒 Items']].map(([t, l]) => `<button class="tab ${t === tab ? 'on' : ''}" data-tab="${t}">${l}</button>`).join('')}</div>${body}</div>`, 'map', 'field');
     on('#back', Game.map); on('[data-tab]', (e, el) => bag(el.dataset.tab));
@@ -6324,7 +6583,7 @@ Symin`,
     screen(`${hud()}<div class="page"><div class="page-head">${back(from === 'house' ? '◀ House' : '◀ Stable')}<h2>Cooking Pot</h2><span class="pill">📖 ${s.recipes.length}/${K.RECIPES.length} recipes</span></div>
       <div class="tabs"><button class="tab ${tab === 'cook' ? 'on' : ''}" data-tab="cook">🍲 Cook</button><button class="tab ${tab === 'book' ? 'on' : ''}" data-tab="book">📖 Recipe book</button></div>
       ${tab === 'book' ? book : `<div class="kitchen">
-        <div class="pot-wrap"><div class="pot" id="pot"><span class="steam">♨️</span>🍲</div><div class="pot-slots" id="pot-slots"></div><p id="preview" class="muted"></p>
+        <div class="pot-wrap"><div class="pot" id="pot"><span class="steam">♨️</span>${ITEM_ICONS.DECOR.pot}</div><div class="pot-slots" id="pot-slots"></div><p id="preview" class="muted"></p>
           <div class="row center"><button class="btn" id="clear">Empty</button><button class="btn primary glow" id="cookbtn">Cook! 🔥</button></div></div>
         <div class="ing-grid">${K.INGREDIENTS.filter(i => s.ingredients[i.id]).map(i => `<button class="ing" data-ing="${i.id}" title="${i.name}"><span>${i.emoji}</span><small>${i.name}</small><i></i>${i.tag ? `<em>${K.EFFECTS[i.tag].icon}</em>` : ''}</button>`).join('') || '<p class="muted">No ingredients yet. Win shrine trials, or buy some from Beedle.</p>'}</div>
       </div>
@@ -6341,7 +6600,7 @@ Symin`,
       let k = 0; const t = setInterval(() => { U.sfx.tick(); if (++k > 8) clearInterval(t); }, 150);
       setTimeout(() => {
         State.count('cooked');
-        if (r.dubious) { State.save(); FX.itemGet('<span class="emo big">🤢</span>', 'Dubious Food', 'Oops! Try mixing real food ingredients next time.', () => kitchen(from)); return; }
+        if (r.dubious) { State.save(); FX.itemGet(`<span class="emo big">${ITEM_ICONS.dubious}</span>`, 'Dubious Food', 'Oops! Try mixing real food ingredients next time.', () => kitchen(from)); return; }
         const key = r.recipe.id + '|' + r.effect; s.meals[key] = (s.meals[key] || 0) + 1;
         const isNew = !s.recipes.includes(r.recipe.id); if (isNew) s.recipes.push(r.recipe.id);
         State.save(); const m = mealInfo(key); const E = r.effect && K.EFFECTS[r.effect];

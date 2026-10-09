@@ -1,5 +1,5 @@
-// Offline cache for Breath of Knowledge (version mv0x2hhp)
-const CACHE = 'botk-mv0x2hhp';
+// Offline cache for Breath of Knowledge (version mv0y1g1a)
+const CACHE = 'botk-mv0y1g1a';
 const CORE = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png', './favicon-32.png'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim())); });

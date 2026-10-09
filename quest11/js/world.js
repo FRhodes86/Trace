@@ -34,18 +34,18 @@
     const part = Object.keys(K.FOE_DROPS).find(k => (foeName || '').includes(k));
     if (part) got[K.FOE_DROPS[part]] = (got[K.FOE_DROPS[part]] || 0) + (isBoss ? 2 : 1);
     for (const [id, c] of Object.entries(got)) { addIng(id, c); const I = ING(id); loot.push({ icon: `<span class="emo">${I.emoji}</span>`, label: `${I.name}${c > 1 ? ' ×' + c : ''}` }); }
-    const t = isBoss ? 3 : 1 + (lv >= 3 ? 1 : 0); s.tickets += t; loot.push({ icon: '<span class="emo">🎫</span>', label: `${t} Adventure Ticket${t > 1 ? 's' : ''}` });
+    const t = isBoss ? 3 : 1 + (lv >= 3 ? 1 : 0); s.tickets += t; loot.push({ icon: `<span class="emo">${ITEM_ICONS.ticket}</span>`, label: `${t} Adventure Ticket${t > 1 ? 's' : ''}` });
     State.save(); return loot;
   }
   // apply a quest/reward object; returns a list of item-get steps
   function grant(r) {
     const s = S(); const steps = [];
     if (r.rupees) { s.rupees += r.rupees; steps.push(n => FX.itemGet(IC.rupee(r.rupees >= 500 ? 'gold' : r.rupees >= 200 ? 'purple' : 'red'), `${fmt(r.rupees)} rupees!`, '', n)); }
-    if (r.tickets) { s.tickets += r.tickets; steps.push(n => FX.itemGet('<span class="emo big">🎫</span>', `${r.tickets} Adventure Tickets!`, 'Spend them on mini-games and horse races.', n)); }
+    if (r.tickets) { s.tickets += r.tickets; steps.push(n => FX.itemGet(`<span class="emo big">${ITEM_ICONS.ticket}</span>`, `${r.tickets} Adventure Tickets!`, 'Spend them on mini-games and horse races.', n)); }
     if (r.ingredient) for (const [id, c] of Object.entries(r.ingredient)) { addIng(id, c); const I = ING(id); steps.push(n => FX.itemGet(`<span class="emo big">${I.emoji}</span>`, `${I.name} ×${c}`, '', n)); }
     if (r.item) for (const [id, c] of Object.entries(r.item)) { s.items[id] = (s.items[id] || 0) + c; const I = K.ITEMS.find(x => x.id === id); steps.push(n => FX.itemGet(`<span class="emo big">${I.emoji}</span>`, `${I.name} ×${c}`, I.desc, n)); }
     if (r.armour) { if (!s.ownedArmour.includes(r.armour)) s.ownedArmour.push(r.armour); const A = K.ARMOUR.find(x => x.id === r.armour); steps.push(n => FX.itemGet(`<span class="emo big">${A.emoji}</span>`, `You got the ${A.name}!`, A.desc + ' Equip it in Beedle\'s shop.', n)); }
-    if (r.saddle) { if (!s.ownedSaddles.includes(r.saddle)) s.ownedSaddles.push(r.saddle); const A = K.SADDLES.find(x => x.id === r.saddle); steps.push(n => FX.itemGet('<span class="emo big">🐎</span>', `You got the ${A.name}!`, 'Put it on a horse at the stable.', n)); }
+    if (r.saddle) { if (!s.ownedSaddles.includes(r.saddle)) s.ownedSaddles.push(r.saddle); const A = K.SADDLES.find(x => x.id === r.saddle); steps.push(n => FX.itemGet(`<span class="emo big">${A.emoji}</span>`, `You got the ${A.name}!`, 'Put it on a horse at the stable.', n)); }
     if (r.pet) { if (!s.ownedPets.includes(r.pet)) s.ownedPets.push(r.pet); const A = K.PETS.find(x => x.id === r.pet); steps.push(n => FX.itemGet(`<div class="pet-get">${ART.pet(r.pet)}</div>`, `New companion: ${A.name}!`, (A.desc || '') + ' Choose companions in the shop\'s Style tab.', n)); }
     if (r.theme) { if (!s.ownedThemes.includes(r.theme)) s.ownedThemes.push(r.theme); if (r.theme === 'triforce') { s.theme = 'triforce'; applyTheme(); } const A = K.THEMES.find(x => x.id === r.theme); steps.push(n => FX.itemGet(`<span class="emo big">${A.emoji}</span>`, `New Sheikah Slate colour: ${A.name}!`, 'Choose it in the shop\'s Style tab.', n)); }
     if (r.weapon) { if (!s.ownedWeapons.includes(r.weapon)) s.ownedWeapons.push(r.weapon); s.weapon = r.weapon; const A = K.WEAPONS.find(x => x.id === r.weapon); steps.push(n => FX.itemGet(`<div class="pet-get">${ART.hero({ armour: s.armour, shield: s.shield, weapon: r.weapon })}</div>`, `You got the ${A.name}!`, `${A.desc} Boss damage: ${A.dmg}.`, n)); }
@@ -113,7 +113,7 @@
     if (tab === 'style') body = '<h3>Sheikah Slate colour</h3>' + gearRow(K.THEMES, 'theme', 'ownedThemes', 'theme', () => 'Changes the glow colour of the whole game.')
       + '<h3>Battle companion</h3>' + gearRow(K.PETS, 'pet', 'ownedPets', 'pet', p => p.desc || 'Fight on your own.')
       + '<h3>Paraglider fabric</h3>' + gearRow(K.GLIDERS.map(g => ({ ...g, emoji: `<span class="glider-sw">${ART.glider(g.id, false)}</span>` })), 'glider', 'ownedGliders', 'glider', () => 'Shows when you fly across the map.');
-    if (tab === 'horse') body = K.SADDLES.map(sd => row(`<span class="saddle-sw" style="background:${sd.color}"></span>`, sd.name, 'A saddle for your horses. Choose it at the stable.', s.ownedSaddles.includes(sd.id) ? '<span class="tag ok">Owned</span>' : buyBtn('saddle', sd.id, sd.price))).join('')
+    if (tab === 'horse') body = K.SADDLES.map(sd => row(sd.emoji, sd.name, 'A saddle for your horses. Choose it at the stable.', s.ownedSaddles.includes(sd.id) ? '<span class="tag ok">Owned</span>' : buyBtn('saddle', sd.id, sd.price))).join('')
       + K.INGREDIENTS.filter(i => i.id === 'carrot' || i.id === 'apple').map(it => row(it.emoji, it.name, 'Horses love these! Feed them at the stable.', `<span class="muted">Have ${s.ingredients[it.id] || 0}</span>${buyBtn('food', it.id, it.price)}`)).join('');
     if (tab === 'sell') {
       const sellRows = [];
@@ -138,7 +138,7 @@
       if (kind === 'food') { addIng(id); State.save(); toast(`Bought ${it.emoji} ${it.name}!`, 'good'); return shop(tab); }
       const own = { weapon: 'ownedWeapons', shield: 'ownedShields', armour: 'ownedArmour', theme: 'ownedThemes', pet: 'ownedPets', glider: 'ownedGliders', saddle: 'ownedSaddles' }[kind];
       s[own].push(id); if (kind !== 'saddle') s[kind] = id; State.save(); applyTheme();
-      FX.itemGet(kind === 'pet' ? `<div class="pet-get">${ART.pet(id)}</div>` : kind === 'glider' ? `<div class="pet-get wide">${ART.glider(id)}</div>` : kind === 'saddle' ? '<span class="emo big">🐎</span>' : `<span class="emo big">${it.emoji}</span>`, `You got the ${it.name}!`, it.desc || (it.dmg ? `Boss damage: ${it.dmg}` : it.blocks ? `Blocks ${it.blocks} hit${it.blocks > 1 ? 's' : ''} per boss battle.` : ''), () => shop(tab));
+      FX.itemGet(kind === 'pet' ? `<div class="pet-get">${ART.pet(id)}</div>` : kind === 'glider' ? `<div class="pet-get wide">${ART.glider(id)}</div>` : kind === 'saddle' ? `<span class="emo big">${it.emoji}</span>` : `<span class="emo big">${it.emoji}</span>`, `You got the ${it.name}!`, it.desc || (it.dmg ? `Boss damage: ${it.dmg}` : it.blocks ? `Blocks ${it.blocks} hit${it.blocks > 1 ? 's' : ''} per boss battle.` : ''), () => shop(tab));
     });
     on('[data-equip]', (e, el) => { s[el.dataset.kind] = el.dataset.equip; State.save(); applyTheme(); shop(tab); });
     on('[data-sell]', (e, el) => {
@@ -161,7 +161,7 @@
     }
     if (tab === 'ingredients') body = `<div class="bag-grid">${K.INGREDIENTS.filter(i => s.ingredients[i.id]).map(i => card(i.emoji, `${i.name} ×${s.ingredients[i.id]}`, i.tag ? `${K.EFFECTS[i.tag].icon} Adds the ${K.EFFECTS[i.tag].name} effect` : 'Cooking ingredient')).join('') || '<p class="muted">No ingredients. Win shrine trials to collect them!</p>'}</div>`;
     if (tab === 'materials') body = `<div class="bag-grid">${K.MATERIALS.filter(i => s.materials[i.id]).map(i => card(i.emoji, `${i.name} ×${s.materials[i.id]}`, 'Monster part for Great Fairy upgrades')).join('') || '<p class="muted">Defeat monsters in shrine trials to collect their parts.</p>'}</div>`;
-    if (tab === 'items') body = `<div class="bag-grid">${card('🎫', `Adventure Tickets ×${s.tickets}`, 'Earned from shrines. Spend on mini-games and races.')}${K.ITEMS.filter(i => s.items[i.id]).map(i => card(i.emoji, `${i.name} ×${s.items[i.id]}`, i.desc)).join('')}${s.lucky ? card('🍀', 'Lucky Clover', `Double ingredients for ${s.lucky} more shrine win${s.lucky > 1 ? 's' : ''}`) : ''}</div>`;
+    if (tab === 'items') body = `<div class="bag-grid">${card(ITEM_ICONS.ticket, `Adventure Tickets ×${s.tickets}`, 'Earned from shrines. Spend on mini-games and races.')}${K.ITEMS.filter(i => s.items[i.id]).map(i => card(i.emoji, `${i.name} ×${s.items[i.id]}`, i.desc)).join('')}${s.lucky ? card('🍀', 'Lucky Clover', `Double ingredients for ${s.lucky} more shrine win${s.lucky > 1 ? 's' : ''}`) : ''}</div>`;
     screen(`${hud()}<div class="page"><div class="page-head">${back()}<h2>Bag</h2><span class="pill">🎫 ${s.tickets}</span></div>
       <div class="tabs">${[['meals', '🍲 Meals'], ['ingredients', '🍎 Ingredients'], ['materials', '🦴 Monster parts'], ['items', '🎒 Items']].map(([t, l]) => `<button class="tab ${t === tab ? 'on' : ''}" data-tab="${t}">${l}</button>`).join('')}</div>${body}</div>`, 'map', 'field');
     on('#back', Game.map); on('[data-tab]', (e, el) => bag(el.dataset.tab));
@@ -193,7 +193,7 @@
     screen(`${hud()}<div class="page"><div class="page-head">${back(from === 'house' ? '◀ House' : '◀ Stable')}<h2>Cooking Pot</h2><span class="pill">📖 ${s.recipes.length}/${K.RECIPES.length} recipes</span></div>
       <div class="tabs"><button class="tab ${tab === 'cook' ? 'on' : ''}" data-tab="cook">🍲 Cook</button><button class="tab ${tab === 'book' ? 'on' : ''}" data-tab="book">📖 Recipe book</button></div>
       ${tab === 'book' ? book : `<div class="kitchen">
-        <div class="pot-wrap"><div class="pot" id="pot"><span class="steam">♨️</span>🍲</div><div class="pot-slots" id="pot-slots"></div><p id="preview" class="muted"></p>
+        <div class="pot-wrap"><div class="pot" id="pot"><span class="steam">♨️</span>${ITEM_ICONS.DECOR.pot}</div><div class="pot-slots" id="pot-slots"></div><p id="preview" class="muted"></p>
           <div class="row center"><button class="btn" id="clear">Empty</button><button class="btn primary glow" id="cookbtn">Cook! 🔥</button></div></div>
         <div class="ing-grid">${K.INGREDIENTS.filter(i => s.ingredients[i.id]).map(i => `<button class="ing" data-ing="${i.id}" title="${i.name}"><span>${i.emoji}</span><small>${i.name}</small><i></i>${i.tag ? `<em>${K.EFFECTS[i.tag].icon}</em>` : ''}</button>`).join('') || '<p class="muted">No ingredients yet. Win shrine trials, or buy some from Beedle.</p>'}</div>
       </div>
@@ -210,7 +210,7 @@
       let k = 0; const t = setInterval(() => { U.sfx.tick(); if (++k > 8) clearInterval(t); }, 150);
       setTimeout(() => {
         State.count('cooked');
-        if (r.dubious) { State.save(); FX.itemGet('<span class="emo big">🤢</span>', 'Dubious Food', 'Oops! Try mixing real food ingredients next time.', () => kitchen(from)); return; }
+        if (r.dubious) { State.save(); FX.itemGet(`<span class="emo big">${ITEM_ICONS.dubious}</span>`, 'Dubious Food', 'Oops! Try mixing real food ingredients next time.', () => kitchen(from)); return; }
         const key = r.recipe.id + '|' + r.effect; s.meals[key] = (s.meals[key] || 0) + 1;
         const isNew = !s.recipes.includes(r.recipe.id); if (isNew) s.recipes.push(r.recipe.id);
         State.save(); const m = mealInfo(key); const E = r.effect && K.EFFECTS[r.effect];

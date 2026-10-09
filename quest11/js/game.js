@@ -232,7 +232,7 @@
     on('#claim', () => {
       const bonus = 50 + Math.min(50, s.streak.days * 5);
       s.rupees += bonus; s.seeds++; s.seedsTotal++; s.tickets += 2; s.daily.claimed = true; State.save();
-      FX.chest([{ icon: IC.rupee('red'), label: `${bonus} rupees` }, { icon: IC.seed(), label: 'Korok seed' }, { icon: '<span class="emo">🎫</span>', label: '2 Adventure Tickets' }], map, 'Daily Quest complete!');
+      FX.chest([{ icon: IC.rupee('red'), label: `${bonus} rupees` }, { icon: IC.seed(), label: 'Korok seed' }, { icon: `<span class="emo">${ITEM_ICONS.ticket}</span>`, label: '2 Adventure Tickets' }], map, 'Daily Quest complete!');
     });
     on('#shop', () => World.shop()); on('#statue', () => statue()); on('#hestu', () => hestu()); on('#log', () => adventureLog()); on('#gear', settings);
     if (!s.flags.mapSeen) {
@@ -420,7 +420,7 @@
             if (lv === 3) rewards.push(...World.checkMastery());
           }
           const drops = World.trialDrops(subj, foe.name, lv, false);
-          if (r.B.wrong === 0) { s.tickets++; drops.push({ icon: '<span class="emo">🎫</span>', label: 'Perfect run: +1 ticket' }); }
+          if (r.B.wrong === 0) { s.tickets++; drops.push({ icon: `<span class="emo">${ITEM_ICONS.ticket}</span>`, label: 'Perfect run: +1 ticket' }); }
           if (loot.length) loot.push(...drops); else rewards.push(n => FX.chest(drops, n, 'Monster loot!'));
           s.stats.trials++; endTrialBuffs(); State.save();
           results(r, { rewards, retry: () => trial(topicId, lv), next: () => shrineScreen(topicId), nextLabel: 'Back to shrine' });
