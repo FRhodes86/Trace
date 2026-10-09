@@ -10,7 +10,7 @@
 <meta name="theme-color" content="#081420">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="11+ Quest">
 <meta name="description" content="A Zelda-inspired adventure that takes children through the whole GL Assessment 11+ curriculum.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -50,7 +50,9 @@ html, body { min-height: 100%; }
 body { margin: 0; background: var(--ink); color: var(--text); font-family: var(--font-body); font-size: 17px; line-height: 1.5; overflow-x: hidden; }
 #bgfx { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
 #fgfx { position: fixed; inset: 0; z-index: 75; pointer-events: none; }
-#app { position: relative; z-index: 1; min-height: 100vh; padding: 12px 16px 110px; }
+/* keep clear of notches / selfie cameras / rounded corners on phones */
+:root { --sat: env(safe-area-inset-top, 0px); --sab: env(safe-area-inset-bottom, 0px); --sal: env(safe-area-inset-left, 0px); --sar: env(safe-area-inset-right, 0px); --badge: 0px; }
+#app { position: relative; z-index: 1; min-height: 100vh; padding: calc(12px + var(--sat)) calc(16px + var(--sar)) calc(110px + var(--sab) + var(--badge)) calc(16px + var(--sal)); }
 #app.enter { animation: scrIn 0.45s ease-out; }
 @keyframes scrIn { from { opacity: 0; transform: translateY(10px); } }
 #app.shake { animation: shake 0.4s; }
@@ -144,7 +146,7 @@ button:focus-visible, input:focus-visible, summary:focus-visible { outline: 3px 
 .tag.ok { background: var(--good); }
 
 /* ---------- toast, banners, floating text ---------- */
-.toast { pointer-events: none; position: fixed; left: 50%; top: 16px; transform: translate(-50%, -140%); background: var(--slate-solid); border: 1px solid var(--rune); padding: 10px 18px; border-radius: 16px; z-index: 90; transition: transform 0.35s; max-width: 92vw; text-align: center; }
+.toast { pointer-events: none; position: fixed; left: 50%; top: calc(16px + var(--sat)); transform: translate(-50%, -140%); background: var(--slate-solid); border: 1px solid var(--rune); padding: 10px 18px; border-radius: 16px; z-index: 90; transition: transform 0.35s; max-width: 92vw; text-align: center; }
 .toast.show { transform: translate(-50%, 0); }
 .toast.good { border-color: var(--good); } .toast.bad { border-color: var(--malice); }
 .banner { position: fixed; left: 0; right: 0; top: 34%; z-index: 85; pointer-events: none; display: flex; justify-content: center; animation: bannerIn 1.7s ease forwards; }
@@ -164,7 +166,7 @@ button:focus-visible, input:focus-visible, summary:focus-visible { outline: 3px 
 .fly .rupee { width: 18px; height: 28px; }
 
 /* ---------- dialogue / modal ---------- */
-.dlg-wrap { position: fixed; inset: 0; z-index: 50; display: flex; align-items: flex-end; justify-content: center; padding: 16px 16px calc(24px + env(safe-area-inset-bottom, 0px)); background: linear-gradient(transparent 45%, rgba(0, 0, 0, 0.6)); cursor: pointer; }
+.dlg-wrap { position: fixed; inset: 0; z-index: 50; display: flex; align-items: flex-end; justify-content: center; padding: calc(16px + var(--sat)) 16px calc(24px + var(--sab) + var(--badge)); background: linear-gradient(transparent 45%, rgba(0, 0, 0, 0.6)); cursor: pointer; }
 .dlg { width: 100%; max-width: 820px; display: flex; gap: 14px; align-items: flex-end; background: rgba(6, 14, 22, 0.92); border: 1px solid rgba(255, 255, 255, 0.18); border-radius: 22px; padding: 16px 22px 12px; box-shadow: 0 0 40px rgba(0, 0, 0, 0.6); animation: dlgIn 0.25s ease-out; }
 @keyframes dlgIn { from { transform: translateY(20px); opacity: 0; } }
 .dlg .portrait { width: 96px; height: 120px; flex: none; margin-top: -60px; filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.6)); }
@@ -274,7 +276,7 @@ textarea { font-size: 0.8rem; text-align: left; max-width: 100%; width: 100%; }
 .dq > div { flex: 1; min-width: 0; }
 .bar { height: 8px; background: #24384b; border-radius: 9px; overflow: hidden; margin-top: 4px; }
 .bar i { display: block; height: 100%; background: linear-gradient(90deg, var(--rune), var(--good)); transition: width 0.5s; }
-.dock { position: fixed; left: 0; right: 0; bottom: 0; display: flex; justify-content: center; gap: 6px; padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px)); background: linear-gradient(transparent, rgba(4, 10, 16, 0.96) 30%); z-index: 20; }
+.dock { position: fixed; left: 0; right: 0; bottom: 0; display: flex; justify-content: center; gap: 6px; padding: 6px calc(8px + var(--sar)) calc(6px + var(--sab) + var(--badge)) calc(8px + var(--sal)); background: linear-gradient(transparent, rgba(4, 10, 16, 0.96) 30%); z-index: 20; }
 .dock-b { background: var(--slate); border: 1px solid var(--edge); color: var(--text); display: flex; flex-direction: column; align-items: center; font-size: 0.72rem; padding: 4px 10px 6px; border-radius: 14px; min-width: 64px; transition: transform 0.15s; }
 .dock-b .art { width: 40px; height: 40px; }
 .dock-b .dock-ic { font-size: 1.7rem; line-height: 40px; height: 40px; }
@@ -424,7 +426,7 @@ button.card:hover { border-color: var(--rune); box-shadow: 0 0 18px rgba(63, 224
 .proj-laser { width: 60px; height: 8px; border-radius: 4px; background: linear-gradient(90deg, transparent, #ff9a2e, #fff); box-shadow: 0 0 18px #ff7a1a; }
 .proj-melee { display: none; }
 .proj-thunder { width: 16px; height: 150px; border-radius: 0; background: linear-gradient(180deg, transparent, #fff8a0, #fff); clip-path: polygon(40% 0, 70% 0, 50% 40%, 80% 40%, 30% 100%, 45% 55%, 15% 55%); box-shadow: 0 0 20px #ffe866; transform-origin: top; }
-.korok-pop { position: fixed; right: 16px; bottom: 110px; z-index: 82; pointer-events: none; display: flex; align-items: flex-end; gap: 6px; transform: translateY(160%); transition: transform 0.45s cubic-bezier(.3, 1.6, .5, 1); }
+.korok-pop { position: fixed; right: calc(16px + var(--sar)); bottom: calc(110px + var(--sab) + var(--badge)); z-index: 82; pointer-events: none; display: flex; align-items: flex-end; gap: 6px; transform: translateY(160%); transition: transform 0.45s cubic-bezier(.3, 1.6, .5, 1); }
 .korok-pop.show { transform: translateY(0); }
 .korok-pop .art { width: 80px; height: 88px; }
 .kp-say { background: #f7f1d8; color: #2b2112; border-radius: 16px 16px 16px 4px; padding: 8px 12px; display: flex; flex-direction: column; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4); margin-bottom: 50px; }
@@ -612,6 +614,10 @@ button.opt:active:not(:disabled) { transform: translateY(1px); box-shadow: 0 1px
 }
 .emoji-row { font-size: 2rem; letter-spacing: 4px; text-align: center; }
 .key { margin: 4px 0 0; font-size: 0.9rem; text-align: center; }
+
+/* hosts that pin their own badge to the bottom-right corner (e.g. "Powered by Netlify"): lift the bottom bar above it */
+.host-badge { --badge: 48px; }
+.host-badge .dock { background: linear-gradient(transparent, rgba(4, 10, 16, 0.96) 22%); }
 </style>
 </head>
 <body>
@@ -5125,6 +5131,8 @@ Symin`,
   // play-time tracker
   setInterval(() => { if (S() && document.visibilityState === 'visible') { S().stats.playSeconds += 30; State.save(); } }, 30000);
 
+  // free static hosts like Netlify can overlay a badge in the bottom corner
+  if (/netlify\.app$|netlify\.com$/.test(location.hostname)) document.documentElement.classList.add('host-badge');
   window.Game = { title, map };
   title();
 })();

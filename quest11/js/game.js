@@ -1083,6 +1083,8 @@
   // play-time tracker
   setInterval(() => { if (S() && document.visibilityState === 'visible') { S().stats.playSeconds += 30; State.save(); } }, 30000);
 
+  // free static hosts like Netlify can overlay a badge in the bottom corner
+  if (/netlify\.app$|netlify\.com$/.test(location.hostname)) document.documentElement.classList.add('host-badge');
   window.Game = { title, map };
   title();
 })();
