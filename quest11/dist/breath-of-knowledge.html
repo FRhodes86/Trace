@@ -4432,7 +4432,7 @@ Symin`,
     const pool = U.shuffle(s.mistakes.slice()).slice(0, 8);
     battle({
       kind: 'bloodmoon', title: 'Blood Moon', subtitle: 'Your old mistakes return!', total: pool.length + 2, hearts: 4, theme: 'bloodmoon',
-      foe: { name: 'Black Moblin', art: ART.moblin(), attack: 'melee' },
+      foe: { name: 'Revived Moblin', art: ART.moblin(), attack: 'melee' },
       next: B => {
         const m = pool[B.idx % pool.length]; const t = topicById(m.topicId);
         // half the time it's the exact question again; otherwise a fresh one of the same kind
