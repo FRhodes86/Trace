@@ -75,13 +75,14 @@
         const common = { shape: pick(SHAPES), fill: pick(FILLS), dots: int(1, 4), inner: pick(['circle', 'square', 'triangle']) };
         for (let i = 0; i < 5; i++) {
           const f = randFig({ rot: pick([0, 45, 90, 135, 180]), dots: lv === 1 ? 0 : int(0, 4) });
-          if (lv === 3 && rule !== 'inner') f.inner = chance(0.5) ? pick(['circle', 'square', 'triangle']) : null;
           if (rule === 'shape') f.shape = common.shape;
           if (rule === 'fill') f.fill = common.fill;
           if (rule === 'dots') { f.dots = common.dots; f.fill = pick(['none', 'grey', 'stripe']); }
-          if (rule === 'inner') { f.shape = pick(['circle', 'square', 'triangle', 'pentagon', 'hexagon']); f.inner = f.shape === 'pentagon' || f.shape === 'hexagon' ? pick(['circle', 'square', 'triangle']) : f.shape; f.innerFill = 'solid'; f.fill = pick(['none', 'grey']); }
+          if (rule === 'inner') { f.shape = pick(['circle', 'square', 'triangle', 'pentagon', 'hexagon']); f.inner = f.shape === 'pentagon' || f.shape === 'hexagon' ? pick(['circle', 'square', 'triangle']) : f.shape; f.innerFill = 'solid'; f.fill = pick(['none', 'grey']); f.dots = 0; }
           if (rule === 'sides') { f.shape = pick(['square', 'hexagon', 'cross']); f.fill = pick(FILLS); }
           if (rule === 'sidesdots') { f.shape = pick(['triangle', 'square', 'pentagon', 'hexagon']); f.dots = SIDES[f.shape]; f.fill = pick(['none', 'grey']); f.inner = null; }
+          // dots would cover a small inner shape, so a figure never has both
+          if (lv === 3 && rule !== 'inner') f.inner = !f.dots && chance(0.5) ? pick(['circle', 'square', 'triangle']) : null;
           figs.push(f);
         }
         if (rule === 'inner') figs.forEach(f => { f.inner = f.shape; });

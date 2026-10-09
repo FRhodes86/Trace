@@ -300,7 +300,8 @@
         const name = pick(NAMES);
         if (chance(0.5)) { const f = int(3, 9), b = int(3, 9); return mc(`${name} is <b>${f}th from the front</b> of a queue and <b>${b}th from the back</b>. How many people are in the queue?`, f + b - 1, [f + b, f + b + 1, f + b - 2, Math.abs(f - b) + 1], `${f} + ${b} counts ${name} twice, so take 1 away: ${f} + ${b} − 1 = <b>${f + b - 1}</b>.`); }
         const n = int(6, 12), p = int(2, n - 1);
-        return mc(`${n} Koroks stand in a line. ${name} is <b>${p}${p === 2 ? 'nd' : p === 3 ? 'rd' : 'th'} from the left</b>. How many Koroks are to ${name}'s right?`, n - p, [n - p + 1, n - p - 1, p, n - 1], `There are ${p - 1} on the left, ${name}, and ${n} − ${p} = <b>${n - p}</b> on the right.`);
+        const th = `${p}${p === 2 ? 'nd' : p === 3 ? 'rd' : 'th'}`;
+        return mc(`${name} and ${n - 1} Koroks stand in a line, so there are ${n} in the line altogether. ${name} is <b>${th} from the left</b>. How many Koroks are to ${name}'s right?`, n - p, [n - p + 1, n - p - 1, p, n - 1], `${name} is ${th}, so there are ${p - 1} Korok${p - 1 === 1 ? '' : 's'} on the left. Take away those and ${name} from the ${n} in the line: ${n} − ${p} = <b>${n - p}</b> on the right.`);
       }
       const k = lv === 1 ? 3 : lv === 2 ? 4 : 5;
       const people = sample(NAMES, k); // people[0] is the most
