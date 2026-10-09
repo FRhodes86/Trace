@@ -265,14 +265,20 @@
     on('#back', stable);
     on('[data-tame]', (e, el) => { if (s.horses.length >= K.STABLE_CAP) return UI().toast('Your stable is full!', 'bad'); tame(+el.dataset.tame); });
   }
+  // the game's green stamina wheel: one segment per try
+  function stamWheel(cur, max) {
+    const seg = (2 * Math.PI) / max; const arcs = [];
+    for (let k = 0; k < max; k++) { const a0 = -Math.PI / 2 + k * seg + 0.06, a1 = a0 + seg - 0.12; const p = (a, r) => `${(20 + Math.cos(a) * r).toFixed(2)},${(20 + Math.sin(a) * r).toFixed(2)}`; arcs.push(`<path d="M${p(a0, 16)} A16,16 0 0 1 ${p(a1, 16)}" stroke="${k < cur ? '#7ee35a' : '#3a4a3a'}" stroke-width="6" fill="none" stroke-linecap="round"/>`); }
+    return `<svg class="stam-wheel" viewBox="0 0 40 40"><circle cx="20" cy="20" r="16" fill="none" stroke="#1d1a2b" stroke-width="9" opacity=".55"/>${arcs.join('')}</svg>`;
+  }
   function tame(i) {
     const s = S(); const { screen, on, addInterval, onKey } = UI(); const h = herd()[i];
     const need = 2 + h.temper; const maxStam = 3 + s.stamina; let stam = maxStam, got = 0, pos = 0, dir = 1, done = false;
     const zone = Math.max(14, 34 - h.temper * 4); const zoneAt = U.int(20, 80 - zone);
     screen(`<div class="page center tame-page"><h2>Taming a wild horse!</h2><p class="muted">Tap <b>Soothe</b> when the marker is in the green zone. Each miss uses stamina.</p>
-      <div class="tame-horse buck" id="th">${ART.horse(h, { anim: 'buck' })}<div class="rider">${UI().heroArt()}</div></div>
+      <div class="tame-field"><div class="tame-horse buck" id="th">${ART.horse(h, { anim: 'buck' })}<div class="rider">${UI().heroArt()}</div></div><div class="tame-wheel" id="stamw">${stamWheel(maxStam, maxStam)}</div></div>
       <div class="meter"><div class="zone" style="left:${zoneAt}%;width:${zone}%"></div><div class="needle" id="needle"></div></div>
-      <div class="tame-stats"><span>Calm: <b id="got">0</b>/${need}</span><span>Stamina: <b id="stam">${'🟢'.repeat(stam)}</b></span></div>
+      <div class="tame-stats"><span>Calm: <b id="got">0</b>/${need}</span><span>Stamina tries left: <b id="stam">${stam}</b></span></div>
       <button class="btn big primary" id="soothe">💚 Soothe!</button></div>`, 'plateau', 'battle');
     const spd = 1.4 + h.temper * 0.45;
     addInterval(setInterval(() => { if (done) return; pos += dir * spd; if (pos >= 100 || pos <= 0) { dir *= -1; pos = Math.max(0, Math.min(100, pos)); } $('#needle').style.left = pos + '%'; }, 16));
@@ -280,7 +286,7 @@
       if (done) return;
       if (pos >= zoneAt && pos <= zoneAt + zone) { got++; U.sfx.correct(); FX.burst(...FX.center($('#th')), { n: 14, colors: ['#7ee35a', '#fff'], speed: 160 }); }
       else { stam--; U.sfx.wrong(); FX.shake(0.6); }
-      $('#got').textContent = got; $('#stam').textContent = '🟢'.repeat(Math.max(0, stam)) + '⚫'.repeat(maxStam - Math.max(0, stam));
+      $('#got').textContent = got; $('#stam').textContent = Math.max(0, stam); $('#stamw').innerHTML = stamWheel(Math.max(0, stam), maxStam);
       if (got >= need) { done = true; $('#th').classList.remove('buck'); FX.banner('Tamed!', 'victory'); U.sfx.fanfare(); setTimeout(() => nameHorse(i), 1300); }
       else if (stam <= 0) { done = true; FX.banner('Thrown off!', 'danger'); setTimeout(() => UI().modal('<h3>The horse threw you off!</h3><p>Try again. Every Stamina Vessel from the Goddess Statue gives you one more try per attempt.</p>', [{ label: 'Back to the field', fn: wildField }, { label: 'Try again', cls: 'primary', fn: () => tame(i) }]), 900); }
     };
@@ -308,17 +314,18 @@
     const rivals = [rollHorse(), rollHorse(), rollHorse()].map((r, k) => ({ ...r, name: ['Royal Steed', 'Dusty', 'Gerudo Racer'][k] }));
     const racers = [{ ...h, me: true }, ...rivals].map(r => ({ ...r, x: 0, v: 0, boost: 0 }));
     const lanes = racers.map((r, k) => `<div class="lane"><span class="lane-name">${r.me ? U.esc(h.name) : r.name}</span><div class="runner" id="run${k}">${ART.horse(r, { saddle: r.me ? (h.saddle || 'stable') : 'stable', anim: 'gallop' })}</div></div>`).join('');
-    screen(`<div class="page center race-page"><h2>Horse Race!</h2><p class="muted">Tap <b>Gallop!</b> when the spur meter is in the green zone for a burst of speed. Don't spam it: a bad spur slows you down!</p>
-      <div class="track"><div class="finish"></div>${lanes}</div>
+    screen(`<div class="page center race-page"><h2>Horse Race!</h2><p class="muted">Tap <b>Gallop!</b> when the needle is in the green zone for a burst of speed. Spurs recharge over time, but a badly timed spur slows you down!</p>
+      <div class="track"><svg class="track-bg" viewBox="0 0 400 100" preserveAspectRatio="none"><rect width="400" height="100" fill="#8fbf6a"/><path d="M0,30 Q60,10 120,26 T240,22 T400,18 V0 H0Z" fill="#bfe6ff"/><path d="M0,30 Q60,10 120,26 T240,22 T400,18" stroke="#6f9f50" stroke-width="3" fill="none"/>${Array.from({ length: 21 }, (_, k) => `<path d="M${k * 20},28 v-10" stroke="#f4ead0" stroke-width="2"/>`).join('')}<path d="M0,20 H400" stroke="#f4ead0" stroke-width="1.6"/></svg><div class="finish"><span>FINISH</span></div>${lanes}</div>
       <div class="meter"><div class="zone" style="left:62%;width:22%"></div><div class="needle" id="needle"></div></div>
       <div class="row center"><span class="pill">Spurs: <b id="spurs"></b></span></div>
       <button class="btn big primary" id="gallop">🏇 Gallop!</button></div>`, 'plateau', 'battle');
-    let spurs = 3 + h.stamina; const spursMax = spurs; $('#spurs').textContent = '🥕'.repeat(spurs);
+    let spurs = 3 + h.stamina; const spursMax = spurs; let regen = 0; const showSpurs = () => { const e = $('#spurs'); if (e) e.innerHTML = Array.from({ length: spursMax }, (_, k) => `<i class="spur ${k < spurs ? 'on' : ''}"></i>`).join(''); }; showSpurs();
     let pos = 0, done = false, t0 = performance.now(), finish = [];
     const base = r => 0.22 + r.speed * 0.035 + (r.me ? h.bond * 0.012 : 0);
     addInterval(setInterval(() => {
       if (done) return;
       pos = (pos + 2.2) % 100; $('#needle').style.left = pos + '%';
+      if (spurs < spursMax && (regen += 30) >= 3500) { regen = 0; spurs++; showSpurs(); } // spurs recharge, as in the game
       racers.forEach((r, k) => {
         if (!r.me && Math.random() < 0.012 * r.stamina) r.boost = 40;
         const v = base(r) * (r.boost > 0 ? 1.9 : 1) * (0.9 + Math.random() * 0.2); if (r.boost > 0) r.boost--;
@@ -334,9 +341,9 @@
       }
     }, 30));
     const gallop = () => {
-      if (done || spurs <= 0) return; spurs--; $('#spurs').textContent = '🥕'.repeat(spurs) + '·'.repeat(spursMax - spurs);
+      if (done || spurs <= 0) return; spurs--; regen = 0; showSpurs();
       const me = racers[0];
-      if (pos >= 62 && pos <= 84) { me.boost = 45; U.sfx.correct(); FX.floatText($('#run0'), 'Burst!', 'xp'); } else { me.boost = -1; me.x = Math.max(0, me.x - 1.5); U.sfx.wrong(); FX.floatText($('#run0'), 'Too early!', 'xp'); }
+      if (pos >= 62 && pos <= 84) { me.boost = 45; U.sfx.correct(); FX.floatText($('#run0'), 'Burst!', 'xp'); } else { me.boost = -1; me.x = Math.max(0, me.x - 1.5); U.sfx.wrong(); FX.floatText($('#run0'), pos < 62 ? 'Too early!' : 'Too late!', 'xp'); }
     };
     on('#gallop', gallop); onKey(e => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); gallop(); } });
   }
@@ -347,74 +354,146 @@
     if (!s.tickets) return UI().modal(`<h3>${name}</h3><p>You need an <b>🎫 Adventure Ticket</b> to play. Clear shrine trials to earn tickets!</p>`, [{ label: 'OK' }]);
     UI().modal(`<h3>${name}</h3><p>Play for <b>🎫 1 Adventure Ticket</b>? You have ${s.tickets}.</p>`, [{ label: 'Not now' }, { label: 'Play! 🎫', cls: 'primary', fn: () => { s.tickets--; State.save(); play(); } }]);
   }
+
+  /* Rito Flight Range: glide over Rito Village and shoot the wooden bullseye targets swinging on ropes in the updraft. */
   function archeryIntro() {
     const s = S(); const { screen, hud, on } = UI();
-    screen(`${hud()}<div class="page center"><div class="page-head">${back()}<h2>Rito Flight Range</h2></div>
-      <div class="npc-stand big"><span class="emo big">🦅</span></div>
-      <p class="intro slate">Teba: "Hit as many targets as you can in 30 seconds. Gold targets are worth 3 points! Best score: <b>${s.counters.archeryBest || 0}</b>"</p>
+    screen(`${hud()}<div class="page center"><div class="page-head">${back()}<h2>Flight Range</h2><span class="pill">🎫 ${s.tickets}</span></div>
+      <div class="npc-stand big">${ART.teba()}</div>
+      <p class="intro slate"><b>Teba:</b> "Ride the updraft over the range and hit as many targets as you can in 30 seconds. Hit the centre for a bonus, and don't miss the golden targets: they're worth 3!"</p>
+      <p class="muted">Best score: <b>${s.counters.archeryBest || 0}</b>. Tap a target to fire an arrow at it.</p>
       <button class="btn big primary glow" id="go">🎯 Play (🎫1)</button></div>`, 'verbal', 'verbal');
     on('#back', Game.map); on('#go', () => ticketGate('Flight Range', archery));
   }
   function archery() {
-    const { screen, addInterval } = UI(); let score = 0, left = 30, done = false;
-    screen(`<div class="page center"><h2>🎯 Flight Range</h2><div class="row center"><span class="pill">Score <b id="sc">0</b></span><span class="pill">⏱ <b id="tl">30</b></span></div><div class="range" id="range"></div></div>`, 'verbal', 'battle');
-    const range = $('#range');
-    const spawn = () => {
-      if (done) return; const gold = Math.random() < 0.18; const t = document.createElement('button'); t.className = 'target' + (gold ? ' gold' : '');
-      const y = U.int(5, 75), dur = U.int(2400, 4200) - (gold ? 800 : 0), fromLeft = Math.random() < 0.5;
-      t.style.top = y + '%'; t.style.left = fromLeft ? '-12%' : '104%';
-      range.appendChild(t);
-      t.animate([{ left: fromLeft ? '-12%' : '104%' }, { left: fromLeft ? '104%' : '-12%' }], { duration: dur, easing: 'linear' }).onfinish = () => t.remove();
-      t.addEventListener('pointerdown', () => { if (done) return; score += gold ? 3 : 1; $('#sc').textContent = score; U.sfx.hit(); const [x, yy] = FX.center(t); FX.burst(x, yy, { n: 16, colors: gold ? ['#ffd23d', '#fff'] : ['#ff5a5a', '#fff'], speed: 200 }); FX.floatText(t, gold ? '+3' : '+1', 'xp'); t.remove(); });
-    };
-    addInterval(setInterval(spawn, 650));
-    addInterval(setInterval(() => {
-      if (done) return; left--; $('#tl').textContent = left;
-      if (left <= 0) {
-        done = true; const s = S(); const best = score > (s.counters.archeryBest || 0); State.countMax('archeryBest', score); const prize = score * 3; s.rupees += prize; State.save();
-        UI().modal(`<h3>Time's up!</h3><p>You scored <b>${score}</b>${best ? ' — a new best! 🏆' : ''}</p><p>Prize: <b>${prize} rupees</b></p>`, [{ label: 'Done', cls: 'primary', fn: archeryIntro }]);
+    const { gameScreen, stage, loop, hud: chud, sprite, ready } = MG;
+    const el = gameScreen('Flight Range', '<p class="muted">Tap a target to shoot. Centre hits score a bonus!</p>', 'verbal', 'battle');
+    const { cv, ctx, W, H } = stage(el, 1.12);
+    const link = sprite('glider-' + S().glider, ART.glider(S().glider), 120, 92);
+    let left = 30, score = 0, hits = 0, shots = 0, over = false, spawn = 0.2, t = 0;
+    const targets = [], arrows = [], bits = [], pops = [];
+    const lx = () => W * 0.5 + Math.sin(t * 0.8) * W * 0.18, ly = () => H - 70 + Math.sin(t * 2) * 6;
+    cv.addEventListener('pointerdown', e => {
+      if (over) return; const r = cv.getBoundingClientRect(); const x = (e.clientX - r.left) * W / r.width, y = (e.clientY - r.top) * H / r.height;
+      if (y > H - 40) return; shots++; arrows.push({ x0: lx(), y0: ly() - 34, x1: x, y1: y, k: 0 }); U.sfx.click();
+    });
+    loop(cv, dt => {
+      t += dt;
+      if (!over) {
+        left -= dt; spawn -= dt;
+        if (spawn <= 0 && targets.filter(q => !q.fall).length < 6) { spawn = 0.75; const gold = Math.random() < 0.16; targets.push({ ax: W * (0.1 + Math.random() * 0.8), len: H * (0.18 + Math.random() * 0.36), sw: 0.3 + Math.random() * 0.4, ph: Math.random() * 6, sp: (gold ? 2.2 : 1.1) + Math.random() * 0.6, r: gold ? 15 : 22, gold, life: gold ? 4 : 9, fall: 0, x: 0, y: 0 }); }
+        for (const a of arrows) {
+          a.k += dt / 0.16;
+          if (a.k >= 1 && !a.done) {
+            a.done = true;
+            const tg = targets.find(q => !q.fall && Math.hypot(q.x - a.x1, q.y - a.y1) <= q.r + 3);
+            if (tg) {
+              const bull = Math.hypot(tg.x - a.x1, tg.y - a.y1) < tg.r * 0.36; const pts = (tg.gold ? 3 : 1) + (bull ? 1 : 0);
+              score += pts; hits++; tg.fall = 1; tg.vy = -80; U.sfx.hit(); pops.push({ x: tg.x, y: tg.y, txt: `${bull ? 'Bullseye! ' : ''}+${pts}`, life: 0.9, gold: tg.gold || bull });
+              for (let i = 0; i < 12; i++) bits.push({ x: tg.x, y: tg.y, vx: (Math.random() - 0.5) * 240, vy: -Math.random() * 200, life: 0.7, c: i % 2 ? '#c8a06a' : (tg.gold ? '#ffd23d' : '#d8402e') });
+            }
+          }
+        }
+        for (let i = arrows.length - 1; i >= 0; i--) if (arrows[i].k > 1.6) arrows.splice(i, 1);
+        if (left <= 0) {
+          over = true; const s = S(); const best = score > (s.counters.archeryBest || 0); State.countMax('archeryBest', score); const prize = score * 3; s.rupees += prize; State.save();
+          MG.finish('Time\'s up!', `<p>You scored <b>${score}</b> with ${hits} hit${hits === 1 ? '' : 's'} from ${shots} arrow${shots === 1 ? '' : 's'}${best ? ' — a new best! 🏆' : ''}</p><p>Prize: <b>${prize} rupees</b></p>`, archeryIntro);
+        }
       }
-    }, 1000));
+      for (const q of targets) {
+        if (q.fall) { q.vy += 600 * dt; q.y += q.vy * dt; q.fall += dt; continue; }
+        q.life -= dt; const ang = Math.sin(t * q.sp + q.ph) * q.sw; q.x = q.ax + Math.sin(ang) * q.len; q.y = Math.cos(ang) * q.len;
+      }
+      for (let i = targets.length - 1; i >= 0; i--) if (targets[i].y > H + 40 || (!targets[i].fall && targets[i].life <= 0)) targets.splice(i, 1);
+      // Rito Village sky: clouds, the great stone spire with its perches, the swirling updraft
+      const sky = ctx.createLinearGradient(0, 0, 0, H); sky.addColorStop(0, '#5aa0e8'); sky.addColorStop(1, '#cfe8fa'); ctx.fillStyle = sky; ctx.fillRect(0, 0, W, H);
+      ctx.fillStyle = 'rgba(255,255,255,.85)'; for (let i = 0; i < 5; i++) { const x = ((i * 140 + t * 12) % (W + 160)) - 80, y = 40 + (i * 53) % (H * 0.5); ctx.beginPath(); ctx.ellipse(x, y, 40, 12, 0, 0, Math.PI * 2); ctx.ellipse(x + 22, y - 8, 24, 12, 0, 0, Math.PI * 2); ctx.fill(); }
+      ctx.fillStyle = '#7a8a9a'; ctx.beginPath(); ctx.moveTo(-10, H); ctx.lineTo(W * 0.04, H * 0.28); ctx.lineTo(W * 0.1, H * 0.22); ctx.lineTo(W * 0.16, H * 0.3); ctx.lineTo(W * 0.2, H); ctx.fill();
+      ctx.strokeStyle = '#5a6a7a'; ctx.lineWidth = 2; ctx.stroke();
+      for (const [y, w] of [[0.36, 0.16], [0.55, 0.18], [0.74, 0.2]]) { ctx.fillStyle = '#7a5230'; ctx.fillRect(W * 0.02, H * y, W * w, 5); ctx.fillStyle = '#c63b4f'; ctx.beginPath(); ctx.moveTo(W * 0.04, H * y); ctx.lineTo(W * 0.09, H * y - 14); ctx.lineTo(W * (0.02 + w), H * y); ctx.fill(); }
+      ctx.strokeStyle = 'rgba(255,255,255,.55)'; ctx.lineWidth = 2;
+      for (let i = 0; i < 9; i++) { const y = H - ((t * 90 + i * 60) % (H + 60)); const x = W * 0.5 + Math.sin(y / 40 + i) * 26; ctx.beginPath(); ctx.arc(x, y, 10 + (i % 3) * 4, 0.3, 2.6); ctx.stroke(); }
+      for (const q of targets) {
+        ctx.strokeStyle = '#6b4a2b'; ctx.lineWidth = 1.4; if (!q.fall) { ctx.beginPath(); ctx.moveTo(q.ax, 0); ctx.lineTo(q.x, q.y - q.r); ctx.stroke(); }
+        ctx.save(); ctx.translate(q.x, q.y); if (q.fall) ctx.rotate(q.fall * 6);
+        if (q.gold) { ctx.shadowColor = '#ffd23d'; ctx.shadowBlur = 14; }
+        ctx.beginPath(); ctx.arc(0, 0, q.r, 0, Math.PI * 2); ctx.fillStyle = q.gold ? '#c99a0c' : '#8a5a2b'; ctx.fill(); ctx.shadowBlur = 0; ctx.lineWidth = 2; ctx.strokeStyle = '#1d1a2b'; ctx.stroke();
+        const rings = q.gold ? ['#fff6c8', '#ffd23d', '#fff6c8', '#e8a020'] : ['#f4ead0', '#d8402e', '#f4ead0', '#d8402e'];
+        rings.forEach((c, k) => { ctx.beginPath(); ctx.arc(0, 0, q.r * (0.82 - k * 0.18), 0, Math.PI * 2); ctx.fillStyle = c; ctx.fill(); });
+        ctx.strokeStyle = 'rgba(90,58,34,.5)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(-q.r, 0); ctx.lineTo(q.r, 0); ctx.stroke(); ctx.restore();
+      }
+      for (const a of arrows) {
+        const k = Math.min(1, a.k); const x = a.x0 + (a.x1 - a.x0) * k, y = a.y0 + (a.y1 - a.y0) * k; const ang = Math.atan2(a.y1 - a.y0, a.x1 - a.x0);
+        ctx.save(); ctx.translate(x, y); ctx.rotate(ang); ctx.globalAlpha = a.k > 1 ? Math.max(0, 1.6 - a.k) / 0.6 : 1;
+        ctx.strokeStyle = '#7a5230'; ctx.lineWidth = 2.2; ctx.beginPath(); ctx.moveTo(-26, 0); ctx.lineTo(0, 0); ctx.stroke();
+        ctx.fillStyle = '#c8c8c8'; ctx.beginPath(); ctx.moveTo(4, 0); ctx.lineTo(-3, -3.4); ctx.lineTo(-3, 3.4); ctx.fill(); ctx.fillStyle = '#e8402e'; ctx.fillRect(-27, -3, 6, 2); ctx.fillRect(-27, 1, 6, 2); ctx.restore();
+      }
+      for (let i = bits.length - 1; i >= 0; i--) { const p = bits[i]; p.life -= dt; if (p.life <= 0) { bits.splice(i, 1); continue; } p.x += p.vx * dt; p.y += p.vy * dt; p.vy += 500 * dt; ctx.globalAlpha = p.life; ctx.fillStyle = p.c; ctx.fillRect(p.x - 2, p.y - 2, 4, 4); ctx.globalAlpha = 1; }
+      for (let i = pops.length - 1; i >= 0; i--) { const p = pops[i]; p.life -= dt; if (p.life <= 0) { pops.splice(i, 1); continue; } ctx.globalAlpha = Math.min(1, p.life * 2); ctx.font = '800 16px Lexend, sans-serif'; ctx.textAlign = 'center'; ctx.lineWidth = 4; ctx.strokeStyle = '#1d1a2b'; ctx.strokeText(p.txt, p.x, p.y - (0.9 - p.life) * 40); ctx.fillStyle = p.gold ? '#ffd23d' : '#fff'; ctx.fillText(p.txt, p.x, p.y - (0.9 - p.life) * 40); ctx.textAlign = 'left'; ctx.globalAlpha = 1; }
+      if (ready(link)) ctx.drawImage(link, lx() - 54, ly() - 70, 108, 83);
+      chud(ctx, W, [`🎯 ${score}`, `⏱ ${Math.max(0, Math.ceil(left))}`]);
+    });
   }
-  const SONG_PADS = [['#3fe0ff', 523, '◆'], ['#ffd23d', 659, '▲'], ['#ff5a6e', 784, '●'], ['#7ee35a', 988, '■']];
+
+  /* Kass's Song: Kass plays a melody on the five Ocarina buttons (A and the four C buttons); play it back note for note. */
+  const SONG_PADS = [['A', 587.33, 'a'], ['▲', 1174.66, 'up'], ['◀', 987.77, 'left'], ['▶', 880, 'right'], ['▼', 698.46, 'down']];
+  const STAFF_Y = { a: 4, down: 3, right: 2, left: 1, up: 0 };
   function kassIntro() {
     const s = S(); const { screen, hud, on } = UI();
-    screen(`${hud()}<div class="page center"><div class="page-head">${back()}<h2>Kass's Song</h2></div>
-      <div class="npc-stand big"><span class="emo big">🪗</span></div>
-      <p class="intro slate">Kass: "Listen to my melody, then play it back! Each round adds one more note. Best melody: <b>${s.counters.songBest || 0}</b> notes."</p>
+    screen(`${hud()}<div class="page center"><div class="page-head">${back()}<h2>Kass's Song</h2><span class="pill">🎫 ${s.tickets}</span></div>
+      <div class="npc-stand big">${ART.kass()}</div>
+      <p class="intro slate"><b>Kass:</b> "Ah, a fellow music lover! Listen closely to my melody, then play it back on the five ocarina buttons. Each round adds one more note."</p>
+      <p class="muted">Longest melody: <b>${s.counters.songBest || 0}</b> notes.</p>
       <button class="btn big primary glow" id="go">🎵 Play (🎫1)</button></div>`, 'verbal', 'field');
     on('#back', Game.map); on('#go', () => ticketGate('Kass\'s Song', kass));
   }
   function kass() {
     const { screen } = UI(); const seq = []; let input = 0, busy = true, over = false;
-    screen(`<div class="page center"><h2>🎵 Kass's Song</h2><p id="msg" class="muted">Listen…</p><div class="pads">${SONG_PADS.map((p, i) => `<button class="pad" data-pad="${i}" style="--c:${p[0]}">${p[2]}</button>`).join('')}</div><p>Melody length: <b id="len">0</b></p></div>`, 'verbal', 'home');
+    screen(`<div class="page center"><h2>🎵 Kass's Song</h2>
+      <div class="kass-row"><div class="kass-mini">${ART.kass()}</div><div class="staff" id="staff"><div class="lines">${'<i></i>'.repeat(5)}</div><div class="notes" id="notes"></div></div></div>
+      <p id="msg" class="muted">Listen…</p>
+      <div class="ocarina"><button class="oc oc-a" data-pad="0">A</button><div class="cpad">${[1, 2, 3, 4].map(i => `<button class="oc oc-c ${SONG_PADS[i][2]}" data-pad="${i}">${SONG_PADS[i][0]}</button>`).join('')}</div></div>
+      <p>Melody length: <b id="len">0</b></p></div>`, 'verbal', 'home');
+    const notes = () => $('#notes');
+    const addNote = (i, cls = '') => { const n = notes(); if (!n) return; const p = SONG_PADS[i]; const d = document.createElement('span'); d.className = 'note ' + p[2] + ' ' + cls; d.style.top = (STAFF_Y[p[2]] * 11 + 2) + 'px'; d.textContent = p[0]; n.appendChild(d); };
     const flash = i => { const b = $(`[data-pad="${i}"]`); if (!b) return; b.classList.add('lit'); playNote(SONG_PADS[i][1]); setTimeout(() => b.classList.remove('lit'), 320); };
-    const round = () => { if (!$('#len')) return; seq.push(U.int(0, 3)); $('#len').textContent = seq.length; busy = true; input = 0; $('#msg').textContent = 'Listen…'; seq.forEach((n, k) => setTimeout(() => flash(n), 600 + k * 520)); setTimeout(() => { busy = false; if ($('#msg')) $('#msg').textContent = 'Your turn!'; }, 600 + seq.length * 520); };
+    const round = () => {
+      if (!$('#len')) return; seq.push(U.int(0, 4)); $('#len').textContent = seq.length; busy = true; input = 0; $('#msg').textContent = 'Kass plays…'; notes().innerHTML = '';
+      seq.forEach((n, k) => setTimeout(() => { if (!$('#len')) return; flash(n); addNote(n, 'kass-note'); }, 600 + k * 560));
+      setTimeout(() => { busy = false; if ($('#msg')) { $('#msg').textContent = 'Your turn!'; notes().innerHTML = ''; } }, 900 + seq.length * 560);
+    };
     const end = () => {
       over = true; const s = S(); const len = seq.length - 1; State.countMax('songBest', len); const prize = len * 12; s.rupees += prize; State.save();
-      UI().modal(`<h3>Lovely playing!</h3><p>You remembered <b>${len}</b> note${len === 1 ? '' : 's'}.</p><p>Prize: <b>${prize} rupees</b></p>`, [{ label: 'Done', cls: 'primary', fn: kassIntro }]);
+      UI().modal(`<h3>${len >= 8 ? 'What a performance!' : 'Lovely playing!'}</h3><p>You remembered <b>${len}</b> note${len === 1 ? '' : 's'}.</p><p>Prize: <b>${prize} rupees</b></p>`, [{ label: 'Done', cls: 'primary', fn: kassIntro }]);
     };
-    $$('[data-pad]').forEach(b => b.addEventListener('pointerdown', () => {
-      if (busy || over) return; const i = +b.dataset.pad; flash(i);
-      if (i !== seq[input]) { U.sfx.wrong(); return end(); }
-      input++; if (input === seq.length) { busy = true; $('#msg').textContent = 'Brilliant!'; setTimeout(round, 700); }
-    }));
+    const press = i => {
+      if (busy || over) return; flash(i);
+      if (i !== seq[input]) { addNote(i, 'wrong'); U.sfx.wrong(); return end(); }
+      addNote(i); input++; if (input === seq.length) { busy = true; $('#msg').textContent = 'Brilliant!'; setTimeout(round, 800); }
+    };
+    $$('[data-pad]').forEach(b => b.addEventListener('pointerdown', () => press(+b.dataset.pad)));
+    UI().onKey(e => { const k = { a: 0, Enter: 0, ArrowUp: 1, ArrowLeft: 2, ArrowRight: 3, ArrowDown: 4 }[e.key]; if (k !== undefined) { e.preventDefault(); press(k); } });
     setTimeout(round, 400);
   }
   let actx;
-  function playNote(f) { if (!S().settings.sound) return; try { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); const o = actx.createOscillator(), g = actx.createGain(); o.type = 'triangle'; o.frequency.value = f; g.gain.setValueAtTime(0.0001, actx.currentTime); g.gain.exponentialRampToValueAtTime(0.2, actx.currentTime + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, actx.currentTime + 0.5); o.connect(g); g.connect(actx.destination); o.start(); o.stop(actx.currentTime + 0.55); } catch (e) { /* no audio */ } }
+  function playNote(f) { if (!S().settings.sound) return; try { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); const o = actx.createOscillator(), o2 = actx.createOscillator(), g = actx.createGain(); o.type = 'sine'; o2.type = 'triangle'; o.frequency.value = f; o2.frequency.value = f * 2; const g2 = actx.createGain(); g2.gain.value = 0.15; g.gain.setValueAtTime(0.0001, actx.currentTime); g.gain.exponentialRampToValueAtTime(0.22, actx.currentTime + 0.03); g.gain.exponentialRampToValueAtTime(0.0001, actx.currentTime + 0.6); o.connect(g); o2.connect(g2); g2.connect(g); g.connect(actx.destination); o.start(); o2.start(); o.stop(actx.currentTime + 0.65); o2.stop(actx.currentTime + 0.65); } catch (e) { /* no audio */ } }
 
+  /* Korok hide-and-seek in the Lost Woods: watch which big leaf the Korok hides under while they shuffle. */
+  const LEAF = `<svg class="leaf-svg" viewBox="0 0 100 80"><ellipse cx="50" cy="74" rx="34" ry="5" fill="#000" opacity=".25"/><path d="M50,76 C20,72 6,52 10,34 C14,18 34,6 50,2 C66,6 86,18 90,34 C94,52 80,72 50,76Z" fill="#5fae3e" stroke="#1d1a2b" stroke-width="2.4"/><path d="M50,74 V6 M50,22 L36,14 M50,22 L64,14 M50,36 L26,26 M50,36 L74,26 M50,50 L20,42 M50,50 L80,42 M50,63 L26,58 M50,63 L74,58" stroke="#3f8f2d" stroke-width="2" fill="none"/><path d="M50,76 Q48,80 44,80" stroke="#6b4423" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M20,36 Q26,22 38,16" stroke="#9fe07a" stroke-width="2.4" fill="none" stroke-linecap="round" opacity=".8"/></svg>`;
   function leafIntro() {
     const s = S(); const { screen, hud, on } = UI();
-    screen(`${hud()}<div class="page center"><div class="page-head">${back()}<h2>Korok Hide-and-Seek</h2></div>
+    screen(`${hud()}<div class="page center"><div class="page-head">${back()}<h2>Korok Hide-and-Seek</h2><span class="pill">🎫 ${s.tickets}</span></div>
       <div class="npc-stand">${ART.korok()}</div>
-      <p class="intro slate">"Yahaha! I'll hide under a leaf and shuffle them around. Find me! Every 2 rounds you win, I'll give you a Korok seed!"</p>
+      <p class="intro slate"><b>Korok:</b> "Yahaha! I'll hide under one of these big leaves, then shuffle them around. Find me! Every 2 rounds you win, I'll give you a Korok seed!"</p>
+      <p class="muted">Times found: <b>${s.counters.leafWins || 0}</b></p>
       <button class="btn big primary glow" id="go">🍃 Play (🎫1)</button></div>`, 'plateau', 'field');
     on('#back', Game.map); on('#go', () => ticketGate('Hide-and-Seek', leafGame));
   }
   function leafGame() {
     const { screen } = UI(); let roundN = 0, wins = 0;
-    screen(`<div class="page center"><h2>🍃 Where's the Korok?</h2><p id="msg" class="muted"></p><div class="leaves" id="leaves">${[0, 1, 2].map(i => `<button class="leaf" data-leaf="${i}" style="left:${8 + i * 32}%"><span class="lf">🍃</span><span class="kk">${ART.korok(true)}</span></button>`).join('')}</div><p>Round <b id="rn">1</b> · Found <b id="wn">0</b></p></div>`, 'plateau', 'field');
+    screen(`<div class="page center"><h2>🍃 Where's the Korok?</h2><p id="msg" class="muted"></p>
+      <div class="woods-clearing"><div class="leaves" id="leaves">${[0, 1, 2].map(i => `<button class="leaf" data-leaf="${i}" style="left:${8 + i * 32}%"><span class="kk">${ART.korok(true)}</span><span class="lf">${LEAF}</span></button>`).join('')}</div></div>
+      <p>Round <b id="rn">1</b> · Found <b id="wn">0</b></p></div>`, 'plateau', 'field');
     let korokAt = 0, busy = true; const pos = [0, 1, 2];
     const place = () => $$('[data-leaf]').forEach(b => { b.style.left = (8 + pos[+b.dataset.leaf] * 32) + '%'; });
     const round = () => {
@@ -430,10 +509,10 @@
     $$('[data-leaf]').forEach(b => b.addEventListener('click', () => {
       if (busy) return; busy = true; const i = +b.dataset.leaf; $$('[data-leaf]').forEach(x => x.classList.toggle('show', +x.dataset.leaf === korokAt));
       if (i === korokAt) {
-        wins++; $('#wn').textContent = wins; U.sfx.korok(); State.count('leafWins'); FX.floatText(b, 'Yahaha!', 'xp');
-        const s = S(); if (wins % 2 === 0) { s.seeds++; s.seedsTotal++; FX.banner('+1 Korok Seed! 🌰', 'grace'); } State.save();
-        setTimeout(round, 1300);
-      } else { U.sfx.wrong(); $('#msg').textContent = 'Oh no! It was over there!'; setTimeout(() => { const s = S(); const prize = wins * 8; s.rupees += prize; State.save(); UI().modal(`<h3>Game over</h3><p>You found the Korok <b>${wins}</b> time${wins === 1 ? '' : 's'}.</p><p>Prize: <b>${prize} rupees</b>${wins >= 2 ? ` and ${Math.floor(wins / 2)} Korok seed${wins >= 4 ? 's' : ''}` : ''}</p>`, [{ label: 'Done', cls: 'primary', fn: leafIntro }]); }, 1100); }
+        wins++; $('#wn').textContent = wins; U.sfx.korok(); State.count('leafWins'); FX.floatText(b, 'Yahaha! You found me!', 'xp');
+        const s = S(); if (wins % 2 === 0) { s.seeds++; s.seedsTotal++; FX.banner('+1 Korok Seed!', 'grace'); } State.save();
+        setTimeout(round, 1400);
+      } else { U.sfx.wrong(); $('#msg').textContent = 'Oh no! It was over there!'; setTimeout(() => { const s = S(); const prize = wins * 8; s.rupees += prize; State.save(); UI().modal(`<h3>Game over</h3><p>You found the Korok <b>${wins}</b> time${wins === 1 ? '' : 's'}.</p><p>Prize: <b>${prize} rupees</b>${wins >= 2 ? ` and ${Math.floor(wins / 2)} Korok seed${wins >= 4 ? 's' : ''}` : ''}</p>`, [{ label: 'Done', cls: 'primary', fn: leafIntro }]); }, 1200); }
     }));
     setTimeout(round, 500);
   }

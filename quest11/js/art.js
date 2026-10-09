@@ -827,6 +827,26 @@
         <path d="M54,58 L60,72 L66,58 Q60,55 54,58Z" fill="#f2b33a" stroke="${INK}" stroke-width="1.6" stroke-linejoin="round"/>
       </g>`, 'npc teba');
   }
+  function kass() {
+    // Kass, the travelling Rito bard: teal-blue feathers, pale face, yellow beak, playing his accordion
+    return svg('0 0 120 150', `${shadow(60, 145, 30)}
+      <g class="h-body">
+        <path d="M48,118 l-3,24 h4 l2,-4 l2,4 h4 l-1,-24 M68,118 l1,24 h4 l2,-4 l2,4 h4 l-3,-24" fill="#f2b33a" stroke="${INK}" stroke-width="1.6"/>
+        <path d="M36,76 Q60,62 84,76 L88,120 Q60,128 32,120 Z" fill="#2f8fa8" stroke="${INK}" stroke-width="2.2"/>
+        <path d="M34,80 Q14,96 18,120 Q28,110 38,106 Z M86,80 Q106,96 102,120 Q92,110 82,106 Z" fill="#257890" stroke="${INK}" stroke-width="2"/>
+        <path d="M44,74 Q60,84 76,74 L74,82 Q60,90 46,82Z" fill="#f2d16b" stroke="${INK}" stroke-width="1.4"/>
+        <g class="squeeze"><rect x="30" y="92" width="60" height="22" rx="3" fill="#c63b4f" stroke="${INK}" stroke-width="1.8"/>
+          ${[38, 46, 54, 62, 70, 78].map(x => `<path d="M${x},92 v22" stroke="#f4e2b0" stroke-width="2"/>`).join('')}
+          <rect x="26" y="90" width="8" height="26" rx="2" fill="#7a5230" stroke="${INK}" stroke-width="1.4"/><rect x="86" y="90" width="8" height="26" rx="2" fill="#7a5230" stroke="${INK}" stroke-width="1.4"/>
+          ${[95, 101, 107].map(y => `<circle cx="30" cy="${y}" r="1.4" fill="#f4f2ea"/><circle cx="90" cy="${y}" r="1.4" fill="#f4f2ea"/>`).join('')}</g>
+        <ellipse cx="60" cy="50" rx="19" ry="21" fill="#3aa0b8" stroke="${INK}" stroke-width="2.2"/>
+        <path d="M46,52 Q60,40 74,52 Q72,64 60,66 Q48,64 46,52Z" fill="#f4f2ea" stroke="${INK}" stroke-width="1.4"/>
+        <path d="M54,24 Q50,10 58,6 Q58,16 62,20 Q66,10 74,12 Q68,18 66,28" fill="#f2d16b" stroke="${INK}" stroke-width="1.4"/>
+        <circle cx="53" cy="50" r="2.8" fill="${INK}"/><circle cx="67" cy="50" r="2.8" fill="${INK}"/><circle cx="54" cy="49" r=".9" fill="#fff"/><circle cx="68" cy="49" r=".9" fill="#fff"/>
+        <path d="M55,56 L60,70 L65,56 Q60,53 55,56Z" fill="#f2b33a" stroke="${INK}" stroke-width="1.6" stroke-linejoin="round"/>
+        <path d="M92,40 q6,-6 10,0 M98,32 v8 M104,44 q4,-4 8,0 M110,38 v6" stroke="#ffd23d" stroke-width="1.8" fill="none" class="notes"/><circle cx="97" cy="41" r="2" fill="#ffd23d"/><circle cx="109" cy="45" r="2" fill="#ffd23d"/>
+      </g>`, 'npc kass');
+  }
   function riju() {
     // the young Gerudo chief: bright red hair in a topknot, golden circlet and jewellery, deep blue and white outfit
     const g = id('rj');
@@ -895,5 +915,5 @@
       ${hero}`, 'mastercycle');
   }
 
-  window.ART = { yunobo, goronBall, sidon, teba, riju, sandSeal, masterCycle, glider, pet, horse, hero, zelda, oldMan, monk, korok, hestu, beedle, goddess, chuchu, keese, bokoblin, moblin, lizalfos, guardianScout, lynel, blight, calamity, darkBeast, icons, beast, worldMap, EL };
+  window.ART = { kass, yunobo, goronBall, sidon, teba, riju, sandSeal, masterCycle, glider, pet, horse, hero, zelda, oldMan, monk, korok, hestu, beedle, goddess, chuchu, keese, bokoblin, moblin, lizalfos, guardianScout, lynel, blight, calamity, darkBeast, icons, beast, worldMap, EL };
 })();

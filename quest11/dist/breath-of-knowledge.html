@@ -846,6 +846,48 @@ html { overflow-x: hidden; overflow-x: clip; }
 .decor-pop { font-size: 4.5rem; text-align: center; line-height: 1; }
 .house-outside .ic.house { width: 100%; height: 100%; }
 @media (max-width: 600px) { .room-frame { border-width: 3px; margin: 0 -6px; } .hof-stats { grid-template-columns: repeat(2, 1fr); } .medals { grid-template-columns: repeat(3, 1fr); } }
+
+/* ---------- mini-game polish ---------- */
+.tame-field { position: relative; max-width: 420px; margin: 0 auto; padding: 10px 0 0; border-radius: var(--r); background: linear-gradient(180deg, #9ed0f4 0%, #d8f0ff 55%, #8fbf6a 56%, #5c8f48 100%); border: 2px solid var(--edge); overflow: hidden; }
+.tame-field .tame-horse { margin-bottom: -6px; }
+.tame-wheel { position: absolute; right: 12px; top: 12px; width: 56px; height: 56px; filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4)); }
+.stam-wheel { width: 100%; height: 100%; }
+.track { background: #b08850; }
+.track .track-bg { position: absolute; left: 0; top: 0; width: 100%; height: 100%; z-index: 0; }
+.track .lane { z-index: 1; background: linear-gradient(180deg, rgba(160,120,70,.0), rgba(120,80,40,.35)); border-bottom: 2px dashed rgba(255,255,255,.35); }
+.track .lane:first-of-type { margin-top: 26px; }
+.track .finish { z-index: 2; width: 12px; }
+.track .finish span { position: absolute; top: 2px; right: -6px; transform: translateX(50%); font: 800 9px var(--font-body); color: #1d1a2b; background: #fff; padding: 1px 4px; border-radius: 3px; white-space: nowrap; }
+.spur { display: inline-block; width: 14px; height: 14px; margin: 0 2px; border-radius: 50%; background: #3a4a3a; border: 2px solid #1d1a2b; vertical-align: middle; }
+.spur.on { background: radial-gradient(circle at 35% 30%, #fff6c8, #ffb02e); box-shadow: 0 0 6px #ffb02e; }
+.kass-row { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 4px; }
+.kass-mini { width: 76px; height: 96px; }
+.staff { position: relative; width: min(70vw, 300px); height: 58px; background: #f4ead0; border-radius: 8px; border: 2px solid #c9b07a; padding: 4px 10px; overflow: hidden; }
+.staff .lines { position: absolute; inset: 7px 8px; display: flex; flex-direction: column; justify-content: space-between; }
+.staff .lines i { display: block; height: 1.5px; background: #8a7a5a; }
+.staff .notes { position: relative; height: 100%; display: flex; gap: 4px; }
+.staff .note { position: relative; width: 16px; height: 16px; border-radius: 50%; font-size: 9px; line-height: 16px; text-align: center; font-weight: 900; color: #1d1a2b; background: #ffd23d; border: 1.5px solid #1d1a2b; animation: popIn 0.25s; flex: none; }
+.staff .note.a { background: #4a8af0; color: #fff; }
+.staff .note.kass-note { opacity: 0.85; }
+.staff .note.wrong { background: #ff4a5a; color: #fff; }
+.ocarina { display: flex; align-items: center; justify-content: center; gap: 26px; margin: 14px 0; }
+.oc { border: 3px solid #1d1a2b; font: 900 1.5rem var(--font-body); cursor: pointer; touch-action: manipulation; transition: transform 0.08s, box-shadow 0.08s; box-shadow: 0 5px 0 rgba(0, 0, 0, 0.45); }
+.oc-a { width: 86px; height: 86px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #8ab8ff, #2f63c4); color: #fff; }
+.cpad { display: grid; grid-template-areas: ". up ." "left . right" ". down ."; grid-template-columns: repeat(3, 56px); grid-template-rows: repeat(3, 56px); }
+.oc-c { width: 56px; height: 56px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff6a0, #e8b820); color: #5a3a10; }
+.oc-c.up { grid-area: up; } .oc-c.left { grid-area: left; } .oc-c.right { grid-area: right; } .oc-c.down { grid-area: down; }
+.oc.lit { transform: translateY(4px) scale(1.06); box-shadow: 0 1px 0 rgba(0, 0, 0, 0.45), 0 0 24px #fff6a0; }
+.oc-a.lit { box-shadow: 0 1px 0 rgba(0, 0, 0, 0.45), 0 0 24px #8ab8ff; }
+.npc .squeeze { transform-box: fill-box; transform-origin: center; animation: squeezeA 1.2s ease-in-out infinite; }
+@keyframes squeezeA { 50% { transform: scaleX(0.9); } }
+.woods-clearing { max-width: 540px; margin: 10px auto; border-radius: var(--r); padding: 6px 0 2px; background: radial-gradient(ellipse at 50% 85%, #6fae4a 0%, #3f7a32 45%, #1f4a26 100%); border: 2px solid var(--edge); box-shadow: inset 0 0 40px rgba(220, 255, 220, 0.25); position: relative; overflow: hidden; }
+.woods-clearing::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 0%, rgba(230,255,230,.35), transparent 60%); pointer-events: none; }
+.leaf .lf { display: block; width: 100%; font-size: 0; transition: transform 0.35s cubic-bezier(.3, 1.4, .5, 1); position: relative; z-index: 2; }
+.leaf .lf .leaf-svg { width: 100%; height: auto; display: block; }
+.leaf .kk { z-index: 1; bottom: 18px; }
+.leaf.show .lf { transform: translateY(-58px) rotate(-14deg); }
+@media (max-width: 600px) { .cpad { grid-template-columns: repeat(3, 48px); grid-template-rows: repeat(3, 48px); } .oc-c { width: 48px; height: 48px; } .oc-a { width: 74px; height: 74px; } .ocarina { gap: 16px; } }
+.tame-field .tame-horse .rider { top: 14%; left: 33%; width: 64px; height: 82px; }
 </style>
 </head>
 <body>
@@ -4150,6 +4192,26 @@ Symin`,
         <path d="M54,58 L60,72 L66,58 Q60,55 54,58Z" fill="#f2b33a" stroke="${INK}" stroke-width="1.6" stroke-linejoin="round"/>
       </g>`, 'npc teba');
   }
+  function kass() {
+    // Kass, the travelling Rito bard: teal-blue feathers, pale face, yellow beak, playing his accordion
+    return svg('0 0 120 150', `${shadow(60, 145, 30)}
+      <g class="h-body">
+        <path d="M48,118 l-3,24 h4 l2,-4 l2,4 h4 l-1,-24 M68,118 l1,24 h4 l2,-4 l2,4 h4 l-3,-24" fill="#f2b33a" stroke="${INK}" stroke-width="1.6"/>
+        <path d="M36,76 Q60,62 84,76 L88,120 Q60,128 32,120 Z" fill="#2f8fa8" stroke="${INK}" stroke-width="2.2"/>
+        <path d="M34,80 Q14,96 18,120 Q28,110 38,106 Z M86,80 Q106,96 102,120 Q92,110 82,106 Z" fill="#257890" stroke="${INK}" stroke-width="2"/>
+        <path d="M44,74 Q60,84 76,74 L74,82 Q60,90 46,82Z" fill="#f2d16b" stroke="${INK}" stroke-width="1.4"/>
+        <g class="squeeze"><rect x="30" y="92" width="60" height="22" rx="3" fill="#c63b4f" stroke="${INK}" stroke-width="1.8"/>
+          ${[38, 46, 54, 62, 70, 78].map(x => `<path d="M${x},92 v22" stroke="#f4e2b0" stroke-width="2"/>`).join('')}
+          <rect x="26" y="90" width="8" height="26" rx="2" fill="#7a5230" stroke="${INK}" stroke-width="1.4"/><rect x="86" y="90" width="8" height="26" rx="2" fill="#7a5230" stroke="${INK}" stroke-width="1.4"/>
+          ${[95, 101, 107].map(y => `<circle cx="30" cy="${y}" r="1.4" fill="#f4f2ea"/><circle cx="90" cy="${y}" r="1.4" fill="#f4f2ea"/>`).join('')}</g>
+        <ellipse cx="60" cy="50" rx="19" ry="21" fill="#3aa0b8" stroke="${INK}" stroke-width="2.2"/>
+        <path d="M46,52 Q60,40 74,52 Q72,64 60,66 Q48,64 46,52Z" fill="#f4f2ea" stroke="${INK}" stroke-width="1.4"/>
+        <path d="M54,24 Q50,10 58,6 Q58,16 62,20 Q66,10 74,12 Q68,18 66,28" fill="#f2d16b" stroke="${INK}" stroke-width="1.4"/>
+        <circle cx="53" cy="50" r="2.8" fill="${INK}"/><circle cx="67" cy="50" r="2.8" fill="${INK}"/><circle cx="54" cy="49" r=".9" fill="#fff"/><circle cx="68" cy="49" r=".9" fill="#fff"/>
+        <path d="M55,56 L60,70 L65,56 Q60,53 55,56Z" fill="#f2b33a" stroke="${INK}" stroke-width="1.6" stroke-linejoin="round"/>
+        <path d="M92,40 q6,-6 10,0 M98,32 v8 M104,44 q4,-4 8,0 M110,38 v6" stroke="#ffd23d" stroke-width="1.8" fill="none" class="notes"/><circle cx="97" cy="41" r="2" fill="#ffd23d"/><circle cx="109" cy="45" r="2" fill="#ffd23d"/>
+      </g>`, 'npc kass');
+  }
   function riju() {
     // the young Gerudo chief: bright red hair in a topknot, golden circlet and jewellery, deep blue and white outfit
     const g = id('rj');
@@ -4218,7 +4280,7 @@ Symin`,
       ${hero}`, 'mastercycle');
   }
 
-  window.ART = { yunobo, goronBall, sidon, teba, riju, sandSeal, masterCycle, glider, pet, horse, hero, zelda, oldMan, monk, korok, hestu, beedle, goddess, chuchu, keese, bokoblin, moblin, lizalfos, guardianScout, lynel, blight, calamity, darkBeast, icons, beast, worldMap, EL };
+  window.ART = { kass, yunobo, goronBall, sidon, teba, riju, sandSeal, masterCycle, glider, pet, horse, hero, zelda, oldMan, monk, korok, hestu, beedle, goddess, chuchu, keese, bokoblin, moblin, lizalfos, guardianScout, lynel, blight, calamity, darkBeast, icons, beast, worldMap, EL };
 })();
 </script>
 <script>
@@ -6699,14 +6761,20 @@ Symin`,
     on('#back', stable);
     on('[data-tame]', (e, el) => { if (s.horses.length >= K.STABLE_CAP) return UI().toast('Your stable is full!', 'bad'); tame(+el.dataset.tame); });
   }
+  // the game's green stamina wheel: one segment per try
+  function stamWheel(cur, max) {
+    const seg = (2 * Math.PI) / max; const arcs = [];
+    for (let k = 0; k < max; k++) { const a0 = -Math.PI / 2 + k * seg + 0.06, a1 = a0 + seg - 0.12; const p = (a, r) => `${(20 + Math.cos(a) * r).toFixed(2)},${(20 + Math.sin(a) * r).toFixed(2)}`; arcs.push(`<path d="M${p(a0, 16)} A16,16 0 0 1 ${p(a1, 16)}" stroke="${k < cur ? '#7ee35a' : '#3a4a3a'}" stroke-width="6" fill="none" stroke-linecap="round"/>`); }
+    return `<svg class="stam-wheel" viewBox="0 0 40 40"><circle cx="20" cy="20" r="16" fill="none" stroke="#1d1a2b" stroke-width="9" opacity=".55"/>${arcs.join('')}</svg>`;
+  }
   function tame(i) {
     const s = S(); const { screen, on, addInterval, onKey } = UI(); const h = herd()[i];
     const need = 2 + h.temper; const maxStam = 3 + s.stamina; let stam = maxStam, got = 0, pos = 0, dir = 1, done = false;
     const zone = Math.max(14, 34 - h.temper * 4); const zoneAt = U.int(20, 80 - zone);
     screen(`<div class="page center tame-page"><h2>Taming a wild horse!</h2><p class="muted">Tap <b>Soothe</b> when the marker is in the green zone. Each miss uses stamina.</p>
-      <div class="tame-horse buck" id="th">${ART.horse(h, { anim: 'buck' })}<div class="rider">${UI().heroArt()}</div></div>
+      <div class="tame-field"><div class="tame-horse buck" id="th">${ART.horse(h, { anim: 'buck' })}<div class="rider">${UI().heroArt()}</div></div><div class="tame-wheel" id="stamw">${stamWheel(maxStam, maxStam)}</div></div>
       <div class="meter"><div class="zone" style="left:${zoneAt}%;width:${zone}%"></div><div class="needle" id="needle"></div></div>
-      <div class="tame-stats"><span>Calm: <b id="got">0</b>/${need}</span><span>Stamina: <b id="stam">${'🟢'.repeat(stam)}</b></span></div>
+      <div class="tame-stats"><span>Calm: <b id="got">0</b>/${need}</span><span>Stamina tries left: <b id="stam">${stam}</b></span></div>
       <button class="btn big primary" id="soothe">💚 Soothe!</button></div>`, 'plateau', 'battle');
     const spd = 1.4 + h.temper * 0.45;
     addInterval(setInterval(() => { if (done) return; pos += dir * spd; if (pos >= 100 || pos <= 0) { dir *= -1; pos = Math.max(0, Math.min(100, pos)); } $('#needle').style.left = pos + '%'; }, 16));
@@ -6714,7 +6782,7 @@ Symin`,
       if (done) return;
       if (pos >= zoneAt && pos <= zoneAt + zone) { got++; U.sfx.correct(); FX.burst(...FX.center($('#th')), { n: 14, colors: ['#7ee35a', '#fff'], speed: 160 }); }
       else { stam--; U.sfx.wrong(); FX.shake(0.6); }
-      $('#got').textContent = got; $('#stam').textContent = '🟢'.repeat(Math.max(0, stam)) + '⚫'.repeat(maxStam - Math.max(0, stam));
+      $('#got').textContent = got; $('#stam').textContent = Math.max(0, stam); $('#stamw').innerHTML = stamWheel(Math.max(0, stam), maxStam);
       if (got >= need) { done = true; $('#th').classList.remove('buck'); FX.banner('Tamed!', 'victory'); U.sfx.fanfare(); setTimeout(() => nameHorse(i), 1300); }
       else if (stam <= 0) { done = true; FX.banner('Thrown off!', 'danger'); setTimeout(() => UI().modal('<h3>The horse threw you off!</h3><p>Try again. Every Stamina Vessel from the Goddess Statue gives you one more try per attempt.</p>', [{ label: 'Back to the field', fn: wildField }, { label: 'Try again', cls: 'primary', fn: () => tame(i) }]), 900); }
     };
@@ -6742,17 +6810,18 @@ Symin`,
     const rivals = [rollHorse(), rollHorse(), rollHorse()].map((r, k) => ({ ...r, name: ['Royal Steed', 'Dusty', 'Gerudo Racer'][k] }));
     const racers = [{ ...h, me: true }, ...rivals].map(r => ({ ...r, x: 0, v: 0, boost: 0 }));
     const lanes = racers.map((r, k) => `<div class="lane"><span class="lane-name">${r.me ? U.esc(h.name) : r.name}</span><div class="runner" id="run${k}">${ART.horse(r, { saddle: r.me ? (h.saddle || 'stable') : 'stable', anim: 'gallop' })}</div></div>`).join('');
-    screen(`<div class="page center race-page"><h2>Horse Race!</h2><p class="muted">Tap <b>Gallop!</b> when the spur meter is in the green zone for a burst of speed. Don't spam it: a bad spur slows you down!</p>
-      <div class="track"><div class="finish"></div>${lanes}</div>
+    screen(`<div class="page center race-page"><h2>Horse Race!</h2><p class="muted">Tap <b>Gallop!</b> when the needle is in the green zone for a burst of speed. Spurs recharge over time, but a badly timed spur slows you down!</p>
+      <div class="track"><svg class="track-bg" viewBox="0 0 400 100" preserveAspectRatio="none"><rect width="400" height="100" fill="#8fbf6a"/><path d="M0,30 Q60,10 120,26 T240,22 T400,18 V0 H0Z" fill="#bfe6ff"/><path d="M0,30 Q60,10 120,26 T240,22 T400,18" stroke="#6f9f50" stroke-width="3" fill="none"/>${Array.from({ length: 21 }, (_, k) => `<path d="M${k * 20},28 v-10" stroke="#f4ead0" stroke-width="2"/>`).join('')}<path d="M0,20 H400" stroke="#f4ead0" stroke-width="1.6"/></svg><div class="finish"><span>FINISH</span></div>${lanes}</div>
       <div class="meter"><div class="zone" style="left:62%;width:22%"></div><div class="needle" id="needle"></div></div>
       <div class="row center"><span class="pill">Spurs: <b id="spurs"></b></span></div>
       <button class="btn big primary" id="gallop">🏇 Gallop!</button></div>`, 'plateau', 'battle');
-    let spurs = 3 + h.stamina; const spursMax = spurs; $('#spurs').textContent = '🥕'.repeat(spurs);
+    let spurs = 3 + h.stamina; const spursMax = spurs; let regen = 0; const showSpurs = () => { const e = $('#spurs'); if (e) e.innerHTML = Array.from({ length: spursMax }, (_, k) => `<i class="spur ${k < spurs ? 'on' : ''}"></i>`).join(''); }; showSpurs();
     let pos = 0, done = false, t0 = performance.now(), finish = [];
     const base = r => 0.22 + r.speed * 0.035 + (r.me ? h.bond * 0.012 : 0);
     addInterval(setInterval(() => {
       if (done) return;
       pos = (pos + 2.2) % 100; $('#needle').style.left = pos + '%';
+      if (spurs < spursMax && (regen += 30) >= 3500) { regen = 0; spurs++; showSpurs(); } // spurs recharge, as in the game
       racers.forEach((r, k) => {
         if (!r.me && Math.random() < 0.012 * r.stamina) r.boost = 40;
         const v = base(r) * (r.boost > 0 ? 1.9 : 1) * (0.9 + Math.random() * 0.2); if (r.boost > 0) r.boost--;
@@ -6768,9 +6837,9 @@ Symin`,
       }
     }, 30));
     const gallop = () => {
-      if (done || spurs <= 0) return; spurs--; $('#spurs').textContent = '🥕'.repeat(spurs) + '·'.repeat(spursMax - spurs);
+      if (done || spurs <= 0) return; spurs--; regen = 0; showSpurs();
       const me = racers[0];
-      if (pos >= 62 && pos <= 84) { me.boost = 45; U.sfx.correct(); FX.floatText($('#run0'), 'Burst!', 'xp'); } else { me.boost = -1; me.x = Math.max(0, me.x - 1.5); U.sfx.wrong(); FX.floatText($('#run0'), 'Too early!', 'xp'); }
+      if (pos >= 62 && pos <= 84) { me.boost = 45; U.sfx.correct(); FX.floatText($('#run0'), 'Burst!', 'xp'); } else { me.boost = -1; me.x = Math.max(0, me.x - 1.5); U.sfx.wrong(); FX.floatText($('#run0'), pos < 62 ? 'Too early!' : 'Too late!', 'xp'); }
     };
     on('#gallop', gallop); onKey(e => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); gallop(); } });
   }
@@ -6781,74 +6850,146 @@ Symin`,
     if (!s.tickets) return UI().modal(`<h3>${name}</h3><p>You need an <b>🎫 Adventure Ticket</b> to play. Clear shrine trials to earn tickets!</p>`, [{ label: 'OK' }]);
     UI().modal(`<h3>${name}</h3><p>Play for <b>🎫 1 Adventure Ticket</b>? You have ${s.tickets}.</p>`, [{ label: 'Not now' }, { label: 'Play! 🎫', cls: 'primary', fn: () => { s.tickets--; State.save(); play(); } }]);
   }
+
+  /* Rito Flight Range: glide over Rito Village and shoot the wooden bullseye targets swinging on ropes in the updraft. */
   function archeryIntro() {
     const s = S(); const { screen, hud, on } = UI();
-    screen(`${hud()}<div class="page center"><div class="page-head">${back()}<h2>Rito Flight Range</h2></div>
-      <div class="npc-stand big"><span class="emo big">🦅</span></div>
-      <p class="intro slate">Teba: "Hit as many targets as you can in 30 seconds. Gold targets are worth 3 points! Best score: <b>${s.counters.archeryBest || 0}</b>"</p>
+    screen(`${hud()}<div class="page center"><div class="page-head">${back()}<h2>Flight Range</h2><span class="pill">🎫 ${s.tickets}</span></div>
+      <div class="npc-stand big">${ART.teba()}</div>
+      <p class="intro slate"><b>Teba:</b> "Ride the updraft over the range and hit as many targets as you can in 30 seconds. Hit the centre for a bonus, and don't miss the golden targets: they're worth 3!"</p>
+      <p class="muted">Best score: <b>${s.counters.archeryBest || 0}</b>. Tap a target to fire an arrow at it.</p>
       <button class="btn big primary glow" id="go">🎯 Play (🎫1)</button></div>`, 'verbal', 'verbal');
     on('#back', Game.map); on('#go', () => ticketGate('Flight Range', archery));
   }
   function archery() {
-    const { screen, addInterval } = UI(); let score = 0, left = 30, done = false;
-    screen(`<div class="page center"><h2>🎯 Flight Range</h2><div class="row center"><span class="pill">Score <b id="sc">0</b></span><span class="pill">⏱ <b id="tl">30</b></span></div><div class="range" id="range"></div></div>`, 'verbal', 'battle');
-    const range = $('#range');
-    const spawn = () => {
-      if (done) return; const gold = Math.random() < 0.18; const t = document.createElement('button'); t.className = 'target' + (gold ? ' gold' : '');
-      const y = U.int(5, 75), dur = U.int(2400, 4200) - (gold ? 800 : 0), fromLeft = Math.random() < 0.5;
-      t.style.top = y + '%'; t.style.left = fromLeft ? '-12%' : '104%';
-      range.appendChild(t);
-      t.animate([{ left: fromLeft ? '-12%' : '104%' }, { left: fromLeft ? '104%' : '-12%' }], { duration: dur, easing: 'linear' }).onfinish = () => t.remove();
-      t.addEventListener('pointerdown', () => { if (done) return; score += gold ? 3 : 1; $('#sc').textContent = score; U.sfx.hit(); const [x, yy] = FX.center(t); FX.burst(x, yy, { n: 16, colors: gold ? ['#ffd23d', '#fff'] : ['#ff5a5a', '#fff'], speed: 200 }); FX.floatText(t, gold ? '+3' : '+1', 'xp'); t.remove(); });
-    };
-    addInterval(setInterval(spawn, 650));
-    addInterval(setInterval(() => {
-      if (done) return; left--; $('#tl').textContent = left;
-      if (left <= 0) {
-        done = true; const s = S(); const best = score > (s.counters.archeryBest || 0); State.countMax('archeryBest', score); const prize = score * 3; s.rupees += prize; State.save();
-        UI().modal(`<h3>Time's up!</h3><p>You scored <b>${score}</b>${best ? ' — a new best! 🏆' : ''}</p><p>Prize: <b>${prize} rupees</b></p>`, [{ label: 'Done', cls: 'primary', fn: archeryIntro }]);
+    const { gameScreen, stage, loop, hud: chud, sprite, ready } = MG;
+    const el = gameScreen('Flight Range', '<p class="muted">Tap a target to shoot. Centre hits score a bonus!</p>', 'verbal', 'battle');
+    const { cv, ctx, W, H } = stage(el, 1.12);
+    const link = sprite('glider-' + S().glider, ART.glider(S().glider), 120, 92);
+    let left = 30, score = 0, hits = 0, shots = 0, over = false, spawn = 0.2, t = 0;
+    const targets = [], arrows = [], bits = [], pops = [];
+    const lx = () => W * 0.5 + Math.sin(t * 0.8) * W * 0.18, ly = () => H - 70 + Math.sin(t * 2) * 6;
+    cv.addEventListener('pointerdown', e => {
+      if (over) return; const r = cv.getBoundingClientRect(); const x = (e.clientX - r.left) * W / r.width, y = (e.clientY - r.top) * H / r.height;
+      if (y > H - 40) return; shots++; arrows.push({ x0: lx(), y0: ly() - 34, x1: x, y1: y, k: 0 }); U.sfx.click();
+    });
+    loop(cv, dt => {
+      t += dt;
+      if (!over) {
+        left -= dt; spawn -= dt;
+        if (spawn <= 0 && targets.filter(q => !q.fall).length < 6) { spawn = 0.75; const gold = Math.random() < 0.16; targets.push({ ax: W * (0.1 + Math.random() * 0.8), len: H * (0.18 + Math.random() * 0.36), sw: 0.3 + Math.random() * 0.4, ph: Math.random() * 6, sp: (gold ? 2.2 : 1.1) + Math.random() * 0.6, r: gold ? 15 : 22, gold, life: gold ? 4 : 9, fall: 0, x: 0, y: 0 }); }
+        for (const a of arrows) {
+          a.k += dt / 0.16;
+          if (a.k >= 1 && !a.done) {
+            a.done = true;
+            const tg = targets.find(q => !q.fall && Math.hypot(q.x - a.x1, q.y - a.y1) <= q.r + 3);
+            if (tg) {
+              const bull = Math.hypot(tg.x - a.x1, tg.y - a.y1) < tg.r * 0.36; const pts = (tg.gold ? 3 : 1) + (bull ? 1 : 0);
+              score += pts; hits++; tg.fall = 1; tg.vy = -80; U.sfx.hit(); pops.push({ x: tg.x, y: tg.y, txt: `${bull ? 'Bullseye! ' : ''}+${pts}`, life: 0.9, gold: tg.gold || bull });
+              for (let i = 0; i < 12; i++) bits.push({ x: tg.x, y: tg.y, vx: (Math.random() - 0.5) * 240, vy: -Math.random() * 200, life: 0.7, c: i % 2 ? '#c8a06a' : (tg.gold ? '#ffd23d' : '#d8402e') });
+            }
+          }
+        }
+        for (let i = arrows.length - 1; i >= 0; i--) if (arrows[i].k > 1.6) arrows.splice(i, 1);
+        if (left <= 0) {
+          over = true; const s = S(); const best = score > (s.counters.archeryBest || 0); State.countMax('archeryBest', score); const prize = score * 3; s.rupees += prize; State.save();
+          MG.finish('Time\'s up!', `<p>You scored <b>${score}</b> with ${hits} hit${hits === 1 ? '' : 's'} from ${shots} arrow${shots === 1 ? '' : 's'}${best ? ' — a new best! 🏆' : ''}</p><p>Prize: <b>${prize} rupees</b></p>`, archeryIntro);
+        }
       }
-    }, 1000));
+      for (const q of targets) {
+        if (q.fall) { q.vy += 600 * dt; q.y += q.vy * dt; q.fall += dt; continue; }
+        q.life -= dt; const ang = Math.sin(t * q.sp + q.ph) * q.sw; q.x = q.ax + Math.sin(ang) * q.len; q.y = Math.cos(ang) * q.len;
+      }
+      for (let i = targets.length - 1; i >= 0; i--) if (targets[i].y > H + 40 || (!targets[i].fall && targets[i].life <= 0)) targets.splice(i, 1);
+      // Rito Village sky: clouds, the great stone spire with its perches, the swirling updraft
+      const sky = ctx.createLinearGradient(0, 0, 0, H); sky.addColorStop(0, '#5aa0e8'); sky.addColorStop(1, '#cfe8fa'); ctx.fillStyle = sky; ctx.fillRect(0, 0, W, H);
+      ctx.fillStyle = 'rgba(255,255,255,.85)'; for (let i = 0; i < 5; i++) { const x = ((i * 140 + t * 12) % (W + 160)) - 80, y = 40 + (i * 53) % (H * 0.5); ctx.beginPath(); ctx.ellipse(x, y, 40, 12, 0, 0, Math.PI * 2); ctx.ellipse(x + 22, y - 8, 24, 12, 0, 0, Math.PI * 2); ctx.fill(); }
+      ctx.fillStyle = '#7a8a9a'; ctx.beginPath(); ctx.moveTo(-10, H); ctx.lineTo(W * 0.04, H * 0.28); ctx.lineTo(W * 0.1, H * 0.22); ctx.lineTo(W * 0.16, H * 0.3); ctx.lineTo(W * 0.2, H); ctx.fill();
+      ctx.strokeStyle = '#5a6a7a'; ctx.lineWidth = 2; ctx.stroke();
+      for (const [y, w] of [[0.36, 0.16], [0.55, 0.18], [0.74, 0.2]]) { ctx.fillStyle = '#7a5230'; ctx.fillRect(W * 0.02, H * y, W * w, 5); ctx.fillStyle = '#c63b4f'; ctx.beginPath(); ctx.moveTo(W * 0.04, H * y); ctx.lineTo(W * 0.09, H * y - 14); ctx.lineTo(W * (0.02 + w), H * y); ctx.fill(); }
+      ctx.strokeStyle = 'rgba(255,255,255,.55)'; ctx.lineWidth = 2;
+      for (let i = 0; i < 9; i++) { const y = H - ((t * 90 + i * 60) % (H + 60)); const x = W * 0.5 + Math.sin(y / 40 + i) * 26; ctx.beginPath(); ctx.arc(x, y, 10 + (i % 3) * 4, 0.3, 2.6); ctx.stroke(); }
+      for (const q of targets) {
+        ctx.strokeStyle = '#6b4a2b'; ctx.lineWidth = 1.4; if (!q.fall) { ctx.beginPath(); ctx.moveTo(q.ax, 0); ctx.lineTo(q.x, q.y - q.r); ctx.stroke(); }
+        ctx.save(); ctx.translate(q.x, q.y); if (q.fall) ctx.rotate(q.fall * 6);
+        if (q.gold) { ctx.shadowColor = '#ffd23d'; ctx.shadowBlur = 14; }
+        ctx.beginPath(); ctx.arc(0, 0, q.r, 0, Math.PI * 2); ctx.fillStyle = q.gold ? '#c99a0c' : '#8a5a2b'; ctx.fill(); ctx.shadowBlur = 0; ctx.lineWidth = 2; ctx.strokeStyle = '#1d1a2b'; ctx.stroke();
+        const rings = q.gold ? ['#fff6c8', '#ffd23d', '#fff6c8', '#e8a020'] : ['#f4ead0', '#d8402e', '#f4ead0', '#d8402e'];
+        rings.forEach((c, k) => { ctx.beginPath(); ctx.arc(0, 0, q.r * (0.82 - k * 0.18), 0, Math.PI * 2); ctx.fillStyle = c; ctx.fill(); });
+        ctx.strokeStyle = 'rgba(90,58,34,.5)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(-q.r, 0); ctx.lineTo(q.r, 0); ctx.stroke(); ctx.restore();
+      }
+      for (const a of arrows) {
+        const k = Math.min(1, a.k); const x = a.x0 + (a.x1 - a.x0) * k, y = a.y0 + (a.y1 - a.y0) * k; const ang = Math.atan2(a.y1 - a.y0, a.x1 - a.x0);
+        ctx.save(); ctx.translate(x, y); ctx.rotate(ang); ctx.globalAlpha = a.k > 1 ? Math.max(0, 1.6 - a.k) / 0.6 : 1;
+        ctx.strokeStyle = '#7a5230'; ctx.lineWidth = 2.2; ctx.beginPath(); ctx.moveTo(-26, 0); ctx.lineTo(0, 0); ctx.stroke();
+        ctx.fillStyle = '#c8c8c8'; ctx.beginPath(); ctx.moveTo(4, 0); ctx.lineTo(-3, -3.4); ctx.lineTo(-3, 3.4); ctx.fill(); ctx.fillStyle = '#e8402e'; ctx.fillRect(-27, -3, 6, 2); ctx.fillRect(-27, 1, 6, 2); ctx.restore();
+      }
+      for (let i = bits.length - 1; i >= 0; i--) { const p = bits[i]; p.life -= dt; if (p.life <= 0) { bits.splice(i, 1); continue; } p.x += p.vx * dt; p.y += p.vy * dt; p.vy += 500 * dt; ctx.globalAlpha = p.life; ctx.fillStyle = p.c; ctx.fillRect(p.x - 2, p.y - 2, 4, 4); ctx.globalAlpha = 1; }
+      for (let i = pops.length - 1; i >= 0; i--) { const p = pops[i]; p.life -= dt; if (p.life <= 0) { pops.splice(i, 1); continue; } ctx.globalAlpha = Math.min(1, p.life * 2); ctx.font = '800 16px Lexend, sans-serif'; ctx.textAlign = 'center'; ctx.lineWidth = 4; ctx.strokeStyle = '#1d1a2b'; ctx.strokeText(p.txt, p.x, p.y - (0.9 - p.life) * 40); ctx.fillStyle = p.gold ? '#ffd23d' : '#fff'; ctx.fillText(p.txt, p.x, p.y - (0.9 - p.life) * 40); ctx.textAlign = 'left'; ctx.globalAlpha = 1; }
+      if (ready(link)) ctx.drawImage(link, lx() - 54, ly() - 70, 108, 83);
+      chud(ctx, W, [`🎯 ${score}`, `⏱ ${Math.max(0, Math.ceil(left))}`]);
+    });
   }
-  const SONG_PADS = [['#3fe0ff', 523, '◆'], ['#ffd23d', 659, '▲'], ['#ff5a6e', 784, '●'], ['#7ee35a', 988, '■']];
+
+  /* Kass's Song: Kass plays a melody on the five Ocarina buttons (A and the four C buttons); play it back note for note. */
+  const SONG_PADS = [['A', 587.33, 'a'], ['▲', 1174.66, 'up'], ['◀', 987.77, 'left'], ['▶', 880, 'right'], ['▼', 698.46, 'down']];
+  const STAFF_Y = { a: 4, down: 3, right: 2, left: 1, up: 0 };
   function kassIntro() {
     const s = S(); const { screen, hud, on } = UI();
-    screen(`${hud()}<div class="page center"><div class="page-head">${back()}<h2>Kass's Song</h2></div>
-      <div class="npc-stand big"><span class="emo big">🪗</span></div>
-      <p class="intro slate">Kass: "Listen to my melody, then play it back! Each round adds one more note. Best melody: <b>${s.counters.songBest || 0}</b> notes."</p>
+    screen(`${hud()}<div class="page center"><div class="page-head">${back()}<h2>Kass's Song</h2><span class="pill">🎫 ${s.tickets}</span></div>
+      <div class="npc-stand big">${ART.kass()}</div>
+      <p class="intro slate"><b>Kass:</b> "Ah, a fellow music lover! Listen closely to my melody, then play it back on the five ocarina buttons. Each round adds one more note."</p>
+      <p class="muted">Longest melody: <b>${s.counters.songBest || 0}</b> notes.</p>
       <button class="btn big primary glow" id="go">🎵 Play (🎫1)</button></div>`, 'verbal', 'field');
     on('#back', Game.map); on('#go', () => ticketGate('Kass\'s Song', kass));
   }
   function kass() {
     const { screen } = UI(); const seq = []; let input = 0, busy = true, over = false;
-    screen(`<div class="page center"><h2>🎵 Kass's Song</h2><p id="msg" class="muted">Listen…</p><div class="pads">${SONG_PADS.map((p, i) => `<button class="pad" data-pad="${i}" style="--c:${p[0]}">${p[2]}</button>`).join('')}</div><p>Melody length: <b id="len">0</b></p></div>`, 'verbal', 'home');
+    screen(`<div class="page center"><h2>🎵 Kass's Song</h2>
+      <div class="kass-row"><div class="kass-mini">${ART.kass()}</div><div class="staff" id="staff"><div class="lines">${'<i></i>'.repeat(5)}</div><div class="notes" id="notes"></div></div></div>
+      <p id="msg" class="muted">Listen…</p>
+      <div class="ocarina"><button class="oc oc-a" data-pad="0">A</button><div class="cpad">${[1, 2, 3, 4].map(i => `<button class="oc oc-c ${SONG_PADS[i][2]}" data-pad="${i}">${SONG_PADS[i][0]}</button>`).join('')}</div></div>
+      <p>Melody length: <b id="len">0</b></p></div>`, 'verbal', 'home');
+    const notes = () => $('#notes');
+    const addNote = (i, cls = '') => { const n = notes(); if (!n) return; const p = SONG_PADS[i]; const d = document.createElement('span'); d.className = 'note ' + p[2] + ' ' + cls; d.style.top = (STAFF_Y[p[2]] * 11 + 2) + 'px'; d.textContent = p[0]; n.appendChild(d); };
     const flash = i => { const b = $(`[data-pad="${i}"]`); if (!b) return; b.classList.add('lit'); playNote(SONG_PADS[i][1]); setTimeout(() => b.classList.remove('lit'), 320); };
-    const round = () => { if (!$('#len')) return; seq.push(U.int(0, 3)); $('#len').textContent = seq.length; busy = true; input = 0; $('#msg').textContent = 'Listen…'; seq.forEach((n, k) => setTimeout(() => flash(n), 600 + k * 520)); setTimeout(() => { busy = false; if ($('#msg')) $('#msg').textContent = 'Your turn!'; }, 600 + seq.length * 520); };
+    const round = () => {
+      if (!$('#len')) return; seq.push(U.int(0, 4)); $('#len').textContent = seq.length; busy = true; input = 0; $('#msg').textContent = 'Kass plays…'; notes().innerHTML = '';
+      seq.forEach((n, k) => setTimeout(() => { if (!$('#len')) return; flash(n); addNote(n, 'kass-note'); }, 600 + k * 560));
+      setTimeout(() => { busy = false; if ($('#msg')) { $('#msg').textContent = 'Your turn!'; notes().innerHTML = ''; } }, 900 + seq.length * 560);
+    };
     const end = () => {
       over = true; const s = S(); const len = seq.length - 1; State.countMax('songBest', len); const prize = len * 12; s.rupees += prize; State.save();
-      UI().modal(`<h3>Lovely playing!</h3><p>You remembered <b>${len}</b> note${len === 1 ? '' : 's'}.</p><p>Prize: <b>${prize} rupees</b></p>`, [{ label: 'Done', cls: 'primary', fn: kassIntro }]);
+      UI().modal(`<h3>${len >= 8 ? 'What a performance!' : 'Lovely playing!'}</h3><p>You remembered <b>${len}</b> note${len === 1 ? '' : 's'}.</p><p>Prize: <b>${prize} rupees</b></p>`, [{ label: 'Done', cls: 'primary', fn: kassIntro }]);
     };
-    $$('[data-pad]').forEach(b => b.addEventListener('pointerdown', () => {
-      if (busy || over) return; const i = +b.dataset.pad; flash(i);
-      if (i !== seq[input]) { U.sfx.wrong(); return end(); }
-      input++; if (input === seq.length) { busy = true; $('#msg').textContent = 'Brilliant!'; setTimeout(round, 700); }
-    }));
+    const press = i => {
+      if (busy || over) return; flash(i);
+      if (i !== seq[input]) { addNote(i, 'wrong'); U.sfx.wrong(); return end(); }
+      addNote(i); input++; if (input === seq.length) { busy = true; $('#msg').textContent = 'Brilliant!'; setTimeout(round, 800); }
+    };
+    $$('[data-pad]').forEach(b => b.addEventListener('pointerdown', () => press(+b.dataset.pad)));
+    UI().onKey(e => { const k = { a: 0, Enter: 0, ArrowUp: 1, ArrowLeft: 2, ArrowRight: 3, ArrowDown: 4 }[e.key]; if (k !== undefined) { e.preventDefault(); press(k); } });
     setTimeout(round, 400);
   }
   let actx;
-  function playNote(f) { if (!S().settings.sound) return; try { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); const o = actx.createOscillator(), g = actx.createGain(); o.type = 'triangle'; o.frequency.value = f; g.gain.setValueAtTime(0.0001, actx.currentTime); g.gain.exponentialRampToValueAtTime(0.2, actx.currentTime + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, actx.currentTime + 0.5); o.connect(g); g.connect(actx.destination); o.start(); o.stop(actx.currentTime + 0.55); } catch (e) { /* no audio */ } }
+  function playNote(f) { if (!S().settings.sound) return; try { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); const o = actx.createOscillator(), o2 = actx.createOscillator(), g = actx.createGain(); o.type = 'sine'; o2.type = 'triangle'; o.frequency.value = f; o2.frequency.value = f * 2; const g2 = actx.createGain(); g2.gain.value = 0.15; g.gain.setValueAtTime(0.0001, actx.currentTime); g.gain.exponentialRampToValueAtTime(0.22, actx.currentTime + 0.03); g.gain.exponentialRampToValueAtTime(0.0001, actx.currentTime + 0.6); o.connect(g); o2.connect(g2); g2.connect(g); g.connect(actx.destination); o.start(); o2.start(); o.stop(actx.currentTime + 0.65); o2.stop(actx.currentTime + 0.65); } catch (e) { /* no audio */ } }
 
+  /* Korok hide-and-seek in the Lost Woods: watch which big leaf the Korok hides under while they shuffle. */
+  const LEAF = `<svg class="leaf-svg" viewBox="0 0 100 80"><ellipse cx="50" cy="74" rx="34" ry="5" fill="#000" opacity=".25"/><path d="M50,76 C20,72 6,52 10,34 C14,18 34,6 50,2 C66,6 86,18 90,34 C94,52 80,72 50,76Z" fill="#5fae3e" stroke="#1d1a2b" stroke-width="2.4"/><path d="M50,74 V6 M50,22 L36,14 M50,22 L64,14 M50,36 L26,26 M50,36 L74,26 M50,50 L20,42 M50,50 L80,42 M50,63 L26,58 M50,63 L74,58" stroke="#3f8f2d" stroke-width="2" fill="none"/><path d="M50,76 Q48,80 44,80" stroke="#6b4423" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M20,36 Q26,22 38,16" stroke="#9fe07a" stroke-width="2.4" fill="none" stroke-linecap="round" opacity=".8"/></svg>`;
   function leafIntro() {
     const s = S(); const { screen, hud, on } = UI();
-    screen(`${hud()}<div class="page center"><div class="page-head">${back()}<h2>Korok Hide-and-Seek</h2></div>
+    screen(`${hud()}<div class="page center"><div class="page-head">${back()}<h2>Korok Hide-and-Seek</h2><span class="pill">🎫 ${s.tickets}</span></div>
       <div class="npc-stand">${ART.korok()}</div>
-      <p class="intro slate">"Yahaha! I'll hide under a leaf and shuffle them around. Find me! Every 2 rounds you win, I'll give you a Korok seed!"</p>
+      <p class="intro slate"><b>Korok:</b> "Yahaha! I'll hide under one of these big leaves, then shuffle them around. Find me! Every 2 rounds you win, I'll give you a Korok seed!"</p>
+      <p class="muted">Times found: <b>${s.counters.leafWins || 0}</b></p>
       <button class="btn big primary glow" id="go">🍃 Play (🎫1)</button></div>`, 'plateau', 'field');
     on('#back', Game.map); on('#go', () => ticketGate('Hide-and-Seek', leafGame));
   }
   function leafGame() {
     const { screen } = UI(); let roundN = 0, wins = 0;
-    screen(`<div class="page center"><h2>🍃 Where's the Korok?</h2><p id="msg" class="muted"></p><div class="leaves" id="leaves">${[0, 1, 2].map(i => `<button class="leaf" data-leaf="${i}" style="left:${8 + i * 32}%"><span class="lf">🍃</span><span class="kk">${ART.korok(true)}</span></button>`).join('')}</div><p>Round <b id="rn">1</b> · Found <b id="wn">0</b></p></div>`, 'plateau', 'field');
+    screen(`<div class="page center"><h2>🍃 Where's the Korok?</h2><p id="msg" class="muted"></p>
+      <div class="woods-clearing"><div class="leaves" id="leaves">${[0, 1, 2].map(i => `<button class="leaf" data-leaf="${i}" style="left:${8 + i * 32}%"><span class="kk">${ART.korok(true)}</span><span class="lf">${LEAF}</span></button>`).join('')}</div></div>
+      <p>Round <b id="rn">1</b> · Found <b id="wn">0</b></p></div>`, 'plateau', 'field');
     let korokAt = 0, busy = true; const pos = [0, 1, 2];
     const place = () => $$('[data-leaf]').forEach(b => { b.style.left = (8 + pos[+b.dataset.leaf] * 32) + '%'; });
     const round = () => {
@@ -6864,10 +7005,10 @@ Symin`,
     $$('[data-leaf]').forEach(b => b.addEventListener('click', () => {
       if (busy) return; busy = true; const i = +b.dataset.leaf; $$('[data-leaf]').forEach(x => x.classList.toggle('show', +x.dataset.leaf === korokAt));
       if (i === korokAt) {
-        wins++; $('#wn').textContent = wins; U.sfx.korok(); State.count('leafWins'); FX.floatText(b, 'Yahaha!', 'xp');
-        const s = S(); if (wins % 2 === 0) { s.seeds++; s.seedsTotal++; FX.banner('+1 Korok Seed! 🌰', 'grace'); } State.save();
-        setTimeout(round, 1300);
-      } else { U.sfx.wrong(); $('#msg').textContent = 'Oh no! It was over there!'; setTimeout(() => { const s = S(); const prize = wins * 8; s.rupees += prize; State.save(); UI().modal(`<h3>Game over</h3><p>You found the Korok <b>${wins}</b> time${wins === 1 ? '' : 's'}.</p><p>Prize: <b>${prize} rupees</b>${wins >= 2 ? ` and ${Math.floor(wins / 2)} Korok seed${wins >= 4 ? 's' : ''}` : ''}</p>`, [{ label: 'Done', cls: 'primary', fn: leafIntro }]); }, 1100); }
+        wins++; $('#wn').textContent = wins; U.sfx.korok(); State.count('leafWins'); FX.floatText(b, 'Yahaha! You found me!', 'xp');
+        const s = S(); if (wins % 2 === 0) { s.seeds++; s.seedsTotal++; FX.banner('+1 Korok Seed!', 'grace'); } State.save();
+        setTimeout(round, 1400);
+      } else { U.sfx.wrong(); $('#msg').textContent = 'Oh no! It was over there!'; setTimeout(() => { const s = S(); const prize = wins * 8; s.rupees += prize; State.save(); UI().modal(`<h3>Game over</h3><p>You found the Korok <b>${wins}</b> time${wins === 1 ? '' : 's'}.</p><p>Prize: <b>${prize} rupees</b>${wins >= 2 ? ` and ${Math.floor(wins / 2)} Korok seed${wins >= 4 ? 's' : ''}` : ''}</p>`, [{ label: 'Done', cls: 'primary', fn: leafIntro }]); }, 1200); }
     }));
     setTimeout(round, 500);
   }
@@ -7245,12 +7386,17 @@ Symin`,
       }
       // mountain slope with lava rivers at the edges
       const g = ctx.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#5a3328'); g.addColorStop(1, '#3a1f18'); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+      // Death Mountain's smoking peak glowing on the horizon
+      const hz = ctx.createLinearGradient(0, 0, 0, H * 0.16); hz.addColorStop(0, '#2a1410'); hz.addColorStop(1, 'rgba(255,106,26,.35)'); ctx.fillStyle = hz; ctx.fillRect(0, 0, W, H * 0.16);
+      ctx.fillStyle = '#2a1714'; ctx.beginPath(); ctx.moveTo(W * 0.1, H * 0.16); ctx.lineTo(W * 0.42, H * 0.03); ctx.lineTo(W * 0.5, H * 0.05); ctx.lineTo(W * 0.58, H * 0.03); ctx.lineTo(W * 0.9, H * 0.16); ctx.fill();
+      ctx.fillStyle = '#ff7a1a'; ctx.shadowColor = '#ff7a1a'; ctx.shadowBlur = 10; ctx.beginPath(); ctx.ellipse(W * 0.5, H * 0.04, W * 0.07, 3, 0, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0;
+      ctx.fillStyle = 'rgba(80,60,60,.5)'; for (let i = 0; i < 3; i++) { const sy = H * 0.03 - ((scroll * 0.2 + i * 20) % 40); ctx.beginPath(); ctx.arc(W * 0.5 + Math.sin(i + scroll / 80) * 8, sy, 8 + i * 3, 0, Math.PI * 2); ctx.fill(); }
       ctx.strokeStyle = 'rgba(0,0,0,.18)'; ctx.lineWidth = 2;
-      for (let y = -60 + scroll; y < H; y += 60) { ctx.beginPath(); ctx.moveTo(W * 0.12, y); ctx.lineTo(W * 0.88, y + 20); ctx.stroke(); }
+      for (let y = -60 + scroll; y < H; y += 60) { if (y < H * 0.16) continue; ctx.beginPath(); ctx.moveTo(W * 0.12, y); ctx.lineTo(W * 0.88, y + 20); ctx.stroke(); }
       for (const side of [0, 1]) {
         const x0 = side ? W * 0.88 : 0; const lg2 = ctx.createLinearGradient(x0, 0, x0 + W * 0.12, 0);
-        lg2.addColorStop(side ? 0 : 1, '#ff9a2e'); lg2.addColorStop(side ? 1 : 0, '#c2381c'); ctx.fillStyle = lg2; ctx.fillRect(x0, 0, W * 0.12, H);
-        ctx.fillStyle = 'rgba(255,230,120,.5)'; for (let y = (scroll * 1.5) % 40 - 40; y < H; y += 40) { ctx.beginPath(); ctx.ellipse(x0 + W * 0.06, y, 6, 3, 0, 0, Math.PI * 2); ctx.fill(); }
+        lg2.addColorStop(side ? 0 : 1, '#ff9a2e'); lg2.addColorStop(side ? 1 : 0, '#c2381c'); ctx.fillStyle = lg2; ctx.fillRect(x0, H * 0.15, W * 0.12, H);
+        ctx.fillStyle = 'rgba(255,230,120,.5)'; for (let y = (scroll * 1.5) % 40 - 40; y < H; y += 40) { if (y < H * 0.17) continue; ctx.beginPath(); ctx.ellipse(x0 + W * 0.06, y, 6, 3, 0, 0, Math.PI * 2); ctx.fill(); }
       }
       ctx.setLineDash([10, 14]); ctx.strokeStyle = 'rgba(255,200,150,.18)'; ctx.lineWidth = 2;
       for (const x of [W * 0.375, W * 0.625]) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
@@ -7260,8 +7406,11 @@ Symin`,
         if (o.kind === 'rock') {
           const rg = ctx.createRadialGradient(x - 6, o.y - 6, 2, x, o.y, 22); rg.addColorStop(0, '#5a4a44'); rg.addColorStop(1, '#2a1f1c');
           ctx.beginPath(); ctx.arc(x, o.y, 22, 0, Math.PI * 2); ctx.fillStyle = rg; ctx.fill(); ctx.lineWidth = 2.4; ctx.strokeStyle = '#1d1a2b'; ctx.stroke();
-          ctx.strokeStyle = '#ff7a1a'; ctx.lineWidth = 2; ctx.shadowColor = '#ff7a1a'; ctx.shadowBlur = 8;
-          ctx.beginPath(); ctx.moveTo(x - 12, o.y - 4); ctx.lineTo(x - 2, o.y + 2); ctx.lineTo(x + 6, o.y - 8); ctx.moveTo(x - 2, o.y + 2); ctx.lineTo(x + 2, o.y + 14); ctx.stroke(); ctx.shadowBlur = 0;
+          ctx.save(); ctx.translate(x, o.y); ctx.rotate(o.y / 30);
+          ctx.strokeStyle = '#ff7a1a'; ctx.lineWidth = 2.2; ctx.shadowColor = '#ffb02e'; ctx.shadowBlur = 10;
+          ctx.beginPath(); ctx.moveTo(-14, -4); ctx.lineTo(-3, 1); ctx.lineTo(5, -9); ctx.moveTo(-3, 1); ctx.lineTo(2, 13); ctx.moveTo(5, -9); ctx.lineTo(14, -3); ctx.stroke(); ctx.shadowBlur = 0;
+          ctx.fillStyle = 'rgba(255,170,60,.35)'; ctx.beginPath(); ctx.arc(-8, 8, 3, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+          ctx.fillStyle = 'rgba(255,120,30,.25)'; ctx.beginPath(); ctx.ellipse(x, o.y - 26, 8, 4, 0, 0, Math.PI * 2); ctx.fill();
         } else {
           ctx.save(); ctx.translate(x, o.y); ctx.shadowColor = o.c; ctx.shadowBlur = 12;
           ctx.beginPath(); ctx.moveTo(0, -14); ctx.lineTo(12, -4); ctx.lineTo(0, 14); ctx.lineTo(-12, -4); ctx.closePath(); ctx.fillStyle = o.c; ctx.fill(); ctx.shadowBlur = 0; ctx.lineWidth = 1.6; ctx.strokeStyle = '#1d1a2b'; ctx.stroke();
@@ -7279,97 +7428,171 @@ Symin`,
       text: 'Goro! Curl up and roll down the mountain with me! Dodge the lava boulders and grab every gem you can, goro!', best: `Best run: <b>${s.counters.rockBest || 0}</b> gems. Swipe lanes with ◀ ▶ or tap the left/right side.` });
   }
 
-  /* ======================= ZORA'S DOMAIN: Zora fishing ======================= */
-  // Cast, wait patiently through the nibbles, then reel in the moment the bobber is pulled under.
-  const FISH = [['fish', 0.55, 'Hyrule Bass'], ['salmon', 0.28, 'Hearty Salmon'], ['crab', 0.17, 'Ironshell Crab']];
+  /* ======================= ZORA'S DOMAIN: catching fish by hand ======================= */
+  // Like the game, there's no fishing rod: fish swim as shadows and rise to the surface. Grab them while they're up!
+  // Tap a fish that's still deep and it darts away. Ironshell crabs sometimes scuttle along the shore.
+  const FISH = { fish: ['Hyrule Bass', '#8fb06a', '#4f7a4a'], salmon: ['Hearty Salmon', '#ff8a7a', '#c2385a'], crab: ['Ironshell Crab', '#6a8aaa', '#34465e'] };
+  function fishShape(ctx, kind) {
+    const [, c1, c2] = FISH[kind]; const g = ctx.createLinearGradient(0, -8, 0, 8); g.addColorStop(0, c1); g.addColorStop(1, c2);
+    ctx.beginPath(); ctx.moveTo(16, 0); ctx.quadraticCurveTo(4, -10, -10, -2); ctx.lineTo(-20, -9); ctx.lineTo(-17, 0); ctx.lineTo(-20, 9); ctx.lineTo(-10, 2); ctx.quadraticCurveTo(4, 10, 16, 0); ctx.closePath(); ctx.fillStyle = g; ctx.fill(); ctx.lineWidth = 1.6; ctx.strokeStyle = '#1d1a2b'; ctx.stroke();
+    ctx.strokeStyle = 'rgba(255,255,255,.5)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(-6, 0); ctx.quadraticCurveTo(4, -3, 12, 0); ctx.stroke();
+    ctx.fillStyle = '#1d1a2b'; ctx.beginPath(); ctx.arc(10, -2, 1.8, 0, Math.PI * 2); ctx.fill();
+  }
+  function crabShape(ctx, t) {
+    ctx.fillStyle = '#4a6a8a'; ctx.strokeStyle = '#1d1a2b'; ctx.lineWidth = 1.4;
+    for (const s of [-1, 1]) { ctx.beginPath(); ctx.moveTo(s * 8, 2); ctx.lineTo(s * 15, 7 + Math.sin(t * 20) * 2); ctx.moveTo(s * 6, 3); ctx.lineTo(s * 11, 9 - Math.sin(t * 20) * 2); ctx.stroke(); }
+    ctx.beginPath(); ctx.ellipse(0, 0, 12, 7, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    for (const s of [-1, 1]) { ctx.beginPath(); ctx.arc(s * 12, -6, 4, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); }
+    ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(-3, -5, 1.6, 0, Math.PI * 2); ctx.arc(3, -5, 1.6, 0, Math.PI * 2); ctx.fill();
+  }
   function fishing() {
-    const el = gameScreen('Zora Fishing', '<p id="fmsg" class="muted">Tap <b>Cast</b> to throw your line.</p><button class="btn big primary" id="act">🎣 Cast</button>', 'english', 'english');
-    const { cv, ctx, W, H } = stage(el, 0.8);
+    const el = gameScreen('Zora\'s Reservoir', '<p id="fmsg" class="muted">Tap a fish when it rises to the surface and splashes!</p>', 'english', 'english');
+    const { cv, ctx, W, H } = stage(el, 0.9);
     const sid = sprite('sidon', ART.sidon(), 120, 150);
-    let casts = 8, caught = 0, state = 'idle', timer = 0, bob = { x: W * 0.62, y: H * 0.55, dip: 0 }, nibbles = 0, flash = 0, splash = [], t = 0;
+    const WATER = H * 0.34, SHORE = H * 0.86;
+    let time = 40, caught = 0, over = false, t = 0, spawnCrab = 6;
+    const fish = [], fx = [], catches = [];
     const msg = m => { const e = $('#fmsg'); if (e) e.innerHTML = m; };
-    const btn = () => $('#act');
-    const catches = [];
-    const act = () => {
-      if (state === 'idle' && casts > 0) { casts--; state = 'wait'; timer = 1 + Math.random() * 3; nibbles = U.int(0, 3); bob.x = W * (0.45 + Math.random() * 0.3); bob.y = H * (0.5 + Math.random() * 0.15); U.sfx.click(); msg('Wait for it… don\'t react to the little nibbles!'); btn().textContent = '🐟 Reel!'; for (let i = 0; i < 12; i++) splash.push({ a: i / 12 * Math.PI * 2, r: 2, life: 0.6 }); }
-      else if (state === 'wait' || state === 'nibble') { state = 'idle'; msg('Too early! The fish swam away. 💨'); U.sfx.wrong(); btn().textContent = '🎣 Cast'; endCheck(); }
-      else if (state === 'bite') {
-        state = 'idle'; let r = Math.random(), f = FISH[0]; for (const x of FISH) { if (r < x[1]) { f = x; break; } r -= x[1]; }
-        caught++; State.count('fishCaught'); S().ingredients[f[0]] = (S().ingredients[f[0]] || 0) + 1; State.save(); catches.push(f); flash = 1;
-        U.sfx.correct(); FX.floatText(cv, `${K.INGREDIENTS.find(i => i.id === f[0]).emoji} ${f[2]}!`, 'xp'); msg(`You caught a <b>${f[2]}</b>! It's in your Bag.`); btn().textContent = '🎣 Cast'; endCheck();
-      }
+    const newFish = () => ({ x: W * (0.15 + Math.random() * 0.7), y: WATER + 30 + Math.random() * (SHORE - WATER - 60), a: Math.random() * Math.PI * 2, sp: 30 + Math.random() * 25, up: 0, wait: 1 + Math.random() * 3.5, kind: Math.random() < 0.3 ? 'salmon' : 'fish', flee: 0 });
+    for (let i = 0; i < 5; i++) fish.push(newFish());
+    const splash = (x, y, n = 14, c = '#e8f6ff') => { for (let i = 0; i < n; i++) fx.push({ x, y, vx: (Math.random() - 0.5) * 160, vy: -60 - Math.random() * 140, life: 0.7, c }); fx.push({ ring: true, x, y, r: 4, life: 0.6 }); };
+    const grab = (kind, x, y) => {
+      caught++; State.count('fishCaught'); const s = S(); s.ingredients[kind] = (s.ingredients[kind] || 0) + 1; State.save(); catches.push(kind);
+      U.sfx.correct(); splash(x, y, 22, '#ffffff'); fx.push({ leap: true, x, y, kind, life: 0.9 }); msg(`Got a <b>${FISH[kind][0]}</b>! It's in your Bag.`);
     };
-    const endCheck = () => { if (casts <= 0 && state === 'idle') { const s = S(); const prize = caught * 10; s.rupees += prize; State.save(); finish('Out of bait!', `<p>You caught <b>${caught}</b> fish: ${catches.map(c => K.INGREDIENTS.find(i => i.id === c[0]).emoji).join(' ') || 'none'}.</p><p>They're in your Bag for cooking, plus <b>${prize} rupees</b> from Sidon.</p>`, fishIntro); } };
-    UI().on('#act', act); bindKeys({ ' ': act, Enter: act });
+    cv.addEventListener('pointerdown', e => {
+      if (over) return; const r = cv.getBoundingClientRect(); const x = (e.clientX - r.left) * W / r.width, y = (e.clientY - r.top) * H / r.height;
+      let best = null, bd = 34;
+      for (const f of fish) { const d = Math.hypot(f.x - x, f.y - y); if (d < bd) { bd = d; best = f; } }
+      if (best) {
+        if (best.kind === 'crab' || best.up > 0) { grab(best.kind, best.x, best.y); fish.splice(fish.indexOf(best), 1); if (best.kind !== 'crab') fish.push(newFish()); }
+        else { best.flee = 1; best.a = Math.atan2(best.y - y, best.x - x); U.sfx.wrong(); msg('Too deep! Wait for it to surface.'); }
+      } else splash(x, y, 6);
+    });
     loop(cv, dt => {
       t += dt;
-      if (state === 'wait') { timer -= dt; if (timer <= 0) { if (nibbles > 0) { nibbles--; state = 'nibble'; timer = 0.35; bob.dip = 3; } else { state = 'bite'; timer = 0.85; bob.dip = 12; U.sfx.tick(); for (let i = 0; i < 16; i++) splash.push({ a: i / 16 * Math.PI * 2, r: 4, life: 0.8 }); } } }
-      else if (state === 'nibble') { timer -= dt; if (timer <= 0) { state = 'wait'; timer = 0.6 + Math.random() * 1.6; bob.dip = 0; } }
-      else if (state === 'bite') { timer -= dt; if (timer <= 0) { state = 'idle'; bob.dip = 0; msg('Too slow! The fish got away. 🐟'); U.sfx.wrong(); const b = btn(); if (b) b.textContent = '🎣 Cast'; endCheck(); } }
-      // East Reservoir Lake under Zora's Domain: luminous stone arches, glowing water, a tiled dock
-      const g = ctx.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#0f3f6a'); g.addColorStop(0.32, '#1e5f94'); g.addColorStop(0.34, '#2c7fb8'); g.addColorStop(1, '#0f3f6a'); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
-      ctx.save(); ctx.shadowColor = '#7ff3ff'; ctx.shadowBlur = 10;
-      for (const [x0, w0, h0] of [[W * 0.05, W * 0.3, H * 0.26], [W * 0.38, W * 0.34, H * 0.3], [W * 0.75, W * 0.28, H * 0.24]]) {
-        ctx.beginPath(); ctx.moveTo(x0, H * 0.33); ctx.lineTo(x0, H * 0.33 - h0 * 0.55); ctx.quadraticCurveTo(x0 + w0 / 2, H * 0.33 - h0 * 1.25, x0 + w0, H * 0.33 - h0 * 0.55); ctx.lineTo(x0 + w0, H * 0.33);
-        ctx.lineTo(x0 + w0 - 8, H * 0.33); ctx.lineTo(x0 + w0 - 8, H * 0.33 - h0 * 0.5); ctx.quadraticCurveTo(x0 + w0 / 2, H * 0.33 - h0 * 1.05, x0 + 8, H * 0.33 - h0 * 0.5); ctx.lineTo(x0 + 8, H * 0.33); ctx.closePath();
-        ctx.fillStyle = '#cfe9f2'; ctx.fill(); ctx.strokeStyle = '#7fb9c9'; ctx.lineWidth = 1.4; ctx.stroke();
+      if (!over) {
+        time -= dt; spawnCrab -= dt;
+        if (spawnCrab <= 0) { spawnCrab = 7 + Math.random() * 6; fish.push({ kind: 'crab', x: -20, y: SHORE + 16, a: 0, sp: 60, up: 1, wait: 99, flee: 0 }); }
+        for (const f of fish) {
+          if (f.kind === 'crab') { f.x += f.sp * dt; continue; }
+          const sp = f.sp * (f.flee > 0 ? 4 : 1); f.flee = Math.max(0, f.flee - dt);
+          f.a += (Math.random() - 0.5) * dt * 2; f.x += Math.cos(f.a) * sp * dt; f.y += Math.sin(f.a) * sp * dt * 0.5;
+          if (f.x < W * 0.12 || f.x > W * 0.92) { f.a = Math.PI - f.a; f.x = Math.max(W * 0.12, Math.min(W * 0.92, f.x)); }
+          if (f.y < WATER + 24 || f.y > SHORE - 24) { f.a = -f.a; f.y = Math.max(WATER + 24, Math.min(SHORE - 24, f.y)); }
+          if (f.up > 0) { f.up -= dt; if (f.up <= 0) f.wait = 1.5 + Math.random() * 3; }
+          else { f.wait -= dt; if (f.wait <= 0 && !f.flee) { f.up = 1.15; splash(f.x, f.y, 10); } }
+        }
+        for (let i = fish.length - 1; i >= 0; i--) if (fish[i].kind === 'crab' && fish[i].x > W + 20) fish.splice(i, 1);
+        if (time <= 0) {
+          over = true; const s = S(); const prize = caught * 10; s.rupees += prize; State.save();
+          const icons = catches.map(k => K.INGREDIENTS.find(i => i.id === k).emoji).join(' ');
+          finish('Time\'s up!', `<p>You caught <b>${caught}</b>: ${icons || 'nothing this time'}.</p><p>They're in your Bag for cooking, and Sidon gives you <b>${prize} rupees</b>!</p>`, fishIntro);
+        }
       }
-      ctx.restore();
-      ctx.fillStyle = '#7ff3ff'; for (let i = 0; i < 5; i++) { const x = W * (0.12 + i * 0.2); ctx.globalAlpha = 0.6 + Math.sin(t * 2 + i) * 0.3; ctx.beginPath(); ctx.moveTo(x, H * 0.33); ctx.lineTo(x - 4, H * 0.27); ctx.lineTo(x, H * 0.22); ctx.lineTo(x + 4, H * 0.27); ctx.fill(); } ctx.globalAlpha = 1;
-      ctx.fillStyle = '#bfe6ff'; ctx.globalAlpha = 0.2; for (let i = 0; i < 9; i++) { const y = H * 0.36 + (i * 31 + t * 12) % (H * 0.64); ctx.beginPath(); ctx.ellipse((i * 97 + t * 8) % W, y, 36, 3, 0, 0, Math.PI * 2); ctx.fill(); } ctx.globalAlpha = 1;
-      ctx.fillStyle = '#d9eef6'; ctx.beginPath(); ctx.moveTo(0, H * 0.8); ctx.lineTo(W * 0.42, H * 0.8); ctx.lineTo(W * 0.46, H); ctx.lineTo(0, H); ctx.fill(); ctx.strokeStyle = '#7fb9c9'; ctx.lineWidth = 2; ctx.stroke();
-      ctx.strokeStyle = '#9fd0e0'; ctx.lineWidth = 1; for (let x = 0; x < W * 0.44; x += 24) { ctx.beginPath(); ctx.moveTo(x, H * 0.8); ctx.lineTo(x + 3, H); ctx.stroke(); }
-      ctx.fillStyle = '#3fb0e8'; ctx.fillRect(0, H * 0.8, W * 0.42, 4);
-      if (ready(sid)) ctx.drawImage(sid, W * 0.03, H * 0.58, 64, 80);
-      ctx.strokeStyle = '#6b4a2b'; ctx.lineWidth = 4; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(W * 0.28, H * 0.98); ctx.lineTo(W * 0.38, H * 0.4); ctx.stroke(); ctx.lineCap = 'butt';
-      if (state !== 'idle') {
-        ctx.strokeStyle = 'rgba(255,255,255,.7)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(W * 0.38, H * 0.4); ctx.quadraticCurveTo(bob.x - 30, bob.y - 60, bob.x, bob.y - 8 + bob.dip); ctx.stroke();
-        const by = bob.y + bob.dip + Math.sin(t * 3) * 1.5;
-        ctx.fillStyle = 'rgba(255,255,255,.35)'; ctx.beginPath(); ctx.ellipse(bob.x, bob.y + 4, 16, 4, 0, 0, Math.PI * 2); ctx.fill();
-        ctx.beginPath(); ctx.arc(bob.x, by - 6, 7, Math.PI, 0); ctx.fillStyle = '#e8402e'; ctx.fill(); ctx.beginPath(); ctx.arc(bob.x, by - 6, 7, 0, Math.PI); ctx.fillStyle = '#fff'; ctx.fill();
-        ctx.lineWidth = 1.4; ctx.strokeStyle = '#1d1a2b'; ctx.beginPath(); ctx.arc(bob.x, by - 6, 7, 0, Math.PI * 2); ctx.stroke();
-        if (state === 'bite') { ctx.font = '900 30px Lexend, sans-serif'; ctx.fillStyle = '#ffd23d'; ctx.strokeStyle = '#1d1a2b'; ctx.lineWidth = 4; ctx.strokeText('!', bob.x - 5, bob.y - 30); ctx.fillText('!', bob.x - 5, bob.y - 30); }
+      // East Reservoir: Zora's Domain glowing in the distance, the lake, a stone shore
+      const sky = ctx.createLinearGradient(0, 0, 0, WATER); sky.addColorStop(0, '#1d3f78'); sky.addColorStop(1, '#5a8ac8'); ctx.fillStyle = sky; ctx.fillRect(0, 0, W, WATER);
+      ctx.fillStyle = '#3a5a8a'; ctx.beginPath(); ctx.moveTo(0, WATER); ctx.lineTo(0, WATER * 0.55); ctx.quadraticCurveTo(W * 0.2, WATER * 0.4, W * 0.35, WATER * 0.62); ctx.lineTo(W * 0.65, WATER * 0.62); ctx.quadraticCurveTo(W * 0.8, WATER * 0.38, W, WATER * 0.5); ctx.lineTo(W, WATER); ctx.fill();
+      ctx.save(); ctx.shadowColor = '#7ff3ff'; ctx.shadowBlur = 12;
+      ctx.fillStyle = '#d6eef6'; ctx.beginPath(); ctx.ellipse(W * 0.5, WATER * 0.58, W * 0.13, WATER * 0.18, 0, Math.PI, 0); ctx.fill();
+      ctx.fillRect(W * 0.44, WATER * 0.2, W * 0.12, WATER * 0.4); ctx.beginPath(); ctx.moveTo(W * 0.42, WATER * 0.22); ctx.quadraticCurveTo(W * 0.5, -WATER * 0.05, W * 0.58, WATER * 0.22); ctx.fill();
+      ctx.restore(); ctx.fillStyle = '#7ff3ff'; for (let i = 0; i < 4; i++) { ctx.globalAlpha = 0.6 + Math.sin(t * 2 + i) * 0.3; ctx.fillRect(W * (0.455 + i * 0.03), WATER * 0.32, 3, 6); } ctx.globalAlpha = 1;
+      const wg = ctx.createLinearGradient(0, WATER, 0, SHORE); wg.addColorStop(0, '#2c8fc8'); wg.addColorStop(1, '#14507e'); ctx.fillStyle = wg; ctx.fillRect(0, WATER, W, SHORE - WATER);
+      ctx.strokeStyle = 'rgba(200,240,255,.25)'; ctx.lineWidth = 1.4; for (let i = 0; i < 10; i++) { const y = WATER + 10 + ((i * 29 + t * 10) % (SHORE - WATER - 10)); const x = (i * 83 + t * 14) % W; ctx.beginPath(); ctx.moveTo(x - 16, y); ctx.quadraticCurveTo(x, y - 3, x + 16, y); ctx.stroke(); }
+      for (const f of fish) {
+        if (f.kind === 'crab') continue;
+        const dirx = Math.cos(f.a) >= 0 ? 1 : -1;
+        ctx.save(); ctx.translate(f.x, f.y); ctx.scale(dirx, 1);
+        if (f.up > 0) {
+          ctx.fillStyle = 'rgba(255,255,255,.25)'; ctx.beginPath(); ctx.ellipse(0, 4, 26, 7, 0, 0, Math.PI * 2); ctx.fill();
+          fishShape(ctx, f.kind);
+          if (f.kind === 'salmon') { ctx.fillStyle = '#ffe0e8'; ctx.globalAlpha = 0.5 + Math.sin(t * 8) * 0.3; ctx.beginPath(); ctx.arc(0, 0, 3, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = 1; }
+        } else {
+          ctx.globalAlpha = 0.35; ctx.fillStyle = '#062a46'; ctx.beginPath(); ctx.ellipse(0, 0, 15, 5, 0, 0, Math.PI * 2); ctx.moveTo(-12, 0); ctx.lineTo(-20, -6); ctx.lineTo(-20, 6); ctx.fill(); ctx.globalAlpha = 1;
+        }
+        ctx.restore();
       }
-      for (let i = splash.length - 1; i >= 0; i--) { const p = splash[i]; p.life -= dt; p.r += dt * 60; if (p.life <= 0) { splash.splice(i, 1); continue; } ctx.globalAlpha = p.life; ctx.fillStyle = '#e8f6ff'; ctx.beginPath(); ctx.arc(bob.x + Math.cos(p.a) * p.r, bob.y + Math.sin(p.a) * p.r * 0.35, 2.4, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = 1; }
-      if (flash > 0) { flash -= dt; ctx.fillStyle = `rgba(255,255,255,${flash * 0.3})`; ctx.fillRect(0, 0, W, H); }
-      hud(ctx, W, [`🪱 ${casts} casts`, `🐟 ${caught}`]);
+      // shore with the stone Zora dock, Sidon cheering you on
+      ctx.fillStyle = '#c9dce4'; ctx.fillRect(0, SHORE, W, H - SHORE); ctx.fillStyle = '#9fb8c4'; for (let x = 0; x < W; x += 26) { ctx.beginPath(); ctx.ellipse(x + 10, SHORE + 3, 13, 4, 0, 0, Math.PI * 2); ctx.fill(); }
+      ctx.strokeStyle = '#7fa0b0'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(0, SHORE); ctx.lineTo(W, SHORE); ctx.stroke();
+      for (const f of fish) {
+        if (f.kind !== 'crab') continue;
+        ctx.save(); ctx.translate(f.x, f.y); crabShape(ctx, t); ctx.restore();
+      }
+      if (ready(sid)) ctx.drawImage(sid, W * 0.82, SHORE - 60, 50, 64);
+      for (let i = fx.length - 1; i >= 0; i--) {
+        const p = fx[i]; p.life -= dt; if (p.life <= 0) { fx.splice(i, 1); continue; }
+        if (p.ring) { p.r += dt * 50; ctx.globalAlpha = p.life; ctx.strokeStyle = '#e8f6ff'; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.ellipse(p.x, p.y, p.r, p.r * 0.35, 0, 0, Math.PI * 2); ctx.stroke(); ctx.globalAlpha = 1; }
+        else if (p.leap) { const k = 1 - p.life / 0.9; const y = p.y - Math.sin(k * Math.PI) * 60; ctx.save(); ctx.globalAlpha = Math.min(1, p.life * 2); ctx.translate(p.x, y); ctx.scale(1.3, 1.3); ctx.rotate(-0.6 + k * 1.2); if (p.kind === 'crab') crabShape(ctx, t); else fishShape(ctx, p.kind); ctx.restore(); }
+        else { p.x += p.vx * dt; p.y += p.vy * dt; p.vy += 400 * dt; ctx.globalAlpha = p.life; ctx.fillStyle = p.c; ctx.beginPath(); ctx.arc(p.x, p.y, 2.2, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = 1; }
+      }
+      hud(ctx, W, [`🐟 ${caught}`, `⏱ ${Math.max(0, Math.ceil(time))}`]);
     });
   }
   function fishIntro() {
     const s = S();
-    intro({ title: 'Zora Fishing', npc: 'Prince Sidon', art: ART.sidon(), backLabel: '◀ Zora\'s Domain', onBack: toRegion('english'), theme: 'english', music: 'english', play: fishing,
-      text: 'The reservoir is full of fish again, thanks to you! Cast your line, ignore the little nibbles, and reel in the moment the bobber is pulled under. You have 8 casts!', best: `Fish caught so far: <b>${s.counters.fishCaught || 0}</b>. Every catch goes in your Bag for cooking.` });
+    intro({ title: 'Zora\'s Reservoir', npc: 'Prince Sidon', art: ART.sidon(), backLabel: '◀ Zora\'s Domain', onBack: toRegion('english'), theme: 'english', music: 'english', play: fishing,
+      text: 'The reservoir is full of fish again, thanks to you! Catch them with your bare hands, just like we Zora do. Grab each fish the moment it splashes up to the surface. Oh, and watch for crabs scuttling along the shore!', best: `Fish caught so far: <b>${s.counters.fishCaught || 0}</b>. Everything you catch goes in your Bag for cooking.` });
   }
 
   /* ======================= RITO VILLAGE: Snowball Bowling ======================= */
-  // Time your aim as the arrow sweeps, then watch the snowball crash through the pins. 3 balls per game.
+  // Seen from behind the bowler, like the game: push a snowball down the slope (it grows as it rolls) into ten wooden pins.
+  // The head pin is nearest you; the row of four is at the back. Pins are knocked over with simple physics.
   function bowling() {
-    const el = gameScreen('Snowball Bowling', '<p id="bmsg" class="muted">Tap <b>Roll!</b> when the arrow points where you want to aim.</p><button class="btn big primary" id="act">☃️ Roll!</button>', 'verbal', 'verbal');
-    const { cv, ctx, W, H } = stage(el, 1.3);
-    const L = W * 0.18, R = W * 0.82, top = 60;
-    const rows = [[0], [-1, 1], [-2, 0, 2], [-3, -1, 1, 3]];
-    let pins, ball, aim = 0, dir = 1, state = 'aim', frame = 1, total = 0, strikes = 0, settle = 0, results = [];
+    const el = gameScreen('Snowball Bowling', '<p id="bmsg" class="muted">Watch the arrow, then tap <b>Roll!</b> to push the snowball. Aim for the pin at the front!</p><button class="btn big primary" id="act">☃️ Roll!</button>', 'verbal', 'verbal');
+    const { cv, ctx, W, H } = stage(el, 1.15);
+    const HZ = H * 0.25, BOT = H + 6, HALF = W * 0.46;
+    const P = (x, z) => { const p = 1 / (1 + z * 0.13); return { x: W / 2 + x * HALF * p, y: HZ + (BOT - HZ) * p, s: p }; };
+    const PIN_R = 0.12, Z0 = 6.4, DZ = 0.46, DX = 0.27;
+    let pins, ball = null, aim = 0, dir = 1, state = 'aim', frame = 1, total = 0, strikes = 0, settle = 0, results = [], t = 0;
+    const flakes = Array.from({ length: 40 }, () => ({ x: Math.random() * W, y: Math.random() * H, s: 0.6 + Math.random() * 1.4 }));
     const msg = m => { const e = $('#bmsg'); if (e) e.innerHTML = m; };
-    const rack = () => { pins = []; const sp = (R - L) / 9; rows.forEach((row, ri) => row.forEach(c => pins.push({ x: W / 2 + c * sp * 0.8, y: top + 26 + ri * sp * 0.85, vx: 0, vy: 0, down: false, a: 0 }))); };
+    const rack = () => { pins = []; for (let k = 0; k < 4; k++) for (let j = 0; j <= k; j++) pins.push({ x: (j - k / 2) * 2 * DX, z: Z0 + k * DZ, vx: 0, vz: 0, down: false, tilt: 0, side: 1 }); };
     rack();
-    const act = () => {
-      if (state !== 'aim') return;
-      state = 'roll'; ball = { x: W / 2 + aim * (R - L) * 0.42, y: H - 50, vx: aim * -10 + (Math.random() - 0.5) * 8, vy: -420, r: 16 }; U.sfx.click();
-    };
+    const act = () => { if (state !== 'aim') return; state = 'roll'; ball = { x: 0, z: 0.5, vx: aim * 0.55 + (Math.random() - 0.5) * 0.04, vz: 6.8, r: 0.2, spin: 0 }; U.sfx.click(); };
     UI().on('#act', act); bindKeys({ ' ': act, Enter: act });
+    function drawPin(p) {
+      const q = P(p.x, p.z); const h = HALF * q.s * 0.8, w = h * 0.36;
+      ctx.save(); ctx.translate(q.x, q.y);
+      ctx.fillStyle = 'rgba(40,60,90,.22)'; ctx.beginPath(); ctx.ellipse(p.tilt * p.side * h * 0.5, 0, w * (0.6 + p.tilt * 0.8), w * 0.22, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.rotate(p.tilt * p.side * Math.PI / 2 * 0.95);
+      const g = ctx.createLinearGradient(-w / 2, 0, w / 2, 0); g.addColorStop(0, '#f4d8a4'); g.addColorStop(0.5, '#e0b878'); g.addColorStop(1, '#a87a44');
+      ctx.beginPath(); ctx.moveTo(-w * 0.32, 0); ctx.bezierCurveTo(-w * 0.62, -h * 0.3, -w * 0.5, -h * 0.5, -w * 0.18, -h * 0.66); ctx.bezierCurveTo(-w * 0.3, -h * 0.8, -w * 0.32, -h, 0, -h); ctx.bezierCurveTo(w * 0.32, -h, w * 0.3, -h * 0.8, w * 0.18, -h * 0.66); ctx.bezierCurveTo(w * 0.5, -h * 0.5, w * 0.62, -h * 0.3, w * 0.32, 0); ctx.closePath();
+      ctx.fillStyle = g; ctx.fill(); ctx.lineWidth = Math.max(1, 1.6 * q.s * 2); ctx.strokeStyle = '#1d1a2b'; ctx.stroke();
+      ctx.fillStyle = '#c63b4f'; ctx.fillRect(-w * 0.2, -h * 0.72, w * 0.4, h * 0.06); ctx.fillRect(-w * 0.21, -h * 0.64, w * 0.42, h * 0.035);
+      ctx.strokeStyle = 'rgba(120,80,40,.5)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(-w * 0.1, -h * 0.1); ctx.lineTo(-w * 0.14, -h * 0.5); ctx.stroke();
+      ctx.restore();
+    }
+    function drawBall(b) {
+      const q = P(b.x, b.z); const r = b.r * HALF * q.s;
+      ctx.fillStyle = 'rgba(40,60,90,.25)'; ctx.beginPath(); ctx.ellipse(q.x, q.y, r * 1.05, r * 0.3, 0, 0, Math.PI * 2); ctx.fill();
+      const g = ctx.createRadialGradient(q.x - r * 0.35, q.y - r * 1.3, r * 0.1, q.x, q.y - r, r); g.addColorStop(0, '#ffffff'); g.addColorStop(0.7, '#e4f0f8'); g.addColorStop(1, '#a8c4dc');
+      ctx.beginPath(); ctx.arc(q.x, q.y - r, r, 0, Math.PI * 2); ctx.fillStyle = g; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = '#1d1a2b'; ctx.stroke();
+      ctx.fillStyle = 'rgba(160,190,215,.6)'; for (let i = 0; i < 5; i++) { const a = b.spin + i * 1.26; ctx.beginPath(); ctx.arc(q.x + Math.cos(a) * r * 0.55, q.y - r + Math.sin(a) * r * 0.5, r * 0.09, 0, Math.PI * 2); ctx.fill(); }
+    }
     loop(cv, dt => {
-      if (state === 'aim') { aim += dir * dt * 1.25; if (aim > 1 || aim < -1) { dir *= -1; aim = Math.max(-1, Math.min(1, aim)); } }
+      t += dt;
+      if (state === 'aim') { aim += dir * dt * 1.15; if (aim > 1 || aim < -1) { dir *= -1; aim = Math.max(-1, Math.min(1, aim)); } }
       if (state === 'roll' || state === 'settle') {
-        if (ball) { ball.x += ball.vx * dt; ball.y += ball.vy * dt; if (ball.x < L + ball.r || ball.x > R - ball.r) ball.vx *= -0.3, ball.x = Math.max(L + ball.r, Math.min(R - ball.r, ball.x)); if (ball.y < -30) ball = null; }
+        if (ball) {
+          ball.x += ball.vx * dt; ball.z += ball.vz * dt; ball.r = Math.min(0.34, 0.2 + ball.z * 0.018); ball.spin += dt * 9;
+          if (Math.abs(ball.x) > 1 - ball.r) { ball.x = Math.sign(ball.x) * (1 - ball.r); ball.vx *= -0.3; }
+          if (ball.z > 12) ball = null;
+        }
         for (const p of pins) {
-          if (ball) { const dx = p.x - ball.x, dy = p.y - ball.y, d = Math.hypot(dx, dy); if (d < ball.r + 9 && d > 0) { const f = 320; p.vx += dx / d * f + ball.vx * 0.3; p.vy += dy / d * f + ball.vy * 0.25; p.down = true; ball.vy *= 0.94; } }
-          p.x += p.vx * dt; p.y += p.vy * dt; p.vx *= 1 - dt * 2.2; p.vy *= 1 - dt * 2.2; if (p.down) p.a += dt * 8;
+          if (ball) { const dx = p.x - ball.x, dz = p.z - ball.z, d = Math.hypot(dx, dz); if (d < ball.r + PIN_R && d > 0) { const sp = Math.hypot(ball.vx, ball.vz) * 0.85; p.vx += dx / d * sp + ball.vx * 0.3; p.vz += dz / d * sp * 0.6 + ball.vz * 0.25; if (!p.down) { p.down = true; U.sfx.hit(); } ball.vz *= 0.93; } }
+          p.x += p.vx * dt; p.z += p.vz * dt; const f = Math.max(0, 1 - dt * 2.6); p.vx *= f; p.vz *= f;
+          if (p.down) { p.tilt = Math.min(1, p.tilt + dt * 4); if (Math.abs(p.vx) > 0.05) p.side = Math.sign(p.vx); }
         }
         for (let i = 0; i < pins.length; i++) for (let j = i + 1; j < pins.length; j++) {
-          const a = pins[i], b = pins[j]; const dx = b.x - a.x, dy = b.y - a.y, d = Math.hypot(dx, dy);
-          if (d < 18 && d > 0) { const sa = Math.hypot(a.vx, a.vy), sb = Math.hypot(b.vx, b.vy); if (sa > 40 && !b.down) { b.down = true; b.vx += dx / d * sa * 0.75; b.vy += dy / d * sa * 0.75; } if (sb > 40 && !a.down) { a.down = true; a.vx -= dx / d * sb * 0.75; a.vy -= dy / d * sb * 0.75; } }
+          const a = pins[i], b = pins[j]; const dx = b.x - a.x, dz = b.z - a.z, d = Math.hypot(dx, dz);
+          if (d < PIN_R * 2.4 && d > 0) {
+            const sa = Math.hypot(a.vx, a.vz), sb = Math.hypot(b.vx, b.vz);
+            if (sa > 0.5 && !b.down) { b.down = true; b.vx += dx / d * sa * 0.7; b.vz += dz / d * sa * 0.7; U.sfx.tick(); }
+            if (sb > 0.5 && !a.down) { a.down = true; a.vx -= dx / d * sb * 0.7; a.vz -= dz / d * sb * 0.7; U.sfx.tick(); }
+          }
         }
-        if (state === 'roll' && !ball) { state = 'settle'; settle = 1.1; }
+        if (state === 'roll' && !ball) { state = 'settle'; settle = 1.2; }
         if (state === 'settle') {
           settle -= dt;
           if (settle <= 0) {
@@ -7379,28 +7602,33 @@ Symin`,
             if (frame > 3) {
               state = 'over'; const s = S(); const prize = total * 3 + strikes * 30; s.rupees += prize; State.countMax('bowlBest', total); State.save();
               finish('Game over!', `<p>Your rolls: <b>${results.join(' · ')}</b> (total ${total}/30)${strikes ? ` with <b>${strikes} strike${strikes > 1 ? 's' : ''}</b>! ☃️` : '.'}</p><p>Prize: <b>${prize} rupees</b></p>`, bowlIntro);
-            } else { state = 'aim'; rack(); msg(`Roll ${frame} of 3. ${n === 10 ? 'Amazing!' : 'Try aiming at the front pin!'}`); }
+            } else { state = 'aim'; rack(); msg(`Roll ${frame} of 3. ${n === 10 ? 'Amazing!' : n >= 7 ? 'So close! Aim for the front pin.' : 'Try rolling straight at the front pin!'}`); }
           }
         }
       }
-      // snowy lane on a Tabantha mountaintop
-      ctx.fillStyle = '#9ec9e8'; ctx.fillRect(0, 0, W, H);
-      ctx.fillStyle = '#f4f8fc'; ctx.beginPath(); ctx.moveTo(L - 30, H); ctx.lineTo(L, 0); ctx.lineTo(R, 0); ctx.lineTo(R + 30, H); ctx.fill();
-      ctx.strokeStyle = '#b8cfe0'; ctx.lineWidth = 2; ctx.stroke();
-      ctx.strokeStyle = 'rgba(160,190,215,.5)'; for (let i = 1; i < 6; i++) { const x = L + (R - L) * i / 6; ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x + (x - W / 2) * 0.08, H); ctx.stroke(); }
-      ctx.fillStyle = '#ffffff'; for (let i = 0; i < 20; i++) { ctx.globalAlpha = 0.6; ctx.beginPath(); ctx.arc((i * 73) % W, ((i * 41) + performance.now() / 30) % H, 1.6, 0, Math.PI * 2); ctx.fill(); } ctx.globalAlpha = 1;
-      for (const p of pins) {
-        ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.down ? Math.min(Math.PI / 2, p.a) * Math.sign(p.vx || 1) : 0); ctx.globalAlpha = p.down ? 0.7 : 1;
-        ctx.beginPath(); ctx.ellipse(0, 6, 8, 10, 0, 0, Math.PI * 2); ctx.ellipse(0, -8, 5, 6, 0, 0, Math.PI * 2); ctx.fillStyle = '#ffffff'; ctx.fill(); ctx.lineWidth = 1.6; ctx.strokeStyle = '#1d1a2b'; ctx.stroke();
-        ctx.fillStyle = '#c63b4f'; ctx.fillRect(-6, -3, 12, 3); ctx.restore();
-      }
-      if (ball) { const rg = ctx.createRadialGradient(ball.x - 5, ball.y - 5, 2, ball.x, ball.y, ball.r); rg.addColorStop(0, '#ffffff'); rg.addColorStop(1, '#c8dcec'); ctx.beginPath(); ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI * 2); ctx.fillStyle = rg; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = '#1d1a2b'; ctx.stroke(); }
+      // Hebra sky, snowy peaks and pines
+      const sky = ctx.createLinearGradient(0, 0, 0, HZ + 20); sky.addColorStop(0, '#7fb0e0'); sky.addColorStop(1, '#dcecf8'); ctx.fillStyle = sky; ctx.fillRect(0, 0, W, HZ + 20);
+      ctx.fillStyle = '#c8d8ec'; ctx.beginPath(); ctx.moveTo(0, HZ + 6); [[0.08, 0.5], [0.2, 0.25], [0.32, 0.55], [0.46, 0.2], [0.6, 0.6], [0.74, 0.3], [0.9, 0.55], [1, 0.4]].forEach(([x, y]) => ctx.lineTo(W * x, HZ - HZ * 0.8 * (1 - y))); ctx.lineTo(W, HZ + 6); ctx.fill();
+      ctx.fillStyle = '#ffffff'; ctx.beginPath(); [[0.2, 0.25], [0.46, 0.2], [0.74, 0.3]].forEach(([x, y]) => { const px = W * x, py = HZ - HZ * 0.8 * (1 - y); ctx.moveTo(px, py); ctx.lineTo(px - 14, py + 14); ctx.lineTo(px - 4, py + 10); ctx.lineTo(px + 2, py + 16); ctx.lineTo(px + 14, py + 13); ctx.closePath(); }); ctx.fill();
+      // the slope
+      const a = P(-1.35, 0), b = P(1.35, 0), c = P(1.35, 14), d = P(-1.35, 14);
+      ctx.fillStyle = '#eef5fb'; ctx.fillRect(0, HZ, W, H - HZ);
+      const sg = ctx.createLinearGradient(0, HZ, 0, H); sg.addColorStop(0, '#dfeaf4'); sg.addColorStop(1, '#ffffff'); ctx.fillStyle = sg;
+      ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.lineTo(c.x, c.y); ctx.lineTo(d.x, d.y); ctx.closePath(); ctx.fill();
+      for (let z = 0; z < 14; z += 1.6) for (const side of [-1, 1]) { const q = P(side * 1.25, z); const hh = 30 * q.s; ctx.fillStyle = '#7a5230'; ctx.fillRect(q.x - 2 * q.s, q.y - hh, 4 * q.s, hh); ctx.fillStyle = '#c63b4f'; ctx.fillRect(q.x - 2 * q.s, q.y - hh, 4 * q.s, 5 * q.s); }
+      for (const [side, z] of [[-1, 3], [1, 5], [-1, 9], [1, 11], [-1, 13]]) { const q = P(side * 1.9, z); const hh = 120 * q.s; ctx.fillStyle = '#2f5a3a'; ctx.beginPath(); ctx.moveTo(q.x, q.y - hh); ctx.lineTo(q.x - hh * 0.32, q.y); ctx.lineTo(q.x + hh * 0.32, q.y); ctx.fill(); ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.moveTo(q.x, q.y - hh); ctx.lineTo(q.x - hh * 0.14, q.y - hh * 0.58); ctx.lineTo(q.x + hh * 0.14, q.y - hh * 0.58); ctx.fill(); }
+      ctx.strokeStyle = 'rgba(150,180,210,.5)'; ctx.lineWidth = 1; for (const x of [-0.5, 0, 0.5]) { const n0 = P(x, 0), n1 = P(x, 14); ctx.setLineDash([4, 8]); ctx.beginPath(); ctx.moveTo(n0.x, n0.y); ctx.lineTo(n1.x, n1.y); ctx.stroke(); } ctx.setLineDash([]);
+      // aim line
       if (state === 'aim') {
-        const ax = W / 2 + aim * (R - L) * 0.42, ay = H - 50;
-        ctx.beginPath(); ctx.arc(ax, ay, 16, 0, Math.PI * 2); ctx.fillStyle = '#f4f8fc'; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = '#1d1a2b'; ctx.stroke();
-        ctx.strokeStyle = '#c63b4f'; ctx.lineWidth = 4; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(ax, ay - 24); ctx.lineTo(ax - aim * 10, ay - 70); ctx.stroke();
-        ctx.fillStyle = '#c63b4f'; ctx.beginPath(); ctx.moveTo(ax - aim * 10, ay - 82); ctx.lineTo(ax - aim * 10 - 9, ay - 66); ctx.lineTo(ax - aim * 10 + 9, ay - 66); ctx.fill();
+        ctx.strokeStyle = 'rgba(198,59,79,.85)'; ctx.lineWidth = 3; ctx.setLineDash([8, 7]); ctx.beginPath();
+        for (let z = 0.6; z <= Z0; z += 0.4) { const q = P(aim * 0.55 * (z - 0.5) / 6.8, z); if (z === 0.6) ctx.moveTo(q.x, q.y); else ctx.lineTo(q.x, q.y); } ctx.stroke(); ctx.setLineDash([]);
+        const tip = P(aim * 0.55 * (Z0 - 0.5) / 6.8, Z0 - 0.2); ctx.fillStyle = '#c63b4f'; ctx.beginPath(); ctx.arc(tip.x, tip.y, 5, 0, Math.PI * 2); ctx.fill();
       }
+      // far things first
+      const things = pins.map(p => ({ z: p.z, draw: () => drawPin(p) }));
+      if (ball) things.push({ z: ball.z, draw: () => drawBall(ball) }); else if (state === 'aim') things.push({ z: 0.5, draw: () => drawBall({ x: 0, z: 0.5, r: 0.2, spin: t }) });
+      things.sort((p, q) => q.z - p.z).forEach(o => o.draw());
+      ctx.fillStyle = '#ffffff'; for (const f of flakes) { f.y += f.s * 30 * dt; f.x += Math.sin(t + f.y / 40) * 0.3; if (f.y > H) { f.y = -4; f.x = Math.random() * W; } ctx.globalAlpha = 0.75; ctx.beginPath(); ctx.arc(f.x, f.y, f.s, 0, Math.PI * 2); ctx.fill(); } ctx.globalAlpha = 1;
       hud(ctx, W, [`Roll ${Math.min(frame, 3)}/3`, `Pins ${total}`, `☃️ ${strikes}`]);
     });
   }
@@ -7411,52 +7639,65 @@ Symin`,
   }
 
   /* ======================= GERUDO DESERT: Sand Seal Rally ======================= */
-  // Surf the dunes behind a sand seal and steer through the flag gates. Each gate adds time.
+  // Shield-surf behind Riju's sand seal Patricia. Steer between three lanes and pass through each pair of flags; every gate adds time.
   function sealRally() {
     const el = gameScreen('Sand Seal Rally', '<div class="mg-ctrl"><button class="btn big" id="u">▲</button><button class="btn big" id="d">▼</button></div>', 'nonverbal', 'battle');
-    const { cv, ctx, W, H } = stage(el, 0.75);
+    const { cv, ctx, W, H } = stage(el, 0.8);
     const seal = sprite('sandSeal', ART.sandSeal(), 160, 90);
-    const rowsY = [H * 0.38, H * 0.56, H * 0.74]; let row = 1, py = rowsY[1];
-    let t = 22, gatesHit = 0, missed = 0, speed = 200, spawn = 0.6, scroll = 0, over = false;
+    const HOR = H * 0.34; const rowsY = [H * 0.5, H * 0.66, H * 0.84]; const scaleOf = y => 0.62 + (y - HOR) / (H - HOR) * 0.5;
+    let row = 1, py = rowsY[1];
+    let t = 22, gatesHit = 0, streak = 0, speed = 210, spawn = 0.6, scroll = 0, over = false, clock = 0;
     const gates = [], dust = [];
     const move = d => { if (!over) row = Math.max(0, Math.min(2, row + d)); };
     UI().on('#u', () => move(-1)); UI().on('#d', () => move(1));
-    cv.addEventListener('pointerdown', e => { const r = cv.getBoundingClientRect(); move(e.clientY - r.top < r.height / 2 ? -1 : 1); });
+    cv.addEventListener('pointerdown', e => { const r = cv.getBoundingClientRect(); move(e.clientY - r.top < r.height * 0.62 ? -1 : 1); });
     bindKeys({ ArrowUp: () => move(-1), ArrowDown: () => move(1), w: () => move(-1), s: () => move(1) });
-    const px = W * 0.22;
+    const px = W * 0.24;
+    const flag = (x, y, sc, ok) => {
+      const h = 46 * sc; ctx.strokeStyle = '#5a3a22'; ctx.lineWidth = 3 * sc; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x, y - h); ctx.stroke();
+      ctx.fillStyle = ok ? '#7ee35a' : '#c63b4f'; ctx.beginPath(); ctx.moveTo(x, y - h); ctx.quadraticCurveTo(x + 12 * sc, y - h + 2 * sc + Math.sin(clock * 8 + x) * 2, x + 22 * sc, y - h + 6 * sc); ctx.lineTo(x, y - h + 14 * sc); ctx.closePath(); ctx.fill();
+      ctx.strokeStyle = '#1d1a2b'; ctx.lineWidth = 1; ctx.stroke(); ctx.fillStyle = '#ffd23d'; ctx.beginPath(); ctx.arc(x, y - h, 2.4 * sc, 0, Math.PI * 2); ctx.fill();
+    };
     loop(cv, dt => {
+      clock += dt;
       if (!over) {
         t -= dt; speed += dt * 5; scroll += speed * dt; spawn -= dt;
         if (spawn <= 0) { spawn = Math.max(0.55, 1.0 - gatesHit * 0.015); gates.push({ x: W + 40, r: U.int(0, 2) }); }
         py += (rowsY[row] - py) * Math.min(1, dt * 10);
         for (const g of gates) {
           g.x -= speed * dt;
-          if (!g.done && g.x < px + 10) { g.done = true; if (Math.abs(rowsY[g.r] - py) < 26) { gatesHit++; t += 1.6; U.sfx.coin(); g.ok = true; for (let i = 0; i < 12; i++) dust.push({ x: px + 30, y: py, vx: (Math.random() - 0.3) * 160, vy: (Math.random() - 0.5) * 160, life: 0.5, c: '#ffd23d' }); } else { missed++; U.sfx.wrong(); } }
+          if (!g.done && g.x < px + 14) { g.done = true; if (row === g.r && Math.abs(rowsY[g.r] - py) < 22) { gatesHit++; streak++; t += 1.6; U.sfx.coin(); g.ok = true; FX.floatText(cv, streak >= 3 ? `+1.6s · ${streak} in a row!` : '+1.6s', 'xp'); for (let i = 0; i < 14; i++) dust.push({ x: px + 30, y: py - 10, vx: (Math.random() - 0.3) * 180, vy: (Math.random() - 0.8) * 180, life: 0.6, c: '#ffd23d' }); } else { streak = 0; U.sfx.wrong(); } }
         }
         for (let i = gates.length - 1; i >= 0; i--) if (gates[i].x < -40) gates.splice(i, 1);
-        if (Math.random() < dt * 30) dust.push({ x: px - 50, y: py + 22, vx: -speed * 0.6, vy: -Math.random() * 40, life: 0.5, c: '#e8c88a' });
+        if (Math.random() < dt * 40) dust.push({ x: px - 40, y: py + 4, vx: -speed * (0.5 + Math.random() * 0.4), vy: -Math.random() * 60, life: 0.55, c: '#f0d090' });
         if (t <= 0) {
           over = true; const s = S(); const best = gatesHit > (s.counters.sealBest || 0); State.countMax('sealBest', gatesHit); const prize = gatesHit * 5; s.rupees += prize; State.save();
-          finish('Time\'s up!', `<p>You rode through <b>${gatesHit}</b> gate${gatesHit === 1 ? '' : 's'}${best ? ' — a new best! 🏆' : ''}.</p><p>Prize: <b>${prize} rupees</b></p>`, sealIntro);
+          finish('Time\'s up!', `<p>Patricia pulled you through <b>${gatesHit}</b> gate${gatesHit === 1 ? '' : 's'}${best ? ' — a new best! 🏆' : ''}.</p><p>Prize: <b>${prize} rupees</b></p>`, sealIntro);
         }
       }
-      const sky = ctx.createLinearGradient(0, 0, 0, H); sky.addColorStop(0, '#ffcf7a'); sky.addColorStop(0.35, '#ffe2a8'); sky.addColorStop(0.36, '#e8b862'); sky.addColorStop(1, '#c8903e'); ctx.fillStyle = sky; ctx.fillRect(0, 0, W, H);
-      ctx.fillStyle = '#d9a456'; ctx.beginPath(); ctx.moveTo(0, H * 0.36); for (let x = 0; x <= W; x += 20) ctx.lineTo(x, H * 0.33 + Math.sin((x + scroll * 0.2) / 60) * 8); ctx.lineTo(W, H * 0.4); ctx.lineTo(0, H * 0.4); ctx.fill();
-      ctx.fillStyle = '#b07a3a'; ctx.beginPath(); ctx.arc(W * 0.8, H * 0.22, 16, 0, Math.PI * 2); ctx.globalAlpha = 0.25; ctx.fill(); ctx.globalAlpha = 1;
-      ctx.strokeStyle = 'rgba(120,70,20,.25)'; ctx.lineWidth = 2; for (let i = 0; i < 8; i++) { const x = ((i * 90) - scroll) % (W + 90); const xx = x < -90 ? x + W + 90 : x; ctx.beginPath(); ctx.moveTo(xx, H * 0.5 + (i % 3) * 30); ctx.quadraticCurveTo(xx + 30, H * 0.47 + (i % 3) * 30, xx + 60, H * 0.5 + (i % 3) * 30); ctx.stroke(); }
-      for (const g of gates) {
-        const y = rowsY[g.r];
-        for (const dy of [-30, 30]) { ctx.strokeStyle = '#5a3a22'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(g.x, y + dy + 14); ctx.lineTo(g.x, y + dy - 18); ctx.stroke(); ctx.fillStyle = g.ok ? '#7ee35a' : '#c63b4f'; ctx.beginPath(); ctx.moveTo(g.x, y + dy - 18); ctx.lineTo(g.x + 16, y + dy - 12); ctx.lineTo(g.x, y + dy - 6); ctx.fill(); ctx.strokeStyle = '#1d1a2b'; ctx.lineWidth = 1; ctx.stroke(); }
-      }
-      for (let i = dust.length - 1; i >= 0; i--) { const p = dust[i]; p.life -= dt; if (p.life <= 0) { dust.splice(i, 1); continue; } p.x += p.vx * dt; p.y += p.vy * dt; ctx.globalAlpha = p.life * 1.6; ctx.fillStyle = p.c; ctx.beginPath(); ctx.arc(p.x, p.y, 3, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = 1; }
-      if (ready(seal)) ctx.drawImage(seal, px - 70, py - 46, 140, 79);
+      // Gerudo Desert: hazy sky, the walls of Gerudo Town, rolling dunes
+      const sky = ctx.createLinearGradient(0, 0, 0, HOR); sky.addColorStop(0, '#f6b25a'); sky.addColorStop(1, '#ffe2a8'); ctx.fillStyle = sky; ctx.fillRect(0, 0, W, HOR + 2);
+      ctx.fillStyle = 'rgba(255,250,220,.8)'; ctx.beginPath(); ctx.arc(W * 0.82, HOR * 0.38, 18, 0, Math.PI * 2); ctx.fill();
+      const tx = W * 0.7 - (scroll * 0.03) % (W * 1.8);
+      ctx.fillStyle = '#c99a5a'; ctx.fillRect(tx - 40, HOR - 22, 80, 22); for (let i = 0; i < 5; i++) ctx.fillRect(tx - 40 + i * 18, HOR - 30, 8, 8);
+      ctx.beginPath(); ctx.arc(tx, HOR - 26, 12, Math.PI, 0); ctx.fill(); ctx.fillStyle = '#7a3aa0'; ctx.fillRect(tx - 2, HOR - 50, 2, 14); ctx.fillStyle = '#c63b4f'; ctx.fillRect(tx, HOR - 50, 8, 5);
+      for (const [yy, c, sp, amp] of [[HOR - 4, '#e8b862', 0.15, 6], [HOR + 6, '#ddaa58', 0.3, 8]]) { ctx.fillStyle = c; ctx.beginPath(); ctx.moveTo(0, H); for (let x = 0; x <= W + 20; x += 20) ctx.lineTo(x, yy + Math.sin((x + scroll * sp) / 70) * amp); ctx.lineTo(W, H); ctx.fill(); }
+      const sand = ctx.createLinearGradient(0, HOR, 0, H); sand.addColorStop(0, '#e2b468'); sand.addColorStop(1, '#c8903e'); ctx.fillStyle = sand; ctx.fillRect(0, HOR + 12, W, H - HOR - 12);
+      ctx.strokeStyle = 'rgba(140,90,30,.28)'; ctx.lineWidth = 2; for (let i = 0; i < 12; i++) { const y = HOR + 20 + (i % 6) * ((H - HOR - 20) / 6); const x = ((i * 120 - scroll * scaleOf(y)) % (W + 120) + W + 120) % (W + 120) - 60; ctx.beginPath(); ctx.moveTo(x, y); ctx.quadraticCurveTo(x + 30, y - 6, x + 60, y); ctx.stroke(); }
+      // gates and Patricia drawn back to front
+      const items = gates.map(g => ({ y: rowsY[g.r], draw: () => { const y = rowsY[g.r], sc = scaleOf(y); flag(g.x - 6 * sc, y - 26 * sc, sc * 0.9, g.ok); ctx.strokeStyle = 'rgba(90,58,34,.6)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(g.x - 6 * sc, y - 26 * sc - 36 * sc); ctx.lineTo(g.x + 6 * sc, y + 20 * sc - 40 * sc); ctx.stroke(); } }));
+      items.push({ y: py + 0.5, draw: () => { const sc = scaleOf(py); if (ready(seal)) ctx.drawImage(seal, px - 72 * sc, py - 66 * sc, 144 * sc, 81 * sc); } });
+      gates.forEach(g => items.push({ y: rowsY[g.r] + 1, draw: () => { const y = rowsY[g.r], sc = scaleOf(y); flag(g.x + 6 * sc, y + 20 * sc, sc, g.ok); } }));
+      items.sort((a, b) => a.y - b.y).forEach(o => o.draw());
+      for (let i = dust.length - 1; i >= 0; i--) { const p = dust[i]; p.life -= dt; if (p.life <= 0) { dust.splice(i, 1); continue; } p.x += p.vx * dt; p.y += p.vy * dt; ctx.globalAlpha = p.life * 1.5; ctx.fillStyle = p.c; ctx.beginPath(); ctx.arc(p.x, p.y, 2.6, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = 1; }
+      ctx.fillStyle = 'rgba(255,240,200,.08)'; ctx.fillRect(0, HOR, W, 30);
       hud(ctx, W, [`🚩 ${gatesHit}`, `⏱ ${Math.max(0, Math.ceil(t))}`]);
     });
   }
   function sealIntro() {
     const s = S();
     intro({ title: 'Sand Seal Rally', npc: 'Riju', art: ART.riju(), backLabel: '◀ Gerudo Desert', onBack: toRegion('nonverbal'), theme: 'nonverbal', music: 'nonverbal', play: sealRally,
-      text: 'Thanks to you, Vah Naboris sleeps peacefully. Grab a shield and let my sand seal tow you through the flag gates! Each gate you pass gives you more time.', best: `Best rally: <b>${s.counters.sealBest || 0}</b> gates. Steer with ▲ ▼ or tap the top/bottom half.` });
+      text: 'Thanks to you, Vah Naboris sleeps peacefully. Borrow my sand seal Patricia and surf behind her on your shield! Ride between each pair of flags. Every gate you pass gives you more time.', best: `Best rally: <b>${s.counters.sealBest || 0}</b> gates. Steer with ▲ ▼ or tap the top/bottom of the sand.` });
   }
 
   /* ======================= MASTER CYCLE ZERO ======================= */
@@ -7527,7 +7768,7 @@ Symin`,
   /* ---------------- region panel (shown on each region's saga screen) ---------------- */
   const ACT = {
     maths: { game: 'Yunobo\'s Rock Roll', art: () => ART.yunobo(), people: 'Goron', open: rockIntro },
-    english: { game: 'Zora Fishing', art: () => ART.sidon(), people: 'Zora', open: fishIntro },
+    english: { game: 'Zora\'s Reservoir', art: () => ART.sidon(), people: 'Zora', open: fishIntro },
     verbal: { game: 'Snowball Bowling', art: () => ART.teba(), people: 'Rito', open: bowlIntro },
     nonverbal: { game: 'Sand Seal Rally', art: () => ART.riju(), people: 'Gerudo', open: sealIntro },
   };
@@ -7542,6 +7783,8 @@ Symin`,
   }
   function bindRegionPanel(r) { UI().on('#ra-play', () => ACT[r.id].open()); UI().on('#ra-q', () => World.quests()); }
 
+  // shared helpers for the canvas mini-games in world.js
+  window.MG = { sprite, ready, stage, loop, rr, rupee, hud, bindKeys, finish, gameScreen };
   window.Regions = { regionPanel, bindRegionPanel, cycleIntro, rockIntro, fishIntro, bowlIntro, sealIntro };
 })();
 </script>

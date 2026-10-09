@@ -104,9 +104,9 @@ The hero (named by the player, default "Link") wakes on the Great Plateau and ha
   - Each region also gives a 1,000-rupee bonus, and the full set gives 5,000.
 - **Free a Divine Beast to open up its region.** New mini-games (paid with Adventure Tickets) and local side quests appear on the region screen:
   - **Death Mountain:** Yunobo's Rock Roll. Roll down the mountain dodging lava boulders and grabbing gems.
-  - **Zora's Domain:** Zora Fishing with Prince Sidon. Ignore the nibbles and reel in on the bite. Your catch goes into your Bag for cooking.
-  - **Rito Village:** Snowball Bowling with Teba. Time your aim, and the pins are knocked down with real physics.
-  - **Gerudo Desert:** Sand Seal Rally with Riju. Surf through flag gates to earn more time.
+  - **Zora's Domain:** Zora's Reservoir with Prince Sidon. Catch fish by hand the way Link does: grab each one as it splashes to the surface, and snatch crabs scuttling along the shore. Your catch goes into your Bag for cooking.
+  - **Rito Village:** Snowball Bowling with Teba. Seen from behind the bowler, you push a growing snowball into ten wooden pins, head pin first, and they're knocked down with real physics.
+  - **Gerudo Desert:** Sand Seal Rally with Riju. Shield-surf behind her sand seal Patricia through pairs of flags to earn more time.
   - Each region also brings quests from Yunobo and Bludo, Sidon and King Dorephan, Teba and Elder Kaneli, and Riju and Buliara. Rewards include house trophies and rare ingredients.
 - **Master Cycle Zero:** 3-star every shrine in Hyrule to win the final Divine Beast. The **Master Cycle Run** appears on the map: jump boulders and Bokoblins and collect rupees. Rides are free, and rupee prizes cover the first 3 rides each day.
 - **22 side quests** from Hudson, Sidon, Yunobo, Teba, Riju, Kass, Purah, Beedle and others. Rewards include armour sets, companions, saddles, colour themes and decor.
