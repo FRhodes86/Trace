@@ -7,6 +7,13 @@
 
   /* Synonym & antonym banks. Each row is a meaning cluster, so distractors never come from the same row. */
   const SYN = [
+    [1, 'end', 'finish', 'stop'], [1, 'pick', 'choose'], [1, 'hurry', 'rush'], [1, 'damp', 'moist'], [1, 'smell', 'odour'],
+    [1, 'speak', 'talk'], [1, 'build', 'construct'], [1, 'thin', 'slim'], [1, 'cry', 'weep', 'sad'],
+    [2, 'gather', 'collect'], [2, 'vanish', 'disappear'], [2, 'rotate', 'spin'], [2, 'error', 'mistake'], [2, 'assist', 'help'],
+    [2, 'cease', 'halt', 'stop'], [2, 'injure', 'hurt'], [2, 'fortunate', 'lucky'], [2, 'precious', 'valuable'], [2, 'puzzle', 'riddle'],
+    [3, 'abandon', 'desert'], [3, 'adequate', 'sufficient'], [3, 'deceive', 'trick'], [3, 'eminent', 'distinguished'], [3, 'fatigue', 'exhaustion', 'weak'],
+    [3, 'gregarious', 'sociable'], [3, 'hazardous', 'perilous', 'fear'], [3, 'immense', 'vast', 'big'], [3, 'lament', 'mourn', 'sad'],
+    [3, 'mimic', 'imitate'], [3, 'remedy', 'cure'], [3, 'vigilant', 'watchful'], [3, 'wrath', 'anger', 'anger'],
     [1, 'big', 'large', 'big'], [1, 'small', 'tiny', 'small'], [1, 'happy', 'glad', 'happy'], [1, 'begin', 'start'], [1, 'shut', 'close'], [1, 'quick', 'fast', 'fast'],
     [1, 'shout', 'yell', 'loud'], [1, 'mend', 'repair'], [1, 'chilly', 'cold', 'cold'], [1, 'hop', 'jump'], [1, 'gift', 'present', 'give'], [1, 'stone', 'rock'],
     [1, 'sad', 'unhappy', 'sad'], [1, 'scared', 'afraid', 'fear'], [1, 'wealthy', 'rich'], [1, 'silent', 'quiet', 'calm'],
@@ -18,6 +25,12 @@
     [3, 'vacant', 'empty', 'empty'], [3, 'meagre', 'scanty', 'small'], [3, 'obstinate', 'stubborn', 'stub'], [3, 'pinnacle', 'peak'], [3, 'pledge', 'promise', 'give'], [3, 'thrifty', 'economical'],
   ];
   const ANT = [
+    [1, 'open', 'closed', 'shut'], [1, 'happy', 'sad'], [1, 'fast', 'slow'], [1, 'clean', 'dirty'], [1, 'old', 'new', 'age'],
+    [1, 'inside', 'outside', 'in'], [1, 'first', 'last'], [1, 'give', 'take', 'give'],
+    [2, 'question', 'answer'], [2, 'include', 'exclude', 'in'], [2, 'sharp', 'blunt'], [2, 'freeze', 'melt'], [2, 'cheap', 'expensive', 'money'],
+    [2, 'strong', 'weak'], [2, 'tame', 'wild'], [2, 'borrow', 'lend', 'give'],
+    [3, 'optimistic', 'pessimistic'], [3, 'confident', 'insecure'], [3, 'majority', 'minority'], [3, 'genuine', 'fake'],
+    [3, 'conceited', 'modest', 'manner'], [3, 'ally', 'foe', 'manner'], [3, 'compulsory', 'optional'], [3, 'artificial', 'natural'],
     [1, 'hot', 'cold'], [1, 'up', 'down', 'up'], [1, 'early', 'late'], [1, 'heavy', 'light'], [1, 'empty', 'full', 'full'], [1, 'win', 'lose', 'win'],
     [1, 'push', 'pull'], [1, 'remember', 'forget'], [1, 'always', 'never'], [1, 'friend', 'enemy', 'manner'], [1, 'loud', 'quiet', 'loud'], [1, 'buy', 'sell', 'money'],
     [2, 'ancient', 'modern'], [2, 'arrive', 'depart'], [2, 'brave', 'cowardly'], [2, 'generous', 'mean', 'money'], [2, 'shallow', 'deep'], [2, 'victory', 'defeat', 'win'],
@@ -99,7 +112,11 @@
   });
 
   /* Letter codes */
-  const CODE_WORDS = ['LINK', 'SWORD', 'ZELDA', 'BOW', 'SHIELD', 'HORSE', 'MAP', 'FIRE', 'RUNE', 'KOROK', 'ORB', 'GLIDE', 'CLIMB', 'STONE', 'TOWER', 'FISH', 'APPLE', 'BOMB', 'HERO', 'MAGIC', 'QUEST', 'TORCH', 'GOAT', 'LAKE', 'BIRD'];
+  const CODE_WORDS = ['LINK', 'SWORD', 'ZELDA', 'BOW', 'SHIELD', 'HORSE', 'MAP', 'FIRE', 'RUNE', 'KOROK', 'ORB', 'GLIDE', 'CLIMB', 'STONE', 'TOWER', 'FISH', 'APPLE', 'BOMB', 'HERO', 'MAGIC', 'QUEST', 'TORCH', 'GOAT', 'LAKE', 'BIRD',
+    'SHRINE', 'GORON', 'ZORA', 'RITO', 'CASTLE', 'CHEST', 'ARROW', 'SLATE', 'TRIBE', 'HORN', 'PLUM', 'FROG', 'DUCK', 'WIND', 'RAIN', 'SNOW', 'GOLD', 'BLUE', 'KING', 'STAR', 'MOON', 'LAMP', 'DRUM', 'KITE', 'SHIP'];
+  // anagram pairs for letter-to-number codes
+  const DIGIT_PAIRS = [['TAME', 'MEAT'], ['STOP', 'POTS'], ['LEMON', 'MELON'], ['HEART', 'EARTH'], ['LISTEN', 'SILENT'], ['NOTE', 'TONE'], ['PALE', 'LEAP'], ['TEAM', 'MATE'],
+    ['RATS', 'STAR'], ['DIAL', 'LAID'], ['SWORD', 'WORDS'], ['BREAD', 'BEARD'], ['HORSE', 'SHORE'], ['LIVE', 'EVIL'], ['SNAIL', 'NAILS'], ['NIGHT', 'THING'], ['ANGEL', 'ANGLE'], ['FLOW', 'WOLF'], ['MILE', 'LIME'], ['SPEAR', 'PEARS'], ['DEAR', 'READ'], ['TIME', 'EMIT'], ['STEAL', 'LEAST'], ['ACTS', 'CATS']];
   const shiftL = (ch, k) => ALPHA[(ALPHA.indexOf(ch) + k + 26 * 3) % 26];
   topics.push({
     id: 'v-codes', name: 'Letter Codes', shrine: 'Kam Urog Shrine', icon: '🔐',
@@ -107,6 +124,16 @@
       <p>If <b>CAT</b> is written as <b>DBU</b>, each letter has moved <b>+1</b> (C→D, A→B, T→U). So <b>DOG</b> would be <b>EPH</b>.</p>
       <p>Use the alphabet strip! Count how far each letter moves — sometimes every letter moves differently (+1, +2, +3…), and sometimes the code goes backwards. Mirror codes swap A↔Z, B↔Y, C↔X…</p>`,
     gen(lv) {
+      if (lv >= 2 && chance(0.3)) {
+        // GL "letters as numbers" codes: digits stand for letters in the first word
+        const [a, b] = pick(DIGIT_PAIRS); const [w, x] = chance(0.5) ? [a, b] : [b, a];
+        const digit = ch => String(w.indexOf(ch) + 1);
+        const code = x.split('').map(digit).join('');
+        const scramble = s => { let t; let g = 0; do { t = shuffle(s.split('')).join(''); } while ((t === s || t === code) && g++ < 20); return t; };
+        if (chance(0.5)) return mc(`If <b>${w}</b> is written as <b>${w.split('').map((_, i) => i + 1).join('')}</b>, how is <b>${x}</b> written?`, code, [scramble(code), scramble(code), code.split('').reverse().join(''), scramble(code)], `Each letter keeps its number: ${w.split('').map((c, i) => `${c}=${i + 1}`).join(', ')}. So ${x} = <b>${code}</b>.`, { n: 5 });
+        const others = [scramble(x), scramble(x), x.split('').reverse().join(''), scramble(x)];
+        return mc(`If <b>${w}</b> is written as <b>${w.split('').map((_, i) => i + 1).join('')}</b>, what does <b>${code}</b> spell?`, x, others, `Swap each number back to its letter: ${code.split('').map(d => `${d}=${w[+d - 1]}`).join(', ')}. That spells <b>${x}</b>.`, { n: 5 });
+      }
       const [w1, w2] = sample(CODE_WORDS, 2);
       let rule, desc;
       if (lv === 1) { const k = pick([1, 2, -1]); rule = (w) => w.split('').map(c => shiftL(c, k)).join(''); desc = `each letter moves ${k > 0 ? '+' : ''}${k}`; }
@@ -247,6 +274,34 @@
       <p>Draw a quick line and place people on it as you read each clue: "Link is taller than Zelda" → Zelda ... Link. Add each new clue until the order is clear.</p>
       <p>Only use what the clues <b>definitely</b> tell you — don't guess!</p>`,
     gen(lv) {
+      const t = pick(lv === 1 ? ['order', 'order', 'days', 'must'] : ['order', 'days', 'must', 'line']);
+      const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+      const day = i => DAYS[((i % 7) + 7) % 7];
+      if (t === 'days') {
+        const d = int(0, 6);
+        if (lv === 1) { const n = int(2, 6); return mc(`Today is <b>${day(d)}</b>. What day will it be in <b>${n} days</b>?`, day(d + n), [day(d + n + 1), day(d + n - 1), day(d - n), day(d + n + 2)], `Count on ${n} days from ${day(d)}: ${Array.from({ length: n }, (_, i) => day(d + i + 1)).join(', ')}.`); }
+        const v = pick([['the day before yesterday was', 'tomorrow', 3], ['tomorrow is', 'yesterday', -2], ['the day after tomorrow is', 'yesterday', -3], ['yesterday was', 'the day after tomorrow', 3]]);
+        if (lv === 3 && chance(0.5)) { const n = int(10, 30); return mc(`Today is <b>${day(d)}</b>. What day will it be in <b>${n} days</b>?`, day(d + n), [day(d + n + 1), day(d + n - 1), day(d + n % 7 + 2), day(d + 3)], `Every 7 days it is ${day(d)} again. ${n} = ${Math.floor(n / 7)} × 7 + ${n % 7}, so count on ${n % 7} day${n % 7 === 1 ? '' : 's'} from ${day(d)}: <b>${day(d + n)}</b>.`); }
+        return mc(`If ${v[0]} <b>${day(d)}</b>, what day is ${v[1]}?`, day(d + v[2]), [day(d + v[2] + 1), day(d + v[2] - 1), day(d), day(d - v[2])], `Work out today first, then count. The answer is <b>${day(d + v[2])}</b>.`);
+      }
+      if (t === 'must') {
+        const G = shuffle([['Gorons', 'a Goron', 'eats rocks', 'eat rocks', 'does not eat rocks', 'Yunobo'], ['Koroks', 'a Korok', 'loves seeds', 'love seeds', 'does not love seeds', 'Pip'], ['Rito', 'a Rito', 'can fly', 'can fly', 'cannot fly', 'Teba'],
+          ['Zoras', 'a Zora', 'can swim', 'can swim', 'cannot swim', 'Sidon'], ['Sheikah', 'a Sheikah', 'is clever', 'are clever', 'is not clever', 'Paya'], ['Gerudo', 'a Gerudo', 'is brave', 'are brave', 'is not brave', 'Riju']]);
+        const [g, other] = G; const [pl, one, sing, plur, negS, name] = g;
+        if (lv >= 2 && chance(0.4)) {
+          // "No ..." version
+          const [trait, negTrait] = pl === 'Rito' ? ['live underwater', 'does not live underwater'] : ['can fly', 'cannot fly'];
+          const pos = trait === 'can fly' ? 'can fly' : 'lives underwater';
+          return mc(`No ${pl} ${trait}. ${name} is ${one}.<br>Which statement <b>must</b> be true?`, `${name} ${negTrait}.`, [`${name} ${pos}.`, `Some ${pl} ${trait}.`, `${name} ${other[2]}.`, `Nobody ${pos === 'can fly' ? 'can fly' : 'lives underwater'}.`], `None of the ${pl} ${trait}, and ${name} is one of them, so <b>${name} ${negTrait}</b>.`);
+        }
+        return mc(`All ${pl} ${plur}. ${name} is ${one}.<br>Which statement <b>must</b> be true?`, `${name} ${sing}.`, [`${name} ${negS}.`, `Anyone who ${sing} is ${one}.`, `${name} ${other[2]}.`, `All ${pl} are called ${name}.`], `All ${pl} ${plur}, and ${name} is one of them, so <b>${name} ${sing}</b>. The other statements might or might not be true. We aren't told.`);
+      }
+      if (t === 'line') {
+        const name = pick(NAMES);
+        if (chance(0.5)) { const f = int(3, 9), b = int(3, 9); return mc(`${name} is <b>${f}th from the front</b> of a queue and <b>${b}th from the back</b>. How many people are in the queue?`, f + b - 1, [f + b, f + b + 1, f + b - 2, Math.abs(f - b) + 1], `${f} + ${b} counts ${name} twice, so take 1 away: ${f} + ${b} − 1 = <b>${f + b - 1}</b>.`); }
+        const n = int(6, 12), p = int(2, n - 1);
+        return mc(`${n} Koroks stand in a line. ${name} is <b>${p}${p === 2 ? 'nd' : p === 3 ? 'rd' : 'th'} from the left</b>. How many Koroks are to ${name}'s right?`, n - p, [n - p + 1, n - p - 1, p, n - 1], `There are ${p - 1} on the left, ${name}, and ${n} − ${p} = <b>${n - p}</b> on the right.`);
+      }
       const k = lv === 1 ? 3 : lv === 2 ? 4 : 5;
       const people = sample(NAMES, k); // people[0] is the most
       const attr = pick([['taller', 'tallest', 'shortest'], ['older', 'oldest', 'youngest'], ['faster', 'fastest', 'slowest'], ['more rupees', 'most rupees', 'fewest rupees']]);

@@ -578,6 +578,115 @@
     },
   });
 
+  /* ---------------- Extra question types mixed into each topic ---------------- */
+  const ONES = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'];
+  const TENS = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
+  const words99 = n => (n < 20 ? ONES[n] : TENS[Math.floor(n / 10)] + (n % 10 ? '-' + ONES[n % 10] : ''));
+  const words999 = n => { const h = Math.floor(n / 100), r = n % 100; return [h ? ONES[h] + ' hundred' : '', r ? (h ? 'and ' : '') + words99(r) : ''].filter(Boolean).join(' '); };
+  const inWords = n => { const th = Math.floor(n / 1000), r = n % 1000; return [th ? words999(th) + ' thousand' : '', r ? (th && r < 100 ? 'and ' : '') + words999(r) : ''].filter(Boolean).join(' ') || 'zero'; };
+  const dp = (x, k = 3) => +x.toFixed(k);
+  const EXTRA = {
+    'm-place'(lv) {
+      const t = pick(lv === 1 ? ['words', 'neg'] : lv === 2 ? ['words', 'neg', 'decval'] : ['decval', 'neg']);
+      if (t === 'words') {
+        const n = lv === 1 ? int(101, 9999) : int(10001, 99999); const w = inWords(n);
+        const s = String(n); const swap = +(s.slice(0, -2) + s.slice(-1) + s.slice(-2, -1));
+        return mc(`Which number is <b>${w}</b>?`, n, [swap, n + 100 * (n % 1000 < 900 ? 1 : -1), +String(n).replace(/0/g, '') || n + 1, n * 10], `Read it in parts: ${w} = ${fmt(n)}.`);
+      }
+      if (t === 'neg') {
+        const set = shuffle([-int(1, 15), -int(16, 30), int(0, 9), -int(1, 9) * 2]); if (new Set(set).size < 4) return null;
+        const small = Math.min(...set);
+        return mc(`Which number is the <b>smallest</b>?`, small, set.filter(x => x !== small), `On a number line, numbers further left are smaller. ${small} is the furthest left.`);
+      }
+      const n = int(1001, 99999) / 1000; const s = n.toFixed(3); const k = int(1, 3); const d = +s.split('.')[1][k - 1]; if (!d) return null;
+      const val = dp(d / 10 ** k);
+      return mc(`What is the value of the digit <b>${d}</b> in <b>${s}</b>?`, val, [dp(d / 10 ** (k + 1), 4), dp(d / 10 ** (k - 1)), d], `It is in the ${['tenths', 'hundredths', 'thousandths'][k - 1]} column, so it is worth ${val}.`);
+    },
+    'm-addsub'(lv) {
+      const t = pick(lv === 1 ? ['money', 'inverse'] : ['money', 'estimate', 'inverse']);
+      if (t === 'money') { const a = int(45, lv === 1 ? 299 : 899), b = int(45, lv === 1 ? 299 : 899); return mc(`A bow costs <b>${money(a)}</b> and a quiver costs <b>${money(b)}</b>. How much do they cost altogether?`, money(a + b), [money(a + b + 10), money(a + b - 10), money(Math.abs(a - b) || 5), money(a + b + 100)], `${money(a)} + ${money(b)} = ${money(a + b)}.`); }
+      if (t === 'inverse') { const a = int(12, lv === 1 ? 60 : 600), b = int(12, lv === 1 ? 60 : 600); return mc(`If <b>${a} + ${b} = ${a + b}</b>, what is <b>${a + b} − ${b}</b>?`, a, [b, a + 1, a + b + b, a - 10].filter(x => x > 0), `Subtraction undoes addition, so ${a + b} − ${b} = ${a}.`); }
+      const a = int(11, 89) * 10 + int(1, 9) * (chance(0.5) ? 1 : -1), b = int(11, 89) * 10 + int(1, 9) * (chance(0.5) ? 1 : -1);
+      const est = Math.round(a / 100) * 100 + Math.round(b / 100) * 100;
+      return mc(`Which is the <b>best estimate</b> of <b>${a} + ${b}</b>?`, est, [est + 100, est - 100, est + 200, est + 1000].filter(x => x > 0), `Round each to the nearest hundred: ${Math.round(a / 100) * 100} + ${Math.round(b / 100) * 100} = ${est}.`);
+    },
+    'm-mult'(lv) {
+      if (lv === 1) {
+        const n = int(11, 49) * (chance(0.5) ? 2 : 1);
+        if (chance(0.5)) return mc(`What is <b>double ${n}</b>?`, n * 2, [n + 2, n * 2 + 10, n * 2 - 10, n * 2 + 1], `Double means × 2: ${n} + ${n} = ${n * 2}.`);
+        const e = n % 2 ? n + 1 : n; return mc(`What is <b>half of ${e}</b>?`, e / 2, [e / 2 + 1, e - 2, e / 2 + 10, e * 2], `Half means ÷ 2: ${e} ÷ 2 = ${e / 2}.`);
+      }
+      if (lv === 3 && chance(0.4)) { const a = pick([4, 6, 8, 9, 10, 12]), b = pick([3, 5, 6, 8, 9, 15]); if (a === b) return null; const l = U.lcm(a, b); return mc(`What is the <b>smallest</b> number that is a multiple of both <b>${a}</b> and <b>${b}</b>?`, l, [a * b === l ? l + a : a * b, l + a, l - b > 0 ? l - b : l + b, Math.max(a, b)], `List the multiples of ${Math.max(a, b)} and find the first one that ${Math.min(a, b)} also goes into: <b>${l}</b>.`); }
+      const a = int(3, 9), b = int(3, 9), c = int(2, Math.min(6, a * b - 1));
+      const f = pick([[`${a} + ${b} × ${c}`, a + b * c, (a + b) * c], [`(${a} + ${b}) × ${c}`, (a + b) * c, a + b * c], [`${a * c} ÷ ${c} + ${b}`, a + b, a * c / (c + b)], [`${a} × ${b} − ${c}`, a * b - c, a * (b - c)]]);
+      return mc(`What is <b>${f[0]}</b>?`, f[1], [f[2], f[1] + 1, f[1] + c, f[1] - 1].filter(x => Number.isInteger(x) && x >= 0), `Remember BIDMAS: Brackets first, then × and ÷, then + and −. ${f[0]} = <b>${f[1]}</b>.`);
+    },
+    'm-div'(lv) {
+      if (lv === 1) { const k = int(3, 6), n = k * int(3, 9) + int(1, k - 1); return mc(`<b>${n}</b> sweets are shared equally between <b>${k}</b> children. How many sweets are <b>left over</b>?`, n % k, [Math.floor(n / k), n % k + 1, k, 0].filter(x => x !== n % k || true), `${k} × ${Math.floor(n / k)} = ${k * Math.floor(n / k)}. ${n} − ${k * Math.floor(n / k)} = ${n % k} left over.`); }
+      const d = pick([3, 4, 5, 6, 9]); const rule = { 3: 'its digits add up to a multiple of 3', 4: 'its last two digits make a multiple of 4', 5: 'it ends in 0 or 5', 6: 'it is even and its digits add up to a multiple of 3', 9: 'its digits add up to a multiple of 9' }[d];
+      const yes = d * int(12, lv === 2 ? 99 : 999); const nos = [yes + 1, yes + 2, yes - 1, yes + d + 1, yes + 2 * d - 1].filter(x => x % d);
+      return mc(`Which number can be divided <b>exactly by ${d}</b>?`, yes, nos, `A number divides exactly by ${d} if ${rule}. ${yes} ÷ ${d} = ${yes / d}.`);
+    },
+    'm-frac'(lv) {
+      if (lv === 1) {
+        const n = pick([4, 5, 6, 8, 10]), r = int(1, n - 1);
+        const row = shuffle(Array.from({ length: n }, (_, i) => (i < r ? '🍎' : '🍏'))).join(' ');
+        return mc(`What fraction of these apples are <b>red</b>?`, fracTxt(r, n), [fracTxt(n - r, n), fracTxt(r, n - r), fracTxt(r, n + 1), `${n}/${r}`], `${r} out of ${n} apples are red, so ${r}/${n}.`, { visual: `<div class="emoji-row">${row}</div>` });
+      }
+      const ds = U.sample([2, 3, 4, 5, 6, 8, 10, 12], 4); const big = chance(0.5);
+      const target = big ? Math.min(...ds) : Math.max(...ds);
+      return mc(`Which fraction is the <b>${big ? 'largest' : 'smallest'}</b>?`, fracTxt(1, target), ds.filter(d => d !== target).map(d => fracTxt(1, d)), `With unit fractions, the <b>bigger</b> the bottom number, the <b>smaller</b> each piece. So 1/${target} is the ${big ? 'largest' : 'smallest'}.`);
+    },
+    'm-dec'(lv) {
+      if (lv === 1) { const p = int(2, 9) * 10 + int(0, 1) * 5; const coin = pick([10, 20, 50]); const tot = coin * int(3, 12); return mc(`How many <b>${coin}p</b> coins make <b>${money(tot)}</b>?`, tot / coin, [tot / coin + 1, tot / coin - 1, tot / 10, coin].filter(x => x !== p), `${money(tot)} = ${tot}p. ${tot} ÷ ${coin} = ${tot / coin}.`); }
+      const x = int(11, 999) / 100; const op = pick([['× 10', 10], ['× 100', 100], ['÷ 10', 0.1], ['÷ 100', 0.01]]);
+      const ans = dp(x * op[1], 4);
+      if (lv === 3 && chance(0.4)) { const f = pick([0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]); const n = int(2, 20) * 10; return mc(`What is <b>${f}</b> of <b>${n}</b>?`, dp(f * n), [dp(f * n * 10), dp(n / f / 10), dp(n - f * n), dp(f * n + 1)], `${f} = ${Math.round(f * 10)}/10. One tenth of ${n} is ${n / 10}, so ${Math.round(f * 10)} tenths is ${dp(f * n)}.`); }
+      return mc(`What is <b>${x} ${op[0]}</b>?`, ans, [dp(ans * 10, 4), dp(ans / 10, 5), dp(x + (op[1] >= 10 ? op[1] : 0), 4), dp(x * (op[1] >= 10 ? 1 / op[1] : 1 / op[1]), 4)], `${op[0].startsWith('×') ? 'Multiplying' : 'Dividing'} by ${op[0].slice(2)} moves the digits ${op[0].slice(2).length - 1} place${op[0].slice(2) === '10' ? '' : 's'} to the ${op[0].startsWith('×') ? 'left' : 'right'}: <b>${ans}</b>.`);
+    },
+    'm-meas'(lv) {
+      const MONTHS = [['January', 31], ['February', 28], ['March', 31], ['April', 30], ['May', 31], ['June', 30], ['July', 31], ['August', 31], ['September', 30], ['October', 31], ['November', 30], ['December', 31]];
+      const t = pick(lv === 1 ? ['weeks', 'month', 'later'] : ['weeks', 'later', 'jug', 'month']);
+      if (t === 'weeks') { const w = int(2, lv === 1 ? 5 : 12); return mc(`How many days are there in <b>${w} weeks</b>?`, w * 7, [w * 7 + 1, w * 5, w * 7 - 7, w + 7], `There are 7 days in a week: ${w} × 7 = ${w * 7}.`); }
+      if (t === 'month') { const m = pick(MONTHS.filter(x => x[0] !== 'February')); return mc(`How many days are there in <b>${m[0]}</b>?`, m[1], [m[1] === 31 ? 30 : 31, 28, 29], `"30 days has September, April, June and November. All the rest have 31, except February…" ${m[0]} has ${m[1]} days.`); }
+      if (t === 'later') { const i = int(0, 11), n = int(2, lv === 1 ? 5 : 11); const ans = MONTHS[(i + n) % 12][0]; return mc(`Which month comes <b>${n} months after ${MONTHS[i][0]}</b>?`, ans, [MONTHS[(i + n + 1) % 12][0], MONTHS[(i + n + 11) % 12][0], MONTHS[(i + 12 - n) % 12][0]], `Count on ${n} months from ${MONTHS[i][0]}: ${ans}.`); }
+      const L = int(1, 4), g = pick([100, 200, 250, 500]); return mc(`A jug holds <b>${L} litre${L > 1 ? 's' : ''}</b>. How many <b>${g} ml</b> glasses can it fill?`, (L * 1000) / g, [(L * 1000) / g + 1, L * g / 100, (L * 100) / g, (L * 1000) / g * 2].filter(x => Number.isInteger(x)), `${L} litre${L > 1 ? 's' : ''} = ${L * 1000} ml. ${L * 1000} ÷ ${g} = ${(L * 1000) / g}.`);
+    },
+    'm-shape'(lv) {
+      const t = pick(lv === 1 ? ['angletype', 'sym'] : lv === 2 ? ['coord', 'sym', 'quad', 'angletype'] : ['coord', 'translate', 'quad']);
+      if (t === 'angletype') { const a = pick([int(10, 85), 90, int(95, 175), int(185, 350)]); const ty = a < 90 ? 'acute' : a === 90 ? 'a right angle' : a < 180 ? 'obtuse' : 'reflex'; return mc(`An angle of <b>${a}°</b> is…`, ty, ['acute', 'a right angle', 'obtuse', 'reflex'].filter(x => x !== ty), `Acute < 90°, right angle = 90°, obtuse is between 90° and 180°, reflex is more than 180°. So ${a}° is ${ty}.`); }
+      if (t === 'sym') { const s = pick([['a square', 4], ['a rectangle', 2], ['an equilateral triangle', 3], ['a regular pentagon', 5], ['a regular hexagon', 6], ['a circle', 'infinitely many'], ['an isosceles triangle', 1]]); return mc(`How many <b>lines of symmetry</b> does ${s[1] === 'infinitely many' ? 'a circle' : s[0]} have?`, s[1], ['infinitely many', 1, 2, 3, 4, 5, 6, 0].filter(x => x !== s[1]).slice(0, 5), `${U.cap(s[0])} has ${s[1]} line${s[1] === 1 ? '' : 's'} of symmetry. Try folding it in your head!`); }
+      if (t === 'quad') { const q = pick([['four equal sides and four right angles', 'square'], ['four right angles but only opposite sides equal', 'rectangle'], ['four equal sides but no right angles', 'rhombus'], ['exactly one pair of parallel sides', 'trapezium'], ['two pairs of parallel sides but no right angles and sides not all equal', 'parallelogram'], ['two pairs of equal adjacent sides and one line of symmetry', 'kite']]); return mc(`Which quadrilateral has <b>${q[0]}</b>?`, q[1], ['square', 'rectangle', 'rhombus', 'trapezium', 'parallelogram', 'kite'].filter(x => x !== q[1]), `A ${q[1]} has ${q[0]}.`); }
+      const x = int(1, 7), y = int(1, 6);
+      const grid = (px, py, lbl) => { let g = ''; for (let i = 0; i <= 8; i++) g += `<line x1="${20 + i * 22}" y1="10" x2="${20 + i * 22}" y2="${10 + 7 * 22}" class="grid"/>`; for (let j = 0; j <= 7; j++) g += `<line x1="20" y1="${10 + j * 22}" x2="${20 + 8 * 22}" y2="${10 + j * 22}" class="grid"/>`; for (let i = 0; i <= 8; i++) g += `<text class="lbl sm" x="${20 + i * 22}" y="${10 + 7 * 22 + 13}" text-anchor="middle">${i}</text>`; for (let j = 1; j <= 7; j++) g += `<text class="lbl sm" x="12" y="${10 + (7 - j) * 22 + 4}" text-anchor="middle">${j}</text>`; return g + `<circle cx="${20 + px * 22}" cy="${10 + (7 - py) * 22}" r="5" class="bar"/><text class="lbl" x="${20 + px * 22 + 7}" y="${10 + (7 - py) * 22 - 6}">${lbl}</text>`; };
+      if (t === 'coord') return mc(`What are the <b>coordinates</b> of point A?`, `(${x}, ${y})`, [`(${y}, ${x})`, `(${x + 1}, ${y})`, `(${x}, ${y - 1})`, `(${x - 1}, ${y + 1})`], `Go <b>along</b> the x-axis first (${x}), then <b>up</b> the y-axis (${y}): (${x}, ${y}). "Along the corridor, then up the stairs!"`, { visual: U.svg(210, 185, grid(x, y, 'A')) });
+      const dx = int(1, 4) * (chance(0.5) ? 1 : -1), dy = int(1, 3) * (chance(0.5) ? 1 : -1);
+      const nx = x + dx, ny = y + dy; if (nx < 0 || ny < 0) return null;
+      return mc(`Point <b>(${x}, ${y})</b> moves <b>${Math.abs(dx)} ${dx > 0 ? 'right' : 'left'}</b> and <b>${Math.abs(dy)} ${dy > 0 ? 'up' : 'down'}</b>. Where does it end up?`, `(${nx}, ${ny})`, [`(${x + dy}, ${y + dx})`, `(${x - dx}, ${y + dy})`, `(${nx}, ${y - dy})`, `(${ny}, ${nx})`], `Left/right changes the first number: ${x} ${dx > 0 ? '+' : '−'} ${Math.abs(dx)} = ${nx}. Up/down changes the second: ${y} ${dy > 0 ? '+' : '−'} ${Math.abs(dy)} = ${ny}.`);
+    },
+    'm-alg'(lv) {
+      if (lv === 1) { const s = int(2, 10), k = int(2, 9); const seq = [0, 1, 2, 3, 4].map(i => s + i * k); const gap = int(1, 3); const ans = seq[gap]; return mc(`What is the missing number? <b>${seq.map((v, i) => (i === gap ? '?' : v)).join(', ')}</b>`, ans, [ans + 1, ans - 1, ans + k, seq[gap - 1] + 1], `The numbers go up in ${k}s, so the missing number is ${seq[gap - 1]} + ${k} = ${ans}.`); }
+      if (lv === 2) { const m = int(2, 5), y = m * int(2, 9), c = int(1, 9); return mc(`If <b>y ÷ ${m} + ${c} = ${y / m + c}</b>, what is y?`, y, [y / m, y + c, (y / m + c) * m, y - m].filter(v => v !== y || true), `Take away ${c}: y ÷ ${m} = ${y / m}. Multiply by ${m}: y = ${y}.`); }
+      const a = int(5, 20), b = int(1, a - 1);
+      return mc(`Two numbers add up to <b>${a + b}</b>. Their difference is <b>${a - b}</b>. What is the <b>larger</b> number?`, a, [b, a + b, a - b, a + 1], `Add the total and the difference, then halve: (${a + b} + ${a - b}) ÷ 2 = ${a}. Check: ${a} + ${b} = ${a + b} and ${a} − ${b} = ${a - b}.`);
+    },
+    'm-data'(lv) {
+      if (lv === 1) {
+        const key = pick([2, 4, 5]); const names = U.sample(['Link', 'Zelda', 'Paya', 'Sidon'], 3); const vals = names.map(() => int(1, 5));
+        const tbl = `<table class="qtable"><tr><th>Name</th><th>Apples eaten</th></tr>${names.map((n, i) => `<tr><td>${n}</td><td>${'🍎'.repeat(vals[i])}</td></tr>`).join('')}</table><p class="key">Key: 🍎 = ${key} apples</p>`;
+        const i = int(0, 2);
+        return mc(`Use the pictogram. How many apples did <b>${names[i]}</b> eat?`, vals[i] * key, [vals[i], vals[i] * key + key, vals[i] + key, (vals[i] - 1) * key].filter(x => x > 0), `${names[i]} has ${vals[i]} apple symbols. Each is worth ${key}: ${vals[i]} × ${key} = ${vals[i] * key}.`, { visual: tbl });
+      }
+      const red = int(0, 10), blue = int(0, 10); if (red + blue === 0) return null; const tot = red + blue;
+      const p = red / tot; const word = p === 0 ? 'impossible' : p === 1 ? 'certain' : p === 0.5 ? 'an even chance' : p < 0.5 ? 'unlikely' : 'likely';
+      return mc(`A bag has <b>${red} red</b> and <b>${blue} blue</b> marbles. Picking a <b>red</b> marble without looking is…`, word, ['impossible', 'unlikely', 'an even chance', 'likely', 'certain'].filter(x => x !== word), `${red} out of ${tot} marbles are red, so it is ${word}.`);
+    },
+  };
+  topics.forEach(t => {
+    const base = t.gen;
+    if (EXTRA[t.id]) t.gen = function (lv) { if (chance(0.35)) { const q = EXTRA[t.id](lv); if (q) return q; } return base.call(this, lv); };
+  });
+
   window.CONTENT = window.CONTENT || {};
   window.CONTENT.maths = topics;
 })();

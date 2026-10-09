@@ -69,7 +69,7 @@
       <p>Don't be fooled by size or rotation — they are often there just to distract you.</p>`,
     gen(lv) {
       return retry(() => {
-        const rules = lv === 1 ? ['shape', 'fill'] : lv === 2 ? ['shape', 'fill', 'dots'] : ['dots', 'inner', 'sides', 'fill'];
+        const rules = lv === 1 ? ['shape', 'fill'] : lv === 2 ? ['shape', 'fill', 'dots'] : ['dots', 'inner', 'sides', 'fill', 'sidesdots'];
         const rule = pick(rules);
         const figs = [];
         const common = { shape: pick(SHAPES), fill: pick(FILLS), dots: int(1, 4), inner: pick(['circle', 'square', 'triangle']) };
@@ -81,6 +81,7 @@
           if (rule === 'dots') { f.dots = common.dots; f.fill = pick(['none', 'grey', 'stripe']); }
           if (rule === 'inner') { f.shape = pick(['circle', 'square', 'triangle', 'pentagon', 'hexagon']); f.inner = f.shape === 'pentagon' || f.shape === 'hexagon' ? pick(['circle', 'square', 'triangle']) : f.shape; f.innerFill = 'solid'; f.fill = pick(['none', 'grey']); }
           if (rule === 'sides') { f.shape = pick(['square', 'hexagon', 'cross']); f.fill = pick(FILLS); }
+          if (rule === 'sidesdots') { f.shape = pick(['triangle', 'square', 'pentagon', 'hexagon']); f.dots = SIDES[f.shape]; f.fill = pick(['none', 'grey']); f.inner = null; }
           figs.push(f);
         }
         if (rule === 'inner') figs.forEach(f => { f.inner = f.shape; });
@@ -90,11 +91,13 @@
         if (rule === 'dots') o.dots = pick([0, 1, 2, 3, 4, 5].filter(d => d !== common.dots));
         if (rule === 'inner') o.inner = pick(['circle', 'square', 'triangle'].filter(s => s !== o.shape));
         if (rule === 'sides') o.shape = pick(['triangle', 'pentagon', 'heptagon']);
+        if (rule === 'sidesdots') o.dots = SIDES[o.shape] + (o.shape === 'hexagon' ? -1 : pick([-1, 1]));
         // No other attribute may split 4-vs-1, or there'd be two answers.
         const attrs = ['shape', 'fill', 'dots', 'inner'].filter(a => a !== rule && !(rule === 'sides' && a === 'shape') && !(rule === 'inner' && a === 'shape'));
         for (const a of attrs) { const c = {}; figs.forEach(f => (c[f[a] || '-'] = (c[f[a] || '-'] || 0) + 1)); if (Object.values(c).includes(4)) return null; }
+        if (rule === 'sidesdots') { const c = {}; figs.forEach(f => (c[f.shape] = (c[f.shape] || 0) + 1)); const lone = Object.keys(c).find(k => c[k] === 1 && Object.values(c).includes(4)); if (lone && lone !== o.shape) return null; }
         const keys = new Set(figs.map(vkey)); if (keys.size < 5) return null;
-        const why = { shape: `The others are all ${common.shape}s.`, fill: `The others all have the same shading.`, dots: `The others all have ${common.dots} dot${common.dots > 1 ? 's' : ''}.`, inner: 'In the others the small shape inside matches the big outer shape.', sides: 'The others all have an even number of sides.' }[rule];
+        const why = { shape: `The others are all ${common.shape}s.`, fill: `The others all have the same shading.`, dots: `The others all have ${common.dots} dot${common.dots > 1 ? 's' : ''}.`, inner: 'In the others the small shape inside matches the big outer shape.', sides: 'The others all have an even number of sides.', sidesdots: 'In the others, the number of dots matches the number of sides.' }[rule];
         return { prompt: 'Which picture is the <b>odd one out</b>?', visual: '', options: figs.map(f => fig(f, 'nvr-opt')), answer: odd, explain: why, html: true, figs: true };
       }, lv);
     },
@@ -244,6 +247,22 @@
       <p>Trick: pick one special square (like the black one). Is it near the mirror or far from it? In the reflection, it stays the <b>same distance</b> from the mirror — just on the other side.</p>
       <p>Watch out for answers that are only <b>rotated</b> — that's not a reflection!</p>`,
     gen(lv) {
+      if (lv >= 2 && chance(0.4)) {
+        // complete the symmetrical shape: the right half must mirror the left half
+        for (let g = 0; g < 100; g++) {
+          const half = [[2, int(0, 3), 0]]; const has = (x, y) => half.some(c => c[0] === x && c[1] === y);
+          while (half.length < (lv === 2 ? 4 : 5)) { const [x, y] = pick(half); const [dx, dy] = pick([[1, 0], [-1, 0], [0, 1], [0, -1]]); const nx = x + dx, ny = y + dy; if (nx >= 0 && nx <= 2 && ny >= 0 && ny <= 3 && !has(nx, ny)) half.push([nx, ny, 0]); }
+          half[int(0, half.length - 1)][2] = 1;
+          const mirror = half.map(([x, y, m]) => [5 - x, y, m]);
+          const ans = half.concat(mirror);
+          const copy = half.concat(half.map(([x, y, m]) => [x + 3, y, m]));
+          const flipped = half.concat(half.map(([x, y, m]) => [5 - x, 3 - y, m]));
+          const moved = half.concat(mirror.map(([x, y, m], i) => (i === 0 ? [x, y === 3 ? 0 : y + 1, m] : [x, y, m])));
+          const shifted = half.concat(mirror.map(([x, y, m]) => [x + 1, y, m]));
+          const keys = new Set([ans, copy, flipped, moved].map(gkey)); if (keys.size < 4) continue;
+          return polyQ('The dashed line is a <b>line of symmetry</b>. Which picture shows the <b>completed</b> symmetrical shape?', `<div class="nvr-row">${polySvg(half, '', true)}</div>`, ans, [copy, flipped, moved, shifted], 'The right half must be a mirror image of the left half: every square is the same distance from the line, on the other side.');
+        }
+      }
       const p = asymPoly(lv === 1 ? 4 : lv === 2 ? 5 : 6);
       const ans = mirX(p);
       const r = rot90(rot90(p));

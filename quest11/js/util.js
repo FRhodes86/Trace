@@ -13,7 +13,7 @@
   U.sample = (arr, n) => U.shuffle(arr).slice(0, n);
   U.gcd = (a, b) => (b ? U.gcd(b, a % b) : Math.abs(a));
   U.lcm = (a, b) => (a * b) / U.gcd(a, b);
-  U.fmt = n => (typeof n === 'number' ? n.toLocaleString('en-GB', { maximumFractionDigits: 3 }) : n);
+  U.fmt = n => (typeof n === 'number' ? n.toLocaleString('en-GB', { maximumFractionDigits: 6 }) : n);
   U.money = p => (p >= 100 ? '£' + (p / 100).toFixed(2) : p + 'p');
   U.round = (n, dp = 2) => Math.round(n * 10 ** dp) / 10 ** dp;
   U.esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));

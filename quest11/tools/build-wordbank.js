@@ -54,6 +54,12 @@ function buildMissing(pool, count, level) {
 
 /* ---------- Compound words (GL "one word from each group") ---------- */
 const COMPOUNDS = [
+  [1, 'hand', 'bag'], [1, 'bed', 'time'], [1, 'day', 'light'], [1, 'sun', 'set'], [1, 'post', 'man'], [1, 'cup', 'cake'],
+  [1, 'head', 'band'], [1, 'class', 'room'], [1, 'bath', 'tub'], [1, 'rain', 'drop'], [1, 'sea', 'shell'],
+  [2, 'grand', 'mother'], [2, 'news', 'paper'], [2, 'back', 'ground'], [2, 'black', 'smith'], [2, 'sword', 'fish'], [2, 'birth', 'day'],
+  [2, 'super', 'market'], [2, 'out', 'side'], [2, 'thumb', 'nail'], [2, 'snow', 'ball'], [2, 'water', 'melon'], [2, 'friend', 'ship'],
+  [3, 'hat', 'red'], [3, 'son', 'net'], [3, 'bud', 'get'], [3, 'arm', 'our'], [3, 'car', 'go'], [3, 'ten', 'ant'],
+  [3, 'wit', 'her'], [3, 'cap', 'able'], [3, 'rot', 'ate'], [3, 'tab', 'let'], [3, 'pig', 'eon'], [3, 'ant', 'hem'],
   // level 1 — easy, familiar
   [1, 'sun', 'flower'], [1, 'snow', 'man'], [1, 'rain', 'bow'], [1, 'foot', 'ball'], [1, 'bed', 'room'],
   [1, 'butter', 'fly'], [1, 'pan', 'cake'], [1, 'star', 'fish'], [1, 'tooth', 'brush'], [1, 'key', 'hole'],
@@ -172,9 +178,9 @@ function buildHidden() {
 // no plurals / -ed forms: they make puzzles feel like tricks rather than vocabulary
 const base = [...C10].filter(x => !(x.endsWith('s') && C35.has(x.slice(0, -1))) && !x.endsWith('ed'));
 const missing = [
-  ...buildMissing(new Set(base.filter(x => x.length <= 4)), 70, 1),
-  ...buildMissing(new Set(base), 70, 2),
-  ...buildMissing(new Set(base.filter(x => x.length >= 4)), 70, 3),
+  ...buildMissing(new Set(base.filter(x => x.length <= 4)), 150, 1),
+  ...buildMissing(new Set(base), 150, 2),
+  ...buildMissing(new Set(base.filter(x => x.length >= 4)), 150, 3),
 ];
 const compounds = buildCompounds();
 const hidden = buildHidden();

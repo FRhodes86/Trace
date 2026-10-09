@@ -7,6 +7,46 @@
   /* ---------------- 1. Spelling ---------------- */
   // [level, correct, [common misspellings], sentence using the word]
   const SPELL = [
+    [1, 'address', ['adress', 'addres', 'adrress'], 'Write your address on the envelope.'],
+    [1, 'calendar', ['calender', 'calander', 'callendar'], 'Mark the date on the calendar.'],
+    [1, 'circle', ['circel', 'sircle', 'cirkle'], 'Draw a circle around the answer.'],
+    [1, 'difficult', ['dificult', 'difficalt', 'diffecult'], 'The climb was difficult but fun.'],
+    [1, 'enough', ['enuff', 'enogh', 'enouf'], 'We had enough food for everyone.'],
+    [1, 'exercise', ['excercise', 'exersize', 'exercize'], 'Exercise keeps your body healthy.'],
+    [1, 'favourite', ['favourate', 'faverite', 'favorute'], 'Apple pie is my favourite pudding.'],
+    [1, 'guard', ['gaurd', 'gard', 'guarde'], 'A guard stood at the castle gate.'],
+    [1, 'height', ['hight', 'heigth', 'hieght'], 'Measure the height of the tower.'],
+    [1, 'minute', ['minit', 'minnute', 'minite'], 'Wait a minute while I find my boots.'],
+    [1, 'often', ['offen', 'ofton', 'oftun'], 'We often go swimming on Saturdays.'],
+    [1, 'probably', ['probly', 'probabley', 'probebly'], 'It will probably rain tomorrow.'],
+    [1, 'remember', ['rember', 'remembor', 'rememmber'], 'Remember to bring your sword.'],
+    [1, 'special', ['speshal', 'specal', 'speacial'], 'Today is a very special day.'],
+    [1, 'straight', ['straigt', 'streight', 'straght'], 'Walk straight ahead to the shrine.'],
+    [1, 'though', ['thogh', 'thoughe', 'thow'], 'It was cold, though the sun was shining.'],
+    [2, 'accident', ['acident', 'accidant', 'axident'], 'It was an accident, so nobody was blamed.'],
+    [2, 'actually', ['actualy', 'acshually', 'actully'], 'The quiet boy was actually very funny.'],
+    [2, 'appear', ['apear', 'appeer', 'appere'], 'Stars appear when the sky grows dark.'],
+    [2, 'awkward', ['awkard', 'akward', 'awkwerd'], 'There was an awkward silence.'],
+    [2, 'bruise', ['bruse', 'brooze', 'bruize'], 'He had a bruise on his knee.'],
+    [2, 'committee', ['comittee', 'commitee', 'committe'], 'The committee voted on the plan.'],
+    [2, 'curiosity', ['curiousity', 'curiosaty', 'curiocity'], 'Curiosity made Link open the chest.'],
+    [2, 'especially', ['especialy', 'expecially', 'espeshally'], 'I love fruit, especially mangoes.'],
+    [2, 'forty', ['fourty', 'fortey', 'fourtie'], 'There were forty arrows in the quiver.'],
+    [2, 'government', ['goverment', 'govenment', 'governmint'], 'The government built a new bridge.'],
+    [2, 'language', ['langauge', 'languige', 'langwage'], 'The Gerudo speak their own language.'],
+    [2, 'opportunity', ['oppertunity', 'opportunaty', 'oportunity'], 'This is a great opportunity to learn.'],
+    [3, 'acquire', ['aquire', 'acquier', 'accquire'], 'Link hoped to acquire a new shield.'],
+    [3, 'amateur', ['amature', 'amatuer', 'ammateur'], 'He was only an amateur painter.'],
+    [3, 'cemetery', ['cemetary', 'cemetry', 'semetery'], 'An old cemetery lay beyond the village.'],
+    [3, 'correspond', ['corespond', 'correspund', 'corrispond'], 'The two friends correspond by letter.'],
+    [3, 'desperate', ['desparate', 'desprate', 'desperite'], 'The desperate travellers searched for water.'],
+    [3, 'foreign', ['foriegn', 'forein', 'foreighn'], 'The merchant came from a foreign land.'],
+    [3, 'lightning', ['litening', 'lightnning', 'lightneing'], 'A flash of lightning lit up the sky.'],
+    [3, 'persuade', ['pursuade', 'perswade', 'persaude'], 'Try to persuade the guard to let us in.'],
+    [3, 'pronunciation', ['pronounciation', 'pronunsiation', 'pronuciation'], 'Her pronunciation of the spell was perfect.'],
+    [3, 'signature', ['signiture', 'signatur', 'sigature'], 'Please add your signature at the bottom.'],
+    [3, 'vehicle', ['vehical', 'veicle', 'vehicel'], 'A strange vehicle rolled across the desert.'],
+    [3, 'twelfth', ['twelth', 'twelvth', 'tweltfh'], 'Her birthday is on the twelfth of May.'],
     [1, 'because', ['becuase', 'becos', 'beacause'], 'Link ran home because it was raining.'],
     [1, 'friend', ['freind', 'frend', 'friennd'], 'Zelda is a loyal friend to everyone.'],
     [1, 'beautiful', ['beutiful', 'beautifull', 'beatiful'], 'The sunset over the lake was beautiful.'],
@@ -72,8 +112,10 @@
         return mc(`Which is the <b>correct</b> spelling?`, it[1], it[2], `The correct spelling is <b>${it[1]}</b>. Example: "${it[3]}"`);
       }
       const noMistake = chance(0.2);
-      const re = new RegExp('\\b' + it[1] + '\\b');
-      const wrongWord = pick(it[2]);
+      const re = new RegExp('\\b' + it[1] + '\\b', 'i');
+      let wrongWord = pick(it[2]);
+      // keep a capital letter if the word starts the sentence
+      const hit = it[3].match(re); if (hit && /^[A-Z]/.test(hit[0])) wrongWord = U.cap(wrongWord);
       const sentence = noMistake ? it[3] : it[3].replace(re, wrongWord);
       const parts = splitSentence(sentence);
       const labels = parts.map((p, i) => `${'ABCD'[i]}: ${p}`);
@@ -90,6 +132,12 @@
 
   /* ---------------- 2. Punctuation ---------------- */
   const PUNCT = [
+    [2, "“Where is my bow?” asked Revali."],
+    [2, "Daruk's boulder rolled down the mountain."],
+    [2, "When the bell rang, the children ran outside."],
+    [3, "“Listen carefully,” said Impa, “and you will learn.”"],
+    [3, "The Rito, who live high in the mountains, are skilled archers."],
+    [3, "Zelda's research notes were found in the library."],
     [1, "My sister's bike is red."],
     [1, "Can you help me carry the shield?"],
     [1, "On Saturday, Link went fishing with Sidon."],
@@ -166,6 +214,16 @@
   /* ---------------- 3. Grammar ---------------- */
   // Tagged sentences for word classes
   const TAGGED = [
+    'The {curious|adjective} fox {sniffed|verb} the {air|noun} {nervously|adverb}.',
+    '{He|pronoun} {jumped|verb} {over|preposition} the {muddy|adjective} puddle.',
+    'Mipha {sang|verb} {beautifully|adverb} {beside|preposition} the {lake|noun}.',
+    'The {tired|adjective} {traveller|noun} {yawned|verb} {and|conjunction} slept.',
+    '{They|pronoun} {cheered|verb} {loudly|adverb} {for|preposition} the {winner|noun}.',
+    'Sidon {swam|verb} {gracefully|adverb} {through|preposition} the {waves|noun}.',
+    'The {wise|adjective} owl {hooted|verb} {but|conjunction} {nobody|pronoun} listened.',
+    '{We|pronoun} {carefully|adverb} {crossed|verb} the {narrow|adjective} {bridge|noun}.',
+    'Riju {raised|verb} her {shining|adjective} {shield|noun} {proudly|adverb}.',
+    'The {dragon|noun} {flew|verb} {silently|adverb} {across|preposition} the {starry|adjective} sky.',
     'The {brave|adjective} knight {galloped|verb} {swiftly|adverb} across the {meadow|noun}.',
     'Zelda {quietly|adverb} {opened|verb} the {ancient|adjective} {book|noun}.',
     'A {tiny|adjective} Korok {giggled|verb} {behind|preposition} the {tree|noun}.',
@@ -180,6 +238,11 @@
     'The {clever|adjective} {sheikah|adjective} slate {beeped|verb} {loudly|adverb}.',
   ];
   const IRREG = [ // base, past, past participle, -ing
+    ['dig', 'dug', 'dug', 'digging'], ['hide', 'hid', 'hidden', 'hiding'], ['take', 'took', 'taken', 'taking'],
+    ['speak', 'spoke', 'spoken', 'speaking'], ['wake', 'woke', 'woken', 'waking'], ['grow', 'grew', 'grown', 'growing'],
+    ['shake', 'shook', 'shaken', 'shaking'], ['bite', 'bit', 'bitten', 'biting'], ['find', 'found', 'found', 'finding'],
+    ['buy', 'bought', 'bought', 'buying'], ['sell', 'sold', 'sold', 'selling'], ['hold', 'held', 'held', 'holding'],
+    ['steal', 'stole', 'stolen', 'stealing'], ['give', 'gave', 'given', 'giving'],
     ['swim', 'swam', 'swum', 'swimming'], ['run', 'ran', 'run', 'running'], ['fly', 'flew', 'flown', 'flying'],
     ['catch', 'caught', 'caught', 'catching'], ['bring', 'brought', 'brought', 'bringing'], ['teach', 'taught', 'taught', 'teaching'],
     ['freeze', 'froze', 'frozen', 'freezing'], ['ride', 'rode', 'ridden', 'riding'], ['throw', 'threw', 'thrown', 'throwing'],
@@ -188,6 +251,17 @@
     ['eat', 'ate', 'eaten', 'eating'], ['fight', 'fought', 'fought', 'fighting'], ['seek', 'sought', 'sought', 'seeking'],
   ];
   const AGREE = [
+    [1, 'The children ___ playing in the garden.', 'are', ['is', 'was', 'be']],
+    [1, 'She ___ her homework every evening.', 'does', ['do', 'doing', 'done']],
+    [1, 'We ___ to the beach last summer.', 'went', ['go', 'goes', 'gone']],
+    [2, 'The team ___ won every match this season.', 'has', ['have', 'are', 'were']],
+    [2, 'There ___ lots of apples on the tree.', 'are', ['is', 'was', 'has']],
+    [2, 'Everyone ___ excited about the festival.', 'was', ['were', 'are', 'be']],
+    [2, 'Link and Zelda ___ best friends.', 'are', ['is', 'was', 'be']],
+    [3, 'The box of swords ___ very heavy.', 'was', ['were', 'are', 'have']],
+    [3, 'Neither of the guards ___ awake.', 'was', ['were', 'are', 'be']],
+    [3, 'If she ___ harder, she would have passed the test.', 'had tried', ['tried', 'has tried', 'would try']],
+    [3, 'I wish I ___ fly like a Rito.', 'could', ['can', 'will', 'am']],
     [1, 'The Koroks ___ hiding in the forest.', 'are', ['is', 'was', 'be']],
     [1, 'Link ___ to the stable every morning.', 'goes', ['go', 'going', 'gone']],
     [1, 'My friends and I ___ going to the market.', 'are', ['is', 'am', 'was']],
@@ -204,6 +278,16 @@
     [3, 'By the time we arrived, the guardian ___ already left.', 'had', ['has', 'have', 'was']],
   ];
   const CONJ = [
+    [1, 'Do you want juice ___ water?', 'or', ['and', 'so', 'because']],
+    [1, 'It was cold, ___ we lit a fire.', 'so', ['but', 'or', 'although']],
+    [1, 'Link likes swimming ___ he likes climbing too.', 'and', ['but', 'because', 'or']],
+    [2, 'Link waited ___ the rain stopped.', 'until', ['because', 'although', 'or']],
+    [2, '___ the sun rose, the birds began to sing.', 'As', ['Unless', 'Although', 'Or']],
+    [2, 'She was smiling ___ she had found the treasure.', 'because', ['although', 'unless', 'or']],
+    [3, '___ it was raining, the match continued.', 'Even though', ['Because', 'So that', 'Unless']],
+    [3, 'Gorons love rocks, ___ Zoras love water.', 'whereas', ['therefore', 'because', 'unless']],
+    [3, 'Pack a torch ___ it gets dark.', 'in case', ['unless', 'although', 'whereas']],
+    [3, 'The bridge was closed; ___, we took the long way round.', 'therefore', ['however', 'although', 'whereas']],
     [1, 'I wanted to go outside ___ it was raining.', 'but', ['and', 'because', 'so']],
     [1, 'Link was tired ___ he went to bed.', 'so', ['but', 'although', 'or']],
     [2, 'We stayed indoors ___ the storm was fierce.', 'because', ['although', 'unless', 'or']],
@@ -250,18 +334,27 @@
   /* ---------------- 4. Vocabulary ---------------- */
   // [level, word, meaning]
   const VOCAB = [
-    [1, 'ancient', 'very old'], [1, 'brave', 'not afraid of danger'], [1, 'enormous', 'very big'], [1, 'gloomy', 'dark and sad'],
-    [1, 'swift', 'very fast'], [1, 'fragile', 'easily broken'], [1, 'furious', 'extremely angry'], [1, 'peculiar', 'strange or odd'],
-    [1, 'exhausted', 'very tired'], [1, 'glimpse', 'a quick look'], [1, 'timid', 'shy and easily frightened'], [1, 'vanish', 'to disappear suddenly'],
+    [1, 'nibble', 'to take small bites'], [1, 'dash', 'to run very quickly'], [1, 'wobble', 'to move unsteadily from side to side'],
+    [1, 'clumsy', 'often bumping into or dropping things'], [1, 'gaze', 'to look steadily for a long time'], [1, 'whisper', 'to speak very quietly'],
+    [1, 'nervous', 'worried and a little afraid', 'fear'], [1, 'sparkle', 'to shine with little flashes of light'], [1, 'rescue', 'to save from danger'], [1, 'journey', 'a trip from one place to another'],
+    [2, 'scarce', 'in short supply'], [2, 'hesitate', 'to pause before doing something'], [2, 'sturdy', 'strong and solid'], [2, 'generous', 'happy to give and share'],
+    [2, 'obstacle', 'something that blocks your way'], [2, 'plummet', 'to fall straight down very fast'], [2, 'wander', 'to walk slowly without a clear direction'],
+    [2, 'ferocious', 'fierce and violent', 'angry'], [2, 'murky', 'dark and dirty, hard to see through'], [2, 'quarrel', 'an angry argument'], [2, 'bewildered', 'very confused'], [2, 'radiant', 'shining brightly; glowing'],
+    [3, 'ambivalent', 'having mixed feelings'], [3, 'clandestine', 'done secretly'], [3, 'diminish', 'to make or become smaller'], [3, 'eloquent', 'speaking fluently and persuasively'],
+    [3, 'frivolous', 'silly and not serious'], [3, 'impartial', 'fair; not taking sides'], [3, 'melancholy', 'a deep, thoughtful sadness'], [3, 'obsolete', 'no longer used; out of date'],
+    [3, 'pragmatic', 'dealing with things sensibly and practically'], [3, 'reticent', 'not revealing your thoughts easily; reserved'], [3, 'ubiquitous', 'found everywhere'], [3, 'venerable', 'respected because of age or wisdom'],
+    [1, 'ancient', 'very old'], [1, 'brave', 'not afraid of danger'], [1, 'cosy', 'warm and comfortable'], [1, 'gloomy', 'dark and sad'],
+    [1, 'swift', 'very fast'], [1, 'fragile', 'easily broken'], [1, 'furious', 'extremely angry', 'angry'], [1, 'peculiar', 'strange or odd', 'odd'],
+    [1, 'exhausted', 'very tired', 'tired'], [1, 'glimpse', 'a quick look'], [1, 'timid', 'shy and easily frightened', 'fear'], [1, 'vanish', 'to disappear suddenly'],
     [1, 'feast', 'a large special meal'], [1, 'grumble', 'to complain quietly'], [1, 'soar', 'to fly high in the air'], [1, 'damp', 'slightly wet'],
     [2, 'abundant', 'more than enough; plentiful'], [2, 'cautious', 'careful to avoid danger'], [2, 'reluctant', 'unwilling to do something'], [2, 'vivid', 'bright and clear'],
-    [2, 'desolate', 'empty and lonely'], [2, 'triumph', 'a great victory'], [2, 'eerie', 'strange and frightening'], [2, 'agile', 'able to move quickly and easily'],
-    [2, 'devour', 'to eat hungrily'], [2, 'loyal', 'faithful and true'], [2, 'summit', 'the top of a mountain'], [2, 'weary', 'tired and worn out'],
-    [2, 'gigantic', 'huge'], [2, 'astonished', 'very surprised'], [2, 'humble', 'not proud; modest'], [2, 'linger', 'to stay longer than needed'],
+    [2, 'desolate', 'empty and lonely'], [2, 'triumph', 'a great victory'], [2, 'eerie', 'strange and frightening', 'odd'], [2, 'agile', 'able to move quickly and easily'],
+    [2, 'devour', 'to eat hungrily'], [2, 'loyal', 'faithful and true'], [2, 'summit', 'the top of a mountain'], [2, 'weary', 'tired and worn out', 'tired'],
+    [2, 'enormous', 'very big', 'big'], [2, 'astonished', 'very surprised'], [2, 'humble', 'not proud; modest'], [2, 'linger', 'to stay longer than needed'],
     [3, 'benevolent', 'kind and generous'], [3, 'ominous', 'suggesting something bad will happen'], [3, 'tenacious', 'refusing to give up'], [3, 'meticulous', 'very careful about details'],
-    [3, 'serene', 'calm and peaceful'], [3, 'formidable', 'causing fear or respect because of strength'], [3, 'jubilant', 'full of joy at a success'], [3, 'candid', 'honest and direct'],
-    [3, 'futile', 'pointless; having no effect'], [3, 'lethargic', 'sluggish and lacking energy'], [3, 'notorious', 'famous for something bad'], [3, 'resilient', 'able to recover quickly'],
-    [3, 'scrutinise', 'to examine very closely'], [3, 'tranquil', 'quiet and still'], [3, 'vindictive', 'wanting revenge'], [3, 'ambiguous', 'having more than one possible meaning'],
+    [3, 'serene', 'calm and peaceful', 'calm'], [3, 'formidable', 'causing fear or respect because of strength'], [3, 'jubilant', 'full of joy at a success'], [3, 'candid', 'honest and direct'],
+    [3, 'futile', 'pointless; having no effect'], [3, 'lethargic', 'sluggish and lacking energy', 'tired'], [3, 'notorious', 'famous for something bad'], [3, 'resilient', 'able to recover quickly'],
+    [3, 'scrutinise', 'to examine very closely'], [3, 'tranquil', 'quiet and still', 'calm'], [3, 'vindictive', 'wanting revenge'], [3, 'ambiguous', 'having more than one possible meaning'],
   ];
   topics.push({
     id: 'e-vocab', name: 'Vocabulary', shrine: 'Ze Kasho Shrine', icon: '📖',
@@ -270,7 +363,7 @@
       <p>Collect brilliant words in a notebook — like a Hylian collecting treasures!</p>`,
     gen(lv) {
       const it = pick(byLv(VOCAB, lv));
-      const pool = VOCAB.filter(v => v[1] !== it[1]);
+      const pool = VOCAB.filter(v => v[1] !== it[1] && (!it[3] || v[3] !== it[3])); // never offer a near-synonym as a wrong answer
       if (chance(0.5)) return mc(`What does <b>${it[1]}</b> mean?`, it[2], sample(pool, 6).map(v => v[2]), `<b>${it[1]}</b> means "${it[2]}".`);
       return mc(`Which word means <b>"${it[2]}"</b>?`, it[1], sample(pool.filter(v => Math.abs(v[0] - it[0]) <= 1), 6).map(v => v[1]), `<b>${it[1]}</b> means "${it[2]}".`);
     },
@@ -369,6 +462,9 @@
     [3, 'The ___ of the story was to always be kind.', 'moral', ['morale', 'mural']],
   ];
   const PREFIX = [
+    [1, 'lock', 'unlock', ['dislock', 'mislock', 'inlock']], [1, 'like', 'dislike', ['mislike', 'inlike', 'imlike']], [1, 'fair', 'unfair', ['disfair', 'misfair', 'infair']],
+    [2, 'perfect', 'imperfect', ['unperfect', 'disperfect', 'inperfect']], [2, 'polite', 'impolite', ['unpolite', 'dispolite', 'inpolite']], [2, 'obey', 'disobey', ['unobey', 'misobey', 'imobey']],
+    [3, 'relevant', 'irrelevant', ['unrelevant', 'inrelevant', 'disrelevant']], [3, 'literate', 'illiterate', ['unliterate', 'inliterate', 'disliterate']], [3, 'accurate', 'inaccurate', ['unaccurate', 'disaccurate', 'imaccurate']],
     [1, 'happy', 'unhappy', ['dishappy', 'imhappy', 'nonhappy']], [1, 'kind', 'unkind', ['diskind', 'inkind', 'mikind']],
     [1, 'agree', 'disagree', ['unagree', 'imagree', 'misagree']], [1, 'appear', 'disappear', ['unappear', 'misappear', 'inappear']],
     [2, 'possible', 'impossible', ['unpossible', 'inpossible', 'dispossible']], [2, 'legal', 'illegal', ['unlegal', 'inlegal', 'dislegal']],
@@ -378,6 +474,9 @@
     [3, 'mature', 'immature', ['unmature', 'inmature', 'dismature']], [3, 'honest', 'dishonest', ['unhonest', 'inhonest', 'imhonest']],
   ];
   const PLURAL = [
+    [1, 'box', 'boxes', ['boxs', 'boxies', 'boxen']], [1, 'lady', 'ladies', ['ladys', 'ladyes', "lady's"]], [1, 'wolf', 'wolves', ['wolfs', 'wolfes', 'wolvs']],
+    [2, 'woman', 'women', ['womans', 'womens', 'womanes']], [2, 'goose', 'geese', ['gooses', 'geeses', 'goosen']], [2, 'hero', 'heroes', ['heros', "hero's", 'heroies']],
+    [3, 'oasis', 'oases', ['oasises', 'oasis', 'oasi']], [3, 'ox', 'oxen', ['oxes', 'oxs', 'oxies']], [3, 'analysis', 'analyses', ['analysises', 'analysiss', 'analysi']],
     [1, 'baby', 'babies', ['babys', 'babyes', "baby's"]], [1, 'fox', 'foxes', ['foxs', 'foxies', 'foxen']], [1, 'child', 'children', ['childs', 'childes', 'childrens']],
     [1, 'mouse', 'mice', ['mouses', 'mices', 'meese']], [2, 'knife', 'knives', ['knifes', 'knifs', 'knive']], [2, 'leaf', 'leaves', ['leafs', 'leafes', 'leavs']],
     [2, 'potato', 'potatoes', ['potatos', "potato's", 'potatoe']], [2, 'tooth', 'teeth', ['tooths', 'teeths', 'toothes']], [2, 'cactus', 'cacti', ['cactuss', 'cactuses', 'cactis']],
@@ -399,6 +498,10 @@
 
   /* ---------------- 7. Figurative language ---------------- */
   const FIG = [
+    [2, 'The stars were diamonds in the sky.', 'metaphor'], [2, 'The wind howled angrily all night.', 'personification'], [2, 'Whoosh! The arrow flew past.', 'onomatopoeia'],
+    [2, 'He was as quiet as a mouse.', 'simile'], [2, 'My backpack weighs a million kilos!', 'hyperbole'], [3, 'Her eyes were deep pools of sorrow.', 'metaphor'],
+    [3, 'The old car coughed and spluttered up the hill.', 'personification'], [3, 'Peter Piper picked a peck of pickled peppers.', 'alliteration'], [3, 'He ran faster than the speed of light.', 'hyperbole'],
+    [3, 'Life is a rollercoaster.', 'metaphor'], [3, 'The kettle sang on the stove.', 'personification'],
     [1, 'The thunder roared like a lion.', 'simile'], [1, 'Sizzle went the sausages in the pan.', 'onomatopoeia'], [1, 'The sun smiled down on us.', 'personification'],
     [1, 'Tiny Tim took ten toys.', 'alliteration'], [1, 'The kitten was as soft as a cloud.', 'simile'], [1, 'The door creaked and the floor squeaked.', 'onomatopoeia'],
     [1, 'The wind howled like a hungry wolf.', 'simile'], [1, 'Link was as brave as a lion.', 'simile'], [1, 'Silly snakes slithered silently.', 'alliteration'],
@@ -431,6 +534,68 @@
   /* ---------------- 8. Comprehension ---------------- */
   // Each passage: level, title, text, questions [q, answer, distractors, explanation]
   const PASSAGES = [
+    {
+      l: 1, title: 'Paya’s Diary',
+      text: `Monday
+Today was the best day ever! Grandmother Impa let me help in the garden for the first time. We planted rows of carrots, and I watered every single one.
+
+Tuesday
+It rained all day, so I stayed inside and read a book about the Sheikah. I learned that they once built amazing machines. I wish I could see one!
+
+Wednesday
+This morning I found a tiny green shoot in the garden. My carrots are growing! I was so excited that I ran to tell Grandmother. She smiled and said, "Good things take time, Paya." I think she is right.`,
+      qs: [
+        ['What type of text is this?', 'A diary', ['A poem', 'A recipe', 'A newspaper report'], 'It is written by Paya about her own days, with a heading for each day.'],
+        ['Who let Paya help in the garden?', 'Grandmother Impa', ['Link', 'Zelda', 'Her teacher'], '"Grandmother Impa let me help in the garden…"'],
+        ['What did they plant?', 'Carrots', ['Potatoes', 'Apple trees', 'Flowers'], '"We planted rows of carrots."'],
+        ['Why did Paya stay inside on Tuesday?', 'It rained all day', ['She was ill', 'It was too hot', 'She was tired'], '"It rained all day, so I stayed inside."'],
+        ['What did Paya learn from her book?', 'The Sheikah once built amazing machines', ['How to grow carrots', 'How to cook soup', 'How to fly'], 'See Tuesday’s entry.'],
+        ['How did Paya feel when she saw the green shoot?', 'Excited', ['Bored', 'Angry', 'Scared'], '"I was so excited that I ran to tell Grandmother."'],
+        ['What does "Good things take time" mean?', 'You need to be patient', ['You should always hurry', 'Gardens are a waste of time', 'Clocks are useful'], 'Impa means the carrots will grow if Paya waits patiently.'],
+      ],
+    },
+    {
+      l: 2, title: 'The Zora: People of the Water',
+      text: `The Zora are an aquatic people who live in Zora’s Domain, a sparkling city carved from luminous stone in the east of Hyrule. They are superb swimmers and can even leap up waterfalls.
+
+Appearance
+Zora have smooth, scaly skin in shades of red, blue and silver. Instead of hair, they have a tail-like head fin. Because their skin must stay moist, they rarely travel far from water.
+
+Long lives
+Zora live far longer than Hylians. Some Zora elders are over a hundred years old, and many still remember events that Hylians know only from history books.
+
+Royal family
+The Zora are ruled by a king. Prince Sidon, the king’s son, is famous for his cheerful nature and his enormous strength. His older sister, Mipha, was a skilled healer and one of the four Champions.`,
+      qs: [
+        ['What kind of text is this?', 'An information text', ['A story', 'A poem', 'A play script'], 'It gives facts about the Zora under sub-headings.'],
+        ['Why are sub-headings like "Appearance" used?', 'To organise the information into sections', ['To tell a joke', 'To show who is speaking', 'To make the text rhyme'], 'Sub-headings help the reader find information quickly.'],
+        ['What does "aquatic" mean?', 'Living in or near water', ['Living in the desert', 'Living in trees', 'Living underground'], 'The Zora are superb swimmers and stay near water.'],
+        ['Why do Zora rarely travel far from water?', 'Their skin must stay moist', ['They are afraid of Hylians', 'They cannot walk', 'Their king forbids it'], '"Because their skin must stay moist, they rarely travel far from water."'],
+        ['Which word describes the stone of Zora’s Domain?', 'luminous', ['smooth', 'scaly', 'enormous'], '"…a sparkling city carved from luminous stone."'],
+        ['How is Sidon related to Mipha?', 'He is her younger brother', ['He is her father', 'He is her cousin', 'He is her older brother'], 'Mipha is described as Sidon’s "older sister".'],
+        ['Which statement is TRUE according to the text?', 'Some Zora elders are over a hundred years old', ['All Zora have red skin', 'Zora cannot swim up waterfalls', 'Mipha ruled the Zora'], 'See the "Long lives" section.'],
+      ],
+    },
+    {
+      l: 3, title: 'The Keeper of Lurelin Light',
+      text: `Old Garron had kept the lighthouse at Lurelin for forty winters. Each evening he climbed the hundred and twelve steps, polished the great lens until it gleamed, and coaxed the flame into life. Fishermen joked that the sea itself set its clock by him.
+
+The night of the storm, however, the sea was in no mood for jokes. Waves hurled themselves at the rocks like furious giants, and the wind tore at the shutters with invisible claws. Halfway up the stairs, Garron’s lantern guttered and died.
+
+He stood very still in the darkness, listening. Below him, the tower groaned. Somewhere out on the black water, he knew, the little fishing boats were turning for home, searching the horizon for his light.
+
+Garron did not hurry. He had climbed these steps more times than he could count; his feet knew every worn edge. One by one, he counted them aloud, his voice steady against the roar. At the hundred and twelfth step, his hand found the cold brass of the lamp. A spark, a hiss, and then light, pouring out across the waves like a promise kept.`,
+      qs: [
+        ['How long had Garron kept the lighthouse?', 'Forty winters', ['A hundred and twelve years', 'One night', 'Ten years'], '"…for forty winters."'],
+        ['What does "coaxed the flame into life" suggest?', 'He lit it gently and patiently', ['He blew it out', 'He was frightened of fire', 'He lit it carelessly'], 'To coax something is to persuade it gently.'],
+        ['"Waves hurled themselves at the rocks like furious giants" is an example of…', 'a simile', ['a metaphor', 'onomatopoeia', 'a rhetorical question'], 'It compares waves to giants using "like".'],
+        ['Why did Garron stand still when his lantern died?', 'He was listening and staying calm', ['He had fallen asleep', 'He was lost', 'He had given up'], '"He stood very still in the darkness, listening."'],
+        ['How was Garron able to climb in the dark?', 'He knew the steps extremely well', ['He had a second lantern', 'Lightning lit the way', 'Someone guided him'], '"His feet knew every worn edge."'],
+        ['Why was it so important that the light was lit?', 'The fishing boats needed it to find their way home', ['The village needed heating', 'It was a festival night', 'Garron wanted to read'], 'The boats were "searching the horizon for his light".'],
+        ['What does "like a promise kept" suggest about the light?', 'Garron had done what people relied on him to do', ['The light was small and weak', 'Garron had broken a promise', 'The storm had ended'], 'The fishermen trusted him to light it, and he did.'],
+        ['Which word best describes Garron?', 'Dependable', ['Careless', 'Impatient', 'Cowardly'], 'He stays calm and keeps his duty even in the storm.'],
+      ],
+    },
     {
       l: 1, title: 'Epona’s Apple',
       text: `Every morning, Link visited the stable to brush his horse, Epona. She had a shiny brown coat, a white mane and a mischievous twinkle in her eye.

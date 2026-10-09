@@ -592,3 +592,5 @@ button.opt:active:not(:disabled) { transform: translateY(1px); box-shadow: 0 1px
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
 }
+.emoji-row { font-size: 2rem; letter-spacing: 4px; text-align: center; }
+.key { margin: 4px 0 0; font-size: 0.9rem; text-align: center; }
