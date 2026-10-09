@@ -14,24 +14,45 @@
   const OUTFITS = {
     tunic: { tunic: '#4f86c6', shade: '#3a6699', trim: '#efe6c8' },
     champion: { tunic: '#2e73d9', shade: '#1f55a8', trim: '#ffffff' },
-    sheikah: { tunic: '#26345e', shade: '#18213f', trim: '#c63b4f', mask: true },
+    sheikah: { tunic: '#26345e', shade: '#18213f', trim: '#c63b4f', mask: '#26345e' },
+    climbing: { tunic: '#4a7a8a', shade: '#335a66', trim: '#e8d8a8', band: '#c8402a' },
+    royalguard: { tunic: '#22336e', shade: '#16224a', trim: '#e2b33c' },
+    barbarian: { tunic: '#7a4a2a', shade: '#5a321a', trim: '#d0302a', paint: '#d0302a', band: '#e8e0c8' },
+    flamebreaker: { tunic: '#6a4a3a', shade: '#4a2e22', trim: '#ff7a2a', band: '#ff7a2a' },
+    zora: { tunic: '#3a8ad0', shade: '#25639c', trim: '#e8f6ff' },
+    snowquill: { tunic: '#e8eef6', shade: '#b8c4d4', trim: '#c63b4f', band: '#c63b4f' },
+    desert: { tunic: '#e8c070', shade: '#c09a48', trim: '#7a3aa0', mask: '#7a3aa0' },
+    time: { tunic: '#3c9a3c', shade: '#2a6e2a', trim: '#f0e0a0', hat: '#3c9a3c' },
+    wild: { tunic: '#2a4aa8', shade: '#1a3070', trim: '#ffd23d', aura: '#ffd23d' },
+    deity: { tunic: '#f2f2f2', shade: '#c8c8d0', trim: '#c62a2a', paint: '#3fb0ff', aura: '#ff5a5a' },
+  };
+  const SHIELD_ART = {
+    pot: `<ellipse cx="40" cy="92" rx="13" ry="15" fill="#9c9c94" stroke="${INK}" stroke-width="2"/><ellipse cx="40" cy="92" rx="8" ry="9" fill="none" stroke="#6f6f68" stroke-width="1.5"/>`,
+    wood: `<ellipse cx="40" cy="92" rx="14" ry="17" fill="#b07a42" stroke="${INK}" stroke-width="2"/><path d="M33,78 v28 M40,75 v34 M47,78 v28" stroke="#7a5230" stroke-width="1.5"/>`,
+    traveler: `<ellipse cx="40" cy="92" rx="15" ry="18" fill="#8a5a2b" stroke="${INK}" stroke-width="2"/><ellipse cx="40" cy="92" rx="10" ry="12" fill="none" stroke="#5e3b1a" stroke-width="2"/><circle cx="40" cy="92" r="3" fill="#b8b8b8"/>`,
+    soldier: `<path d="M27,78 Q40,72 53,78 L50,102 Q40,114 30,102 Z" fill="#3a6aa8" stroke="${INK}" stroke-width="2"/><path d="M40,80 v24 M31,90 h18" stroke="#c8d4e4" stroke-width="2"/>`,
+    hylian: `<path d="M26,78 Q40,70 54,78 L52,104 Q40,118 28,104 Z" fill="#2f55b5" stroke="${INK}" stroke-width="2"/><path d="M34,86 L40,80 L46,86 L40,96 Z" fill="#c9302c"/><path d="M37,100 l3,-5 l3,5 z" fill="#f4d03f"/>`,
+    royal: `<path d="M26,78 Q40,70 54,78 L52,104 Q40,118 28,104 Z" fill="#23367a" stroke="#e2b33c" stroke-width="3"/><path d="M40,82 l5,9 h-10 z" fill="#e2b33c"/><circle cx="40" cy="100" r="3" fill="#e2b33c"/>`,
+    lynel: `<path d="M24,80 L32,72 L40,78 L48,72 L56,80 L52,104 L40,116 L28,104 Z" fill="#8a2a1a" stroke="${INK}" stroke-width="2"/><circle cx="40" cy="92" r="6" fill="#e8c8b0" stroke="${INK}"/>`,
+    mirror: `<ellipse cx="40" cy="92" rx="15" ry="19" fill="#dfe8f0" stroke="#8a9aaa" stroke-width="3"/><ellipse cx="40" cy="92" rx="10" ry="13" fill="#f8fbff"/><path d="M33,84 l6,-4" stroke="#fff" stroke-width="3" opacity=".9"/>`,
   };
   function hero(o = {}) {
     const f = OUTFITS[o.armour] || OUTFITS.tunic;
     const g = id('hg');
-    const blade = o.weapon === 'master' ? '#e9f4ff' : o.weapon === 'royal' ? '#f3e7b0' : '#d7dde4';
-    const hilt = o.weapon === 'master' ? '#3159c9' : o.weapon === 'royal' ? '#c9a227' : '#7a5230';
-    const bladeLen = { traveler: 0.85, soldier: 1, knight: 1.15, royal: 1.12, master: 1.2 }[o.weapon] || 0.85;
-    const shieldSvg = o.shield === 'hylian'
-      ? `<path d="M26,78 Q40,70 54,78 L52,104 Q40,118 28,104 Z" fill="#2f55b5" stroke="${INK}" stroke-width="2"/><path d="M34,86 L40,80 L46,86 L40,96 Z" fill="#c9302c"/><path d="M37,100 l3,-5 l3,5 z" fill="#f4d03f"/>`
-      : o.shield === 'traveler'
-        ? `<ellipse cx="40" cy="92" rx="15" ry="18" fill="#8a5a2b" stroke="${INK}" stroke-width="2"/><ellipse cx="40" cy="92" rx="10" ry="12" fill="none" stroke="#5e3b1a" stroke-width="2"/><circle cx="40" cy="92" r="3" fill="#b8b8b8"/>`
-        : `<ellipse cx="40" cy="92" rx="13" ry="15" fill="#9c9c94" stroke="${INK}" stroke-width="2"/><ellipse cx="40" cy="92" rx="8" ry="9" fill="none" stroke="#6f6f68" stroke-width="1.5"/>`;
-    const face = f.mask
-      ? `<path d="M48,48 Q62,58 79,48 L79,60 Q62,66 48,58 Z" fill="#26345e" stroke="${INK}" stroke-width="1.5"/><path d="M58,54 l4,3 l4,-3" stroke="#c63b4f" stroke-width="1.5" fill="none"/>`
-      : `<path d="M66,57 q4,2 7,0" stroke="#a5604a" stroke-width="1.6" fill="none" stroke-linecap="round"/>`;
+    const W = (window.CATALOG && CATALOG.WEAPONS.find(w => w.id === o.weapon)) || { blade: '#d7dde4', hilt: '#7a5230' };
+    const blade = W.blade, hilt = W.hilt;
+    const bladeLen = { traveler: 0.85, boko: 0.8, soldier: 1, knight: 1.15, flame: 1.05, frost: 1.05, thunder: 1.05, eightfold: 1.12, royal: 1.12, lynel: 1.15, biggoron: 1.4, goddess: 1.2, master: 1.2 }[o.weapon] || 0.85;
+    const SL = (window.CATALOG && (CATALOG.SHIELDS.find(x => x.id === o.shield) || {}).look) || (o.shield === 'none' ? 'pot' : o.shield) || 'pot';
+    const shieldSvg = SHIELD_ART[SL] || SHIELD_ART.pot;
+    const face = (f.mask
+      ? `<path d="M48,48 Q62,58 79,48 L79,60 Q62,66 48,58 Z" fill="${f.mask}" stroke="${INK}" stroke-width="1.5"/><path d="M58,54 l4,3 l4,-3" stroke="${f.trim}" stroke-width="1.5" fill="none"/>`
+      : `<path d="M66,57 q4,2 7,0" stroke="#a5604a" stroke-width="1.6" fill="none" stroke-linecap="round"/>`)
+      + (f.paint ? `<path d="M70,51 l6,0 M68,54 l8,1" stroke="${f.paint}" stroke-width="1.8" stroke-linecap="round"/>` : '');
+    const hat = f.hat ? `<path d="M46,32 Q58,10 80,26 Q60,22 50,40 Q36,60 22,70 Q34,48 46,32Z" fill="${f.hat}" stroke="${INK}" stroke-width="2"/>` : '';
+    const band = f.band ? `<path d="M46,33 Q63,26 81,34" stroke="${f.band}" stroke-width="3.5" fill="none"/>` : '';
+    const aura = f.aura ? `<ellipse cx="60" cy="85" rx="44" ry="62" fill="${f.aura}" opacity=".18" class="aura-pulse"/>` : '';
     return svg('0 0 120 150', `<defs>${lg(g + 't', f.tunic, f.shade)}${lg(g + 'h', '#ffe08a', '#d9a62e')}${lg(g + 'b', blade, '#9fb4c8', false)}</defs>
-      ${shadow(60, 145, 30)}
+      ${shadow(60, 145, 30)}${aura}
       <g class="h-body">
         <g class="h-shield">${shieldSvg}</g>
         <path d="M50,108 h11 v26 h-11z" fill="#8a6a45" stroke="${INK}" stroke-width="2"/>
@@ -55,7 +76,7 @@
           <path d="M56,26 Q66,22 74,28" stroke="#fff3c4" stroke-width="2" fill="none" opacity=".8"/>
           <g class="h-eye"><ellipse cx="72" cy="47" rx="2.8" ry="3.8" fill="#2e6fbf"/><circle cx="73" cy="45.6" r="1" fill="#fff"/></g>
           <path d="M68,40.5 q4,-2 7,0" stroke="#b8862a" stroke-width="1.6" fill="none"/>
-          ${face}
+          ${face}${band}${hat}
         </g>
         <g class="h-arm">
           <g transform="translate(88 92) scale(${bladeLen}) translate(-88 -92)">
@@ -351,6 +372,48 @@
       </g>`, 'monster darkbeast');
   }
 
+  /* ======================= COMPANIONS ======================= */
+  function pet(kind) {
+    switch (kind) {
+      case 'korok': return korok(true);
+      case 'chuchu': return chuchu('plain');
+      case 'guardian': return svg('0 0 130 140', `<g class="m-body hover"><path d="M36,104 L18,132 M52,108 L44,134 M76,108 L84,134 M92,104 L110,132" stroke="#6f6a5c" stroke-width="7" stroke-linecap="round"/><ellipse cx="64" cy="98" rx="38" ry="14" fill="#8c8674" stroke="${INK}" stroke-width="2"/><path d="M28,92 Q28,40 64,36 Q100,40 100,92 Z" fill="#a8a28d" stroke="${INK}" stroke-width="2.4"/><path d="M34,80 Q64,70 94,80" stroke="#3fe0ff" stroke-width="2.4" fill="none"/><circle cx="64" cy="66" r="12" fill="#1a3a4a" stroke="${INK}" stroke-width="2"/><circle class="eye-glow" cx="64" cy="66" r="7" fill="#3fe0ff"/></g>`, 'pet');
+      case 'fairy': return svg('0 0 100 100', `<g class="m-body hover"><ellipse cx="34" cy="40" rx="20" ry="12" fill="#ffd0f0" opacity=".7" transform="rotate(-30 34 40)"/><ellipse cx="66" cy="40" rx="20" ry="12" fill="#ffd0f0" opacity=".7" transform="rotate(30 66 40)"/><circle cx="50" cy="52" r="14" fill="#fff0fa"/><circle cx="50" cy="52" r="22" fill="#ff9ae0" opacity=".35" class="aura-pulse"/></g>`, 'pet');
+      case 'chick': return svg('0 0 100 100', `${shadow(50, 94, 20)}<g class="m-body bob"><ellipse cx="50" cy="64" rx="26" ry="24" fill="#ffd23d" stroke="${INK}" stroke-width="2"/><path d="M26,60 Q14,50 18,70 Z M74,60 Q86,50 82,70Z" fill="#f2b81d" stroke="${INK}" stroke-width="1.6"/><circle cx="42" cy="56" r="3.2" fill="${INK}"/><circle cx="58" cy="56" r="3.2" fill="${INK}"/><path d="M46,64 L54,64 L50,72 Z" fill="#ff8a2a" stroke="${INK}" stroke-width="1.2"/><path d="M50,40 q-6,-10 0,-14 q6,4 0,14" fill="#c63b4f"/><path d="M42,88 v6 M58,88 v6" stroke="#ff8a2a" stroke-width="3"/></g>`, 'pet');
+      case 'dog': return svg('0 0 120 100', `${shadow(60, 94, 34)}<g class="m-body bob"><path d="M28,58 Q20,40 30,30" stroke="#8a5a2b" stroke-width="7" stroke-linecap="round" fill="none" class="tail"/><ellipse cx="56" cy="62" rx="32" ry="18" fill="#c08850" stroke="${INK}" stroke-width="2"/><path d="M34,74 v18 M46,76 v18 M66,76 v18 M78,74 v18" stroke="#a87038" stroke-width="7" stroke-linecap="round"/><circle cx="90" cy="44" r="16" fill="#c08850" stroke="${INK}" stroke-width="2"/><path d="M80,32 Q74,46 82,52 Z" fill="#8a5a2b" stroke="${INK}" stroke-width="1.5"/><ellipse cx="104" cy="48" rx="7" ry="5" fill="#d8a878" stroke="${INK}" stroke-width="1.5"/><circle cx="109" cy="46" r="2.4" fill="${INK}"/><circle cx="94" cy="40" r="2.4" fill="${INK}"/></g>`, 'pet');
+      default: return '';
+    }
+  }
+
+  /* ======================= HORSES ======================= */
+  function horse(h = {}, o = {}) {
+    const coat = (window.CATALOG && CATALOG.COATS.find(c => c.id === h.coat)) || { body: '#8b5a2b', mane: '#2a1a10' };
+    const saddle = o.saddle && window.CATALOG ? (CATALOG.SADDLES.find(x => x.id === o.saddle) || CATALOG.SADDLES[0]).color : null;
+    const g = id('hz');
+    const spots = coat.spots ? `<g fill="${coat.spots}" opacity=".85"><circle cx="70" cy="70" r="7"/><circle cx="96" cy="62" r="5"/><circle cx="112" cy="80" r="6"/><circle cx="84" cy="86" r="4"/></g>` : '';
+    return svg('0 0 200 150', `<defs>${lg(g, coat.body, shade(coat.body))}</defs>${shadow(100, 144, 64)}
+      <g class="hz-body ${o.anim || ''}">
+        <path d="M44,68 Q18,74 22,112 Q30,96 38,90" fill="${coat.mane}" stroke="${INK}" stroke-width="2" class="hz-tail"/>
+        <g class="hz-legs">
+          <path class="leg l1" d="M58,90 L54,134 h10 l2,-40" fill="url(#${g})" stroke="${INK}" stroke-width="2"/>
+          <path class="leg l2" d="M76,92 L76,136 h10 l0,-42" fill="${shade(coat.body)}" stroke="${INK}" stroke-width="2"/>
+          <path class="leg l3" d="M118,92 L116,134 h10 l4,-40" fill="url(#${g})" stroke="${INK}" stroke-width="2"/>
+          <path class="leg l4" d="M134,88 L138,134 h10 l-2,-44" fill="${shade(coat.body)}" stroke="${INK}" stroke-width="2"/>
+          <path d="M53,132 h12 v6 h-12z M75,134 h12 v6 h-12z M115,132 h12 v6 h-12z M137,132 h12 v6 h-12z" fill="#2a2a2a"/>
+        </g>
+        <ellipse cx="96" cy="76" rx="56" ry="26" fill="url(#${g})" stroke="${INK}" stroke-width="2.4"/>
+        ${spots}
+        <path d="M128,64 Q140,38 156,22 L174,32 Q160,50 150,80 Z" fill="url(#${g})" stroke="${INK}" stroke-width="2.4"/>
+        <path d="M154,18 Q170,14 186,34 Q192,46 184,50 Q172,48 158,38 Z" fill="url(#${g})" stroke="${INK}" stroke-width="2.4"/>
+        <ellipse cx="184" cy="44" rx="7" ry="6" fill="${shade(coat.body)}"/>
+        <path d="M156,16 L160,4 L166,16 Z" fill="${coat.body}" stroke="${INK}" stroke-width="1.8"/>
+        <circle cx="170" cy="28" r="2.8" fill="${INK}"/><circle cx="171" cy="27" r=".9" fill="#fff"/>
+        <path d="M130,58 Q140,30 156,14 Q150,34 146,44 Q140,56 136,68 Z" fill="${coat.mane}" stroke="${INK}" stroke-width="1.8" class="hz-mane"/>
+        ${saddle ? `<path d="M76,52 Q96,44 116,52 L114,70 Q96,74 78,70 Z" fill="${saddle}" stroke="${INK}" stroke-width="2"/><path d="M96,70 v18" stroke="${INK}" stroke-width="2"/><rect x="91" y="86" width="10" height="5" rx="2" fill="#ccc" stroke="${INK}"/><path d="M160,40 L184,46 M150,60 Q130,60 118,56" stroke="#5a3a22" stroke-width="2" fill="none"/>` : ''}
+      </g>`, 'horse');
+  }
+  function shade(hex) { const n = parseInt(hex.slice(1), 16); const r = Math.max(0, (n >> 16) - 40), g2 = Math.max(0, ((n >> 8) & 255) - 40), b = Math.max(0, (n & 255) - 40); return `rgb(${r},${g2},${b})`; }
+
   /* ======================= ICONS ======================= */
   const icons = {
     heart: (full = true) => `<svg class="ic heart ${full ? 'full' : 'empty'}" viewBox="0 0 24 22"><path d="M12,21 C4,14 1,10 1,6.5 A5.5,5.5 0 0 1 12,4 A5.5,5.5 0 0 1 23,6.5 C23,10 20,14 12,21Z" fill="${full ? '#ff3d5a' : 'rgba(0,0,0,.35)'}" stroke="${full ? '#fff' : 'rgba(255,255,255,.55)'}" stroke-width="1.6"/>${full ? '<path d="M5,6 q1.5,-2.5 4,-1.5" stroke="#fff" stroke-width="1.6" fill="none" opacity=".8" stroke-linecap="round"/>' : ''}</svg>`,
@@ -443,5 +506,5 @@
     </svg>`;
   }
 
-  window.ART = { hero, zelda, oldMan, monk, korok, hestu, beedle, goddess, chuchu, keese, bokoblin, moblin, lizalfos, guardianScout, lynel, blight, calamity, darkBeast, icons, beast, worldMap, EL };
+  window.ART = { pet, horse, hero, zelda, oldMan, monk, korok, hestu, beedle, goddess, chuchu, keese, bokoblin, moblin, lizalfos, guardianScout, lynel, blight, calamity, darkBeast, icons, beast, worldMap, EL };
 })();

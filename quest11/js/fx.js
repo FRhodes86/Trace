@@ -309,37 +309,87 @@
 
   /* ---------- ambient music: sparse piano-like notes, BotW style ---------- */
   const Music = (() => {
-    let ctx, master, timer = null, mode = null, on = true;
-    const scales = {
-      field: [0, 2, 4, 7, 9, 12, 14, 16, 19], shrine: [0, 3, 5, 7, 10, 12, 15], battle: [0, 1, 3, 5, 7, 8, 10, 12],
-      maths: [0, 3, 5, 6, 7, 10, 12], english: [0, 2, 4, 7, 9, 11, 12, 14], verbal: [0, 2, 5, 7, 9, 12, 14], nonverbal: [0, 1, 4, 5, 7, 8, 11, 12], castle: [0, 1, 3, 6, 7, 8, 11],
+    let ctx, master, comp, noiseBuf, timer = null, mode = null, on = true, step = 0, nextT = 0, intensity = 0, ambientTimer = null;
+    const ambientScales = {
+      field: [0, 2, 4, 7, 9, 12, 14, 16, 19], shrine: [0, 3, 5, 7, 10, 12, 15], plateau: [0, 2, 4, 7, 9, 12],
+      maths: [0, 3, 5, 6, 7, 10, 12], english: [0, 2, 4, 7, 9, 11, 12, 14], verbal: [0, 2, 5, 7, 9, 12, 14], nonverbal: [0, 1, 4, 5, 7, 8, 11, 12], stable: [0, 2, 4, 5, 7, 9, 12], home: [0, 4, 7, 9, 12, 16],
     };
-    const roots = { field: 60, shrine: 57, battle: 52, maths: 50, english: 62, verbal: 64, nonverbal: 55, castle: 48 };
-    function note(m, when, dur, vol, type = 'sine') {
-      const f = 440 * Math.pow(2, (m - 69) / 12);
-      const o = ctx.createOscillator(), g = ctx.createGain(), o2 = ctx.createOscillator(), g2 = ctx.createGain();
-      o.type = type; o.frequency.value = f; o2.type = 'sine'; o2.frequency.value = f * 2; g2.gain.value = 0.25;
-      g.gain.setValueAtTime(0.0001, when); g.gain.exponentialRampToValueAtTime(vol, when + 0.015); g.gain.exponentialRampToValueAtTime(0.0001, when + dur);
-      o.connect(g); o2.connect(g2); g2.connect(g); g.connect(master); o.start(when); o2.start(when); o.stop(when + dur + 0.1); o2.stop(when + dur + 0.1);
+    const ambientRoots = { field: 60, shrine: 57, plateau: 62, maths: 50, english: 62, verbal: 64, nonverbal: 55, stable: 60, home: 65 };
+    // Driving battle themes: 16 steps per bar, 4 bars per loop
+    const SONGS = {
+      battle: { bpm: 136, roots: [45, 41, 48, 43], chords: [[69, 72, 76], [65, 69, 72], [64, 67, 72], [67, 71, 74]], bassWave: 'sawtooth', leadWave: 'square',
+        kick: [0, 8, 10], snare: [4, 12], lead: [[0, 76], [3, 74], [4, 72], [6, 71], [8, 69], [12, 72], [14, 76], [16, 81], [20, 79], [22, 77], [24, 76], [28, 74], [30, 72], [32, 71], [36, 72], [38, 74], [40, 76], [44, 79], [48, 81], [52, 79], [54, 76], [56, 74], [60, 76]] },
+      boss: { bpm: 152, roots: [38, 34, 36, 33], chords: [[62, 65, 69], [58, 62, 65], [60, 64, 67], [57, 61, 64]], bassWave: 'sawtooth', leadWave: 'sawtooth', dist: true,
+        kick: [0, 4, 8, 11, 12], snare: [4, 12], roll: true, lead: [[0, 74], [2, 77], [4, 81], [8, 79], [10, 77], [12, 76], [16, 74], [18, 70], [20, 74], [24, 72], [28, 69], [32, 74], [34, 77], [36, 81], [40, 84], [44, 82], [46, 81], [48, 79], [52, 76], [56, 73], [60, 69]] },
+      castle: { bpm: 124, roots: [40, 36, 33, 35], chords: [[64, 67, 71], [60, 64, 67], [57, 60, 64], [59, 63, 66]], bassWave: 'sawtooth', leadWave: 'sawtooth', dist: true, pad: true,
+        kick: [0, 6, 8, 14], snare: [4, 12], roll: true, lead: [[0, 76], [4, 79], [8, 83], [12, 81], [16, 79], [20, 76], [24, 72], [28, 71], [32, 76], [36, 79], [40, 84], [44, 83], [48, 81], [52, 79], [56, 78], [60, 75]] },
+    };
+    const mtof = m => 440 * Math.pow(2, (m - 69) / 12);
+    function osc(type, freq, t, dur, vol, dest, opt = {}) {
+      const o = ctx.createOscillator(), g = ctx.createGain(); o.type = type; o.frequency.setValueAtTime(freq, t);
+      if (opt.slideTo) o.frequency.exponentialRampToValueAtTime(opt.slideTo, t + dur);
+      if (opt.detune) o.detune.value = opt.detune;
+      let node = o;
+      if (opt.lp) { const f = ctx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = opt.lp; f.Q.value = opt.q || 1; o.connect(f); node = f; }
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + (opt.attack || 0.008)); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      node.connect(g); g.connect(dest || master); o.start(t); o.stop(t + dur + 0.05);
     }
-    function tick() {
-      if (!ctx || !mode || !on) return;
-      const sc = scales[mode] || scales.field, root = roots[mode] || 60, now = ctx.currentTime;
-      if (mode === 'battle' || mode === 'castle') {
-        const bass = root - 12; for (let i = 0; i < 4; i++) note(bass + (i === 3 ? sc[2] : 0), now + i * 0.25, 0.22, 0.07, 'triangle');
-        if (Math.random() < 0.7) note(root + 12 + U.pick(sc), now + U.pick([0, 0.5]), 0.5, 0.045, 'triangle');
-        timer = setTimeout(tick, 1000);
-      } else {
-        const k = Math.random() < 0.35 ? 2 : 1;
-        for (let i = 0; i < k; i++) note(root + U.pick(sc) + (Math.random() < 0.3 ? 12 : 0), now + i * 0.18, 2.4, 0.05);
-        if (Math.random() < 0.25) note(root - 12 + sc[0], now, 3.5, 0.035);
-        timer = setTimeout(tick, 900 + Math.random() * 1600);
-      }
+    function noise(t, dur, vol, hp) {
+      const src = ctx.createBufferSource(); src.buffer = noiseBuf; const f = ctx.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = hp; const g = ctx.createGain();
+      g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.0001, t + dur); src.connect(f); f.connect(g); g.connect(master); src.start(t); src.stop(t + dur + 0.02);
+    }
+    const kick = (t, heavy) => osc('sine', heavy ? 120 : 150, t, heavy ? 0.28 : 0.2, heavy ? 0.9 : 0.75, master, { slideTo: 38 });
+    const snare = t => { noise(t, 0.16, 0.32, 1400); osc('triangle', 190, t, 0.09, 0.18); };
+    const hat = (t, open) => noise(t, open ? 0.12 : 0.035, open ? 0.08 : 0.06, 7000);
+    function scheduleStep(song, st, t) {
+      const sp = 60 / song.bpm / 4; const bar = Math.floor(st / 16) % 4; const s16 = st % 16; const loopStep = st % 64;
+      const heavy = !!song.dist;
+      if (song.kick.includes(s16)) kick(t, heavy);
+      if (song.snare.includes(s16)) snare(t);
+      if (song.roll && bar === 3 && s16 >= 12) snare(t + sp / 2);
+      if (s16 % 2 === 0 || intensity >= 2) hat(t, s16 % 4 === 2 && intensity >= 1);
+      // bass: driving eighths with octave pops
+      if (s16 % 2 === 0) { const r = song.roots[bar] + (s16 % 8 === 6 ? 12 : 0); osc(song.bassWave, mtof(r), t, sp * 1.8, 0.16, master, { lp: heavy ? 900 : 700, q: 4 }); }
+      // arpeggio sparkle
+      const ch = song.chords[bar]; osc('square', mtof(ch[s16 % 3] + (s16 % 6 > 2 ? 12 : 0)), t, sp * 0.9, intensity >= 1 ? 0.045 : 0.03, master, { lp: 3000 });
+      // chord stab / pad at bar start
+      if (s16 === 0) ch.forEach(n => song.pad ? osc('sawtooth', mtof(n - 12), t, sp * 15, 0.035, master, { lp: 1400, attack: 0.3, detune: 7 }) : osc('sawtooth', mtof(n), t, sp * 3, 0.05, master, { lp: 2200, detune: 9 }));
+      // lead melody
+      const L = song.lead.find(x => x[0] === loopStep);
+      if (L) { osc(song.leadWave, mtof(L[1]), t, sp * 3.6, 0.07, master, { lp: heavy ? 2600 : 3200, detune: heavy ? 5 : 0 }); if (intensity >= 2) osc(song.leadWave, mtof(L[1] - 12), t, sp * 3.6, 0.04, master, { lp: 2000 }); }
+    }
+    function sequencer() {
+      if (!ctx || !on || !SONGS[mode]) return;
+      const song = SONGS[mode]; const sp = 60 / song.bpm / 4;
+      while (nextT < ctx.currentTime + 0.15) { scheduleStep(song, step, nextT); step++; nextT += sp; }
+    }
+    function ambientTick() {
+      if (!ctx || !mode || !on || SONGS[mode]) return;
+      const sc = ambientScales[mode] || ambientScales.field, root = ambientRoots[mode] || 60, now = ctx.currentTime;
+      const k = Math.random() < 0.35 ? 2 : 1;
+      for (let i = 0; i < k; i++) { const m = root + U.pick(sc) + (Math.random() < 0.3 ? 12 : 0); osc('sine', mtof(m), now + i * 0.18, 2.4, 0.05); osc('sine', mtof(m) * 2, now + i * 0.18, 1.2, 0.012); }
+      if (Math.random() < 0.25) osc('sine', mtof(root - 12 + sc[0]), now, 3.5, 0.035);
+      ambientTimer = setTimeout(ambientTick, 900 + Math.random() * 1600);
+    }
+    function stopAll() { clearInterval(timer); timer = null; clearTimeout(ambientTimer); ambientTimer = null; }
+    function start() {
+      stopAll(); if (!ctx || !on || !mode) return;
+      if (SONGS[mode]) { step = 0; nextT = ctx.currentTime + 0.05; timer = setInterval(sequencer, 25); }
+      else ambientTimer = setTimeout(ambientTick, 300);
     }
     return {
-      unlock() { try { ctx = ctx || new (window.AudioContext || window.webkitAudioContext)(); master = master || ctx.createGain(); master.gain.value = 0.8; master.connect(ctx.destination); if (ctx.state === 'suspended') ctx.resume(); } catch (e) { /* no audio */ } },
-      play(m) { if (m === mode) return; mode = m; clearTimeout(timer); if (on && ctx) timer = setTimeout(tick, 300); },
-      set(v) { on = v; clearTimeout(timer); if (on && ctx && mode) tick(); },
+      unlock() {
+        try {
+          ctx = ctx || new (window.AudioContext || window.webkitAudioContext)();
+          if (!master) { comp = ctx.createDynamicsCompressor(); comp.connect(ctx.destination); master = ctx.createGain(); master.gain.value = 0.55; master.connect(comp);
+            noiseBuf = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate); const d = noiseBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; }
+          if (ctx.state === 'suspended') ctx.resume();
+          if (mode && !timer && !ambientTimer) start();
+        } catch (e) { /* no audio */ }
+      },
+      play(m) { if (m === mode) return; mode = m; intensity = 0; start(); },
+      set(v) { on = v; if (on) start(); else stopAll(); },
+      intensity(n) { intensity = n; },
     };
   })();
 

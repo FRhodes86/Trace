@@ -58,13 +58,40 @@ The hero (named by the player, default "Link") wakes on the Great Plateau and ha
   - Clouds cover unexplored regions until you visit, which activates a Sheikah Tower.
   - Divine Beasts glow red while corrupted and blue once freed, and freed beasts fire beams at the castle.
   - Link paraglides between locations.
-- Ambient music is generated live: sparse, piano-like notes that change for each region, plus battle themes. It can be switched off in Settings.
+- Music is generated live. Each region has its own calm, piano-like ambient track. Battles get a driving drum-and-bass theme, the Blights get a heavier boss theme, and Hyrule Castle gets its own. Battle music builds as the combo grows (3 and 5 in a row). It can be switched off in Settings.
 
 ## What keeps them coming back
 
 - **Hero Rank:** every correct answer earns XP, and levels unlock titles from *Sleepy Hylian* to *Legend of Hyrule*.
 
-- **Rupees** buy items and upgrades from Beedle: weapons (more boss damage), shields (block hits), armour (rupee bonus, easier Koroks), elixirs and fairies.
+- **Beedle's Shop** has over 100 things to buy, from an 80-rupee Boko Club up to the 15,000-rupee Fierce Deity Armour:
+  - Weapons: more boss damage and coloured slash trails. The elemental blades are ×1.5 "super effective" (+25% damage) against one Blight.
+  - Shields: block hits in boss fights. Some also earn rupees on a perfect guard, and the Mirror Shield reflects damage.
+  - Armour: changes Link's look and boosts rewards (rupees, XP, Korok luck, extra ingredients).
+  - Elixirs, fairies, bomb arrows, Lucky Clovers and gold nuggets.
+  - Cooking ingredients and horse gear.
+  - Style: Sheikah Slate colour themes, paraglider fabrics, and battle companions (dog, Korok, Rito chick, Chuchu, fairy, Mini Guardian) that cheer on correct answers.
+  - A Sell tab for meals and monster parts.
+- **Gear never makes the questions easier.** Perks only boost rewards or boss battles, so the learning stays just as challenging.
+- **Loot:** every shrine win drops cooking ingredients (different in each region), a monster part, and **Adventure Tickets**.
+- **Cooking:** throw up to 5 ingredients in the pot at the stable (or at home) to discover 24 recipes. Special ingredients add effects:
+  - Hearty, Mighty and Hasty meals help in boss fights.
+  - Spicy (+rupees), Electro (more Koroks) and Chilly (+XP) meals last 3 shrine trials.
+- **Horses:** a new herd arrives in Hyrule Field every day.
+  - Tame one with a timing mini-game (fiery horses are harder), then name it and register it at Outskirt Stable.
+  - Brush and feed your horses daily to grow their bond.
+  - Choose saddles, and race them for prizes.
+- **Mini-games cost Adventure Tickets**, which are earned in the shrines. Fun breaks always lead back to learning. The mini-games are:
+  - the Rito Flight Range (archery),
+  - Kass's Song (a memory game),
+  - Korok hide-and-seek in the Lost Woods,
+  - horse racing.
+- **Hateno house** (2,500 rupees): furnish it with Bolson Construction furniture.
+  - The bed gives a daily XP boost.
+  - The weapon rack and trophy shelf show off what you've earned.
+  - The Golden Hero Statue (6,000 rupees) is for true heroes.
+- **22 side quests** from Hudson, Sidon, Yunobo, Teba, Riju, Kass, Purah, Beedle and others. Rewards include armour sets, companions, saddles, colour themes and decor.
+- **Great Fairy Fountain** (next to the Goddess Statue): upgrade armour up to ★★★★ with rupees and monster parts, which boosts its perks.
 - **Spirit Orbs** (first clear of each shrine) can be swapped at the Goddess Statue: 4 orbs make a Heart Container or a Stamina Vessel.
 - **Korok seeds** pop up at random after correct answers. Give them to Hestu for extra rune uses.
 - **Sheikah Runes** in battle:
@@ -103,7 +130,9 @@ quest11/
   js/content/*.js       question generators per subject (+ wordbank.js, generated)
   js/story.js           all names, dialogue and story text (easy to rename characters)
   js/state.js           save data, progression rules, mastery
-  js/game.js            screens, battle engine, shop, etc.
+  js/catalog.js         every ownable thing: gear, items, ingredients, recipes, cosmetics, decor, horses, side quests
+  js/game.js            screens, battle engine, story
+  js/world.js           side content: shop, bag, cooking, horses, mini-games, house, side quests, Great Fairy
   tools/test-content.js stress-tests every generator: node tools/test-content.js 1000
   tools/build-wordbank.js  rebuilds wordbank.js (needs `npm i wordlist-english`)
   tools/bundle.js       builds dist/breath-of-knowledge.html

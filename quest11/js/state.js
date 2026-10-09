@@ -6,29 +6,7 @@
   const SUBJECTS = ['maths', 'english', 'verbal', 'nonverbal'];
   const SUBJECT_NAMES = { maths: 'Maths', english: 'English', verbal: 'Verbal Reasoning', nonverbal: 'Non-Verbal Reasoning' };
 
-  const WEAPONS = [
-    { id: 'traveler', name: 'Traveller\'s Sword', emoji: '🗡️', dmg: 10, price: 0 },
-    { id: 'soldier', name: 'Soldier\'s Broadsword', emoji: '⚔️', dmg: 13, price: 200 },
-    { id: 'knight', name: 'Knight\'s Claymore', emoji: '🔱', dmg: 16, price: 500 },
-    { id: 'royal', name: 'Royal Guard\'s Sword', emoji: '👑', dmg: 20, price: 1000 },
-    { id: 'master', name: 'Master Sword', emoji: '✨', dmg: 26, price: null },
-  ];
-  const SHIELDS = [
-    { id: 'none', name: 'Pot Lid', emoji: '🍳', blocks: 0, price: 0 },
-    { id: 'traveler', name: 'Traveller\'s Shield', emoji: '🛡️', blocks: 1, price: 300 },
-    { id: 'hylian', name: 'Hylian Shield', emoji: '🔰', blocks: 2, price: 900 },
-  ];
-  const ARMOUR = [
-    { id: 'tunic', name: 'Hylian Tunic', emoji: '👕', desc: 'Cosy and reliable.', price: 0 },
-    { id: 'sheikah', name: 'Sheikah Set', emoji: '🥷', desc: 'Koroks are much easier to find.', price: 250 },
-    { id: 'champion', name: 'Champion\'s Tunic', emoji: '💙', desc: '+25% rupees from every correct answer.', price: 600 },
-  ];
-  const ITEMS = [
-    { id: 'hearty', name: 'Hearty Elixir', emoji: '❤️', desc: '+3 extra hearts in your next battle.', price: 40 },
-    { id: 'hasty', name: 'Hasty Elixir', emoji: '💨', desc: '+20 seconds on every timer in your next battle.', price: 30 },
-    { id: 'fairy', name: 'Fairy', emoji: '🧚', desc: 'If you run out of hearts, a fairy revives you with 3 hearts.', price: 80 },
-    { id: 'bombarrow', name: 'Bomb Arrows', emoji: '🏹', desc: 'Use in a boss battle: next correct answer deals double damage.', price: 35 },
-  ];
+  const { WEAPONS, SHIELDS, ARMOUR, ITEMS } = window.CATALOG;
   const MASTER_SWORD_HEARTS = 8;
   const HESTU_COSTS = [2, 4, 7, 10, 15];
 
@@ -41,7 +19,13 @@
       runeLevel: 1, hestuLevel: 0,
       champions: {}, // daruk/mipha/revali/urbosa: true
       weapon: 'traveler', ownedWeapons: ['traveler'], shield: 'none', ownedShields: ['none'], armour: 'tunic', ownedArmour: ['tunic'],
-      items: { hearty: 0, hasty: 0, fairy: 0, bombarrow: 0 },
+      items: { hearty: 0, hasty: 0, mighty: 0, fairy: 0, bombarrow: 0, ticket: 0, luckycharm: 0, goldnugget: 0 },
+      tickets: 3, ingredients: { apple: 3, shroom: 2, meat: 1, salt: 1 }, materials: {}, meals: {}, recipes: [], buffs: { spicy: 0, electro: 0, chilly: 0 }, lucky: 0,
+      horses: [], activeHorse: null, wild: { day: '', herd: [] },
+      house: { owned: false, decor: [] }, rested: '',
+      theme: 'sheikah', glider: 'hylian', pet: 'none', ownedThemes: ['sheikah'], ownedGliders: ['hylian'], ownedPets: ['none'], ownedSaddles: ['stable'],
+      fairy: { open: false, levels: {} },
+      quests: {}, counters: {},
       plateau: {}, // subject -> true
       stars: {}, // topicId -> 0..3 (highest trial cleared)
       bosses: {}, // regionId -> true
@@ -63,14 +47,20 @@
     SUBJECTS, SUBJECT_NAMES, WEAPONS, SHIELDS, ARMOUR, ITEMS, MASTER_SWORD_HEARTS, HESTU_COSTS,
     s: null,
     load() {
-      try { const raw = localStorage.getItem(KEY); if (raw) { this.s = Object.assign(fresh(), JSON.parse(raw)); return true; } } catch (e) { /* storage blocked */ }
+      try { const raw = localStorage.getItem(KEY); if (raw) { this.s = this.migrate(JSON.parse(raw)); return true; } } catch (e) { /* storage blocked */ }
       this.s = null; return false;
+    },
+    // older saves: fill in any new fields, including inside nested objects
+    migrate(obj) {
+      const f = fresh(); const s = Object.assign(f, obj);
+      for (const k of ['items', 'buffs', 'house', 'fairy', 'wild', 'settings']) s[k] = Object.assign(fresh()[k], obj[k] || {});
+      return s;
     },
     newGame(hero) { this.s = fresh(); this.s.hero = hero || 'Link'; this.save(); },
     save() { try { localStorage.setItem(KEY, JSON.stringify(this.s)); } catch (e) { /* storage full or blocked */ } },
     wipe() { try { localStorage.removeItem(KEY); } catch (e) { /* ignore */ } this.s = null; },
     exportCode() { return btoa(unescape(encodeURIComponent(JSON.stringify(this.s)))); },
-    importCode(code) { const obj = JSON.parse(decodeURIComponent(escape(atob(code.trim())))); if (!obj || obj.v !== 1) throw new Error('Not a save code'); this.s = Object.assign(fresh(), obj); this.save(); },
+    importCode(code) { const obj = JSON.parse(decodeURIComponent(escape(atob(code.trim())))); if (!obj || obj.v !== 1) throw new Error('Not a save code'); this.s = this.migrate(obj); this.save(); },
 
     /* ---- daily streak ---- */
     touchDay() {
@@ -89,15 +79,34 @@
     /* ---- equipment ---- */
     weapon() { return WEAPONS.find(w => w.id === this.s.weapon) || WEAPONS[0]; },
     shield() { return SHIELDS.find(w => w.id === this.s.shield) || SHIELDS[0]; },
-    rupeeBonus() { return this.s.armour === 'champion' ? 1.25 : 1; },
-    korokChance() { return this.s.armour === 'sheikah' ? 0.16 : 0.07; },
+    armour() { return ARMOUR.find(a => a.id === this.s.armour) || ARMOUR[0]; },
+    // armour perk, boosted by Great Fairy upgrades (+25% per level)
+    perk() { const a = this.armour(); const lv = this.s.fairy.levels[a.id] || 0; const m = 1 + 0.25 * lv; const p = a.perk || {};
+      return { rupees: (p.rupees || 0) * m, xp: (p.xp || 0) * m, korok: p.korok ? 1 + (p.korok - 1) * m : 1, drops: (p.drops || 0) + (lv >= 4 && p.drops ? 1 : 0), subject: p.subject, subjRupees: (p.subjRupees || 0) * m }; },
+    rupeeBonus(subject) { const p = this.perk(); return 1 + p.rupees + (subject && subject === p.subject ? p.subjRupees : 0) + (this.s.buffs.spicy > 0 ? 0.5 : 0); },
+    xpBonus() { const p = this.perk(); return 1 + p.xp + (this.s.buffs.chilly > 0 ? 0.3 : 0) + (this.s.restedBonus ? 0.1 : 0); },
+    korokChance() { return Math.min(0.4, 0.07 * this.perk().korok * (this.s.buffs.electro > 0 ? 2 : 1)); },
+    count(key, n = 1) { this.s.counters[key] = (this.s.counters[key] || 0) + n; },
+    countMax(key, v) { this.s.counters[key] = Math.max(this.s.counters[key] || 0, v); },
+    totalStars() { return Object.values(this.s.stars).reduce((a, b) => a + b, 0); },
+    questValue(key) {
+      const s = this.s, c = s.counters;
+      switch (key) {
+        case 'trials': return s.stats.trials; case 'stars': return this.totalStars(); case 'seedsTotal': return s.seedsTotal;
+        case 'bestStreak': return s.stats.bestStreak; case 'recipes': return s.recipes.length; case 'house': return s.house.owned ? 1 : 0;
+        case 'maxBond': return s.horses.reduce((m, h) => Math.max(m, h.bond), 0); case 'bosses': return this.bossesBeaten();
+        case 'mockBest': return s.mocks.reduce((m, x) => Math.max(m, Math.round((x.score / x.total) * 100)), 0);
+        default: return c[key] || 0;
+      }
+    },
+    questsReady() { return CATALOG.QUESTS.filter(q => !this.s.quests[q.id] && this.questValue(q.goal[0]) >= q.goal[1]).length; },
     timerBonus() { return this.s.stamina * 6; },
 
     /* ---- mastery ---- */
     record(topicId, lv, correct) {
       const m = (this.s.mastery[topicId] = this.s.mastery[topicId] || []);
       m.push({ l: lv, c: correct ? 1 : 0 }); if (m.length > 30) m.shift();
-      const st = this.s.stats; st.answered++; if (correct) { st.correct++; this.s.daily.correct++; }
+      const st = this.s.stats; st.answered++; if (correct) { st.correct++; this.s.daily.correct++; const subj = SUBJECTS.find(x => CONTENT[x].some(t => t.id === topicId)); if (subj) this.count('c_' + subj); }
     },
     // 0..100 — recent accuracy, weighted so that hard questions count for more
     mastery(topicId) {

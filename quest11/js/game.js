@@ -159,11 +159,12 @@
   }
 
   /* =========================================================== MAP */
-  const PINS = { maths: [77, 21], english: [86, 52], verbal: [20, 26], nonverbal: [20, 80], castle: [50, 44], woods: [49, 17], plateau: [50, 79], hateno: [76, 79], blood: [33, 62] };
+  const PINS = { maths: [77, 21], english: [86, 52], verbal: [20, 26], nonverbal: [20, 80], castle: [50, 44], woods: [49, 17], plateau: [50, 79], hateno: [76, 79], blood: [33, 62], stable: [38, 53], house: [89, 70], range: [27, 41], kass: [63, 30] };
   function map() {
     const s = S();
     if (!s.flags.introSeen) return intro();
     if (!State.plateauDone()) return plateau();
+    World.applyTheme();
     // daily treasure chest
     const today = new Date().toISOString().slice(0, 10);
     const freed = id => s.bosses[id];
@@ -188,6 +189,10 @@
           <button class="pin small" style="left:${PINS.woods[0]}%;top:${PINS.woods[1]}%" id="woods"><span class="pin-art sm">${IC.sword()}</span><span class="pin-lbl"><b>Lost Woods</b></span></button>
           <button class="pin small" style="left:${PINS.plateau[0]}%;top:${PINS.plateau[1]}%" id="plat"><span class="pin-art sm">${IC.tower(true)}</span><span class="pin-lbl"><b>Great Plateau</b></span></button>
           <button class="pin small" style="left:${PINS.hateno[0]}%;top:${PINS.hateno[1]}%" id="hateno"><span class="pin-art sm">📜</span><span class="pin-lbl"><b>Hateno Lab</b><small>Practice papers</small></span></button>
+          <button class="pin small side" style="left:${PINS.stable[0]}%;top:${PINS.stable[1]}%" id="stable"><span class="pin-art sm">🐴</span><span class="pin-lbl"><b>Outskirt Stable</b><small>Horses &amp; cooking</small></span></button>
+          <button class="pin small side" style="left:${PINS.house[0]}%;top:${PINS.house[1]}%" id="house"><span class="pin-art sm">🏡</span><span class="pin-lbl"><b>Hateno House</b></span></button>
+          <button class="pin small side" style="left:${PINS.range[0]}%;top:${PINS.range[1]}%" id="range"><span class="pin-art sm">🎯</span><span class="pin-lbl"><b>Flight Range</b></span></button>
+          <button class="pin small side" style="left:${PINS.kass[0]}%;top:${PINS.kass[1]}%" id="kass"><span class="pin-art sm">🪗</span><span class="pin-lbl"><b>Kass's Song</b></span></button>
           ${bloodMoon ? `<button class="pin bloodmoon" style="left:${PINS.blood[0]}%;top:${PINS.blood[1]}%" id="blood"><span class="pin-art sm">🌕</span><span class="pin-lbl"><b>Blood Moon!</b><small>${s.mistakes.length} mistakes return</small></span></button>` : ''}
           <div class="me" id="me" style="left:${here[0]}%;top:${here[1]}%">${ART.hero({ armour: s.armour, shield: s.shield, weapon: s.weapon })}</div>
         </div></div>
@@ -201,6 +206,8 @@
         <button class="dock-b" id="shop">${ART.beedle()}<span>Shop</span></button>
         <button class="dock-b" id="statue">${ART.goddess()}<span>Goddess</span></button>
         <button class="dock-b" id="hestu">${ART.hestu()}<span>Hestu</span></button>
+        <button class="dock-b" id="quests"><span class="dock-ic">📜</span><span>Quests</span>${State.questsReady() ? `<i class="badge">${State.questsReady()}</i>` : ''}</button>
+        <button class="dock-b" id="bag"><span class="dock-ic">🎒</span><span>Bag</span></button>
         <button class="dock-b" id="log"><span class="dock-ic">📒</span><span>Log</span></button>
         <button class="dock-b" id="gear"><span class="dock-ic">⚙️</span><span>Settings</span></button>
       </nav>`, 'map', 'field');
@@ -218,12 +225,15 @@
     on('#plat', () => travel('plateau', () => plateau()));
     on('#hateno', () => travel('hateno', mockMenu));
     on('#blood', bloodMoonIntro);
+    on('#stable', () => travel('stable', World.stable)); on('#house', () => travel('house', World.house));
+    on('#range', () => travel('range', World.archeryIntro)); on('#kass', () => travel('kass', World.kassIntro));
+    on('#quests', World.quests); on('#bag', () => World.bag());
     on('#claim', () => {
       const bonus = 50 + Math.min(50, s.streak.days * 5);
-      s.rupees += bonus; s.seeds++; s.seedsTotal++; s.daily.claimed = true; State.save();
-      FX.chest([{ icon: IC.rupee('red'), label: `${bonus} rupees` }, { icon: IC.seed(), label: 'Korok seed' }], map, 'Daily Quest complete!');
+      s.rupees += bonus; s.seeds++; s.seedsTotal++; s.tickets += 2; s.daily.claimed = true; State.save();
+      FX.chest([{ icon: IC.rupee('red'), label: `${bonus} rupees` }, { icon: IC.seed(), label: 'Korok seed' }, { icon: '<span class="emo">🎫</span>', label: '2 Adventure Tickets' }], map, 'Daily Quest complete!');
     });
-    on('#shop', () => shop()); on('#statue', () => statue()); on('#hestu', () => hestu()); on('#log', () => adventureLog()); on('#gear', settings);
+    on('#shop', () => World.shop()); on('#statue', () => statue()); on('#hestu', () => hestu()); on('#log', () => adventureLog()); on('#gear', settings);
     if (!s.flags.mapSeen) {
       s.flags.mapSeen = true; State.save();
       dialogue([['Old Man', 'This is Hyrule. Each region holds shrines for one subject, and a Divine Beast controlled by a Blight.'], ['Old Man', 'Clouds hide the regions you haven\'t explored yet. Travel there to reveal them!'], ['Old Man', 'Clear shrines to earn stars. Earn enough stars and you can challenge the Blight. Free all four Champions and you can face Calamity Ganon himself!']]);
@@ -378,6 +388,8 @@
     on('[data-lv]', (e, el) => { FX.flash('#3fe0ff', 0.5); trial(topicId, +el.dataset.lv); });
   }
 
+  // meal buffs last a number of shrine trials; the bed's rested bonus lasts one
+  function endTrialBuffs() { const s = S(); for (const k of Object.keys(s.buffs)) if (s.buffs[k] > 0) s.buffs[k]--; s.restedBonus = false; }
   function trial(topicId, lv) {
     const t = topicById(topicId); const subj = subjectOf(topicId); const idx = topicsOf(subj).indexOf(t); const name = shrineName(subj, idx);
     const tr = TRIALS[lv - 1];
@@ -400,9 +412,12 @@
             loot.push({ icon: '⭐', label: `${'★'.repeat(lv)} star${lv > 1 ? 's' : ''}` });
             rewards.push(n => FX.chest(loot, n, 'Shrine treasure!'));
           }
-          s.stats.trials++; State.save();
+          const drops = World.trialDrops(subj, foe.name, lv, false);
+          if (r.B.wrong === 0) { s.tickets++; drops.push({ icon: '<span class="emo">🎫</span>', label: 'Perfect run: +1 ticket' }); }
+          if (loot.length) loot.push(...drops); else rewards.push(n => FX.chest(drops, n, 'Monster loot!'));
+          s.stats.trials++; endTrialBuffs(); State.save();
           results(r, { rewards, retry: () => trial(topicId, lv), next: () => shrineScreen(topicId), nextLabel: 'Back to shrine' });
-        } else results(r, { retry: () => trial(topicId, lv), next: () => shrineScreen(topicId) });
+        } else { endTrialBuffs(); State.save(); results(r, { retry: () => trial(topicId, lv), next: () => shrineScreen(topicId) }); }
       },
     });
   }
@@ -418,7 +433,12 @@
     const s = S();
     const isBoss = !!cfg.boss; const exam = !!cfg.exam; const sword = cfg.kind === 'sword';
     const useItems = cfg.items || {};
-    const maxHearts = cfg.hearts + (useItems.hearty ? 3 : 0);
+    const mealFx = useItems.meal ? useItems.meal.split('|')[1] : '';
+    const maxHearts = cfg.hearts + (useItems.hearty ? 3 : 0) + (mealFx === 'hearty' ? 2 : 0);
+    const mightMult = Math.max(useItems.mighty ? 1.25 : 1, mealFx === 'mighty' ? 1.2 : 1); // elixir and meal don't stack
+    const pet = !exam && s.pet && s.pet !== 'none' ? s.pet : null;
+    const trail = (CATALOG.WEAPONS.find(w => w.id === s.weapon) || {}).trail || '#fff';
+    document.documentElement.style.setProperty('--trail', trail);
     const foeHp = isBoss ? cfg.boss.hp : cfg.total ? cfg.total - 2 : 1;
     const B = {
       cfg, idx: 0, hearts: maxHearts, maxHearts, correct: 0, wrong: 0, streak: 0, best: 0, rupees: 0, seeds: 0, xp: 0, log: [],
@@ -432,14 +452,17 @@
       for (const k of Object.keys(STORY.runes)) if (s.runes[k]) B.runes[k] = State.runeCharges();
       for (const k of Object.keys(STORY.champions)) if (s.champions[k]) B.champ[k] = true;
     }
-    if (useItems.hearty) s.items.hearty--; if (useItems.hasty) s.items.hasty--; State.save();
-    const timerFor = () => (s.settings.timers && cfg.timer ? cfg.timer + State.timerBonus() + (useItems.hasty ? 20 : 0) : 0);
+    for (const k of ['hearty', 'hasty', 'mighty']) if (useItems[k]) s.items[k]--;
+    if (useItems.meal) { s.meals[useItems.meal]--; if (!s.meals[useItems.meal]) delete s.meals[useItems.meal]; }
+    State.save(); FX.Music.intensity(0);
+    const timerFor = () => (s.settings.timers && cfg.timer ? cfg.timer + State.timerBonus() + (useItems.hasty ? 20 : 0) + (mealFx === 'hasty' ? 15 : 0) : 0);
     const foe = isBoss ? { name: cfg.boss.name, art: cfg.boss.art, attack: cfg.boss.element } : cfg.foe || { name: 'Bokoblin', art: ART.bokoblin('red'), attack: 'melee' };
     const theme = cfg.theme || (isBoss ? (cfg.boss.theme || 'castle') : 'shrine');
 
     const arena = exam ? '' : `<div class="arena ${isBoss ? 'boss-arena' : ''}" id="arena">
         <div class="ground"></div>
         <div class="fighter hero-f" id="hero">${heroArt()}<svg class="stamina" id="stamina" viewBox="0 0 40 40" hidden><circle cx="20" cy="20" r="15" class="st-bg"/><circle cx="20" cy="20" r="15" class="st-fg" id="stfg"/></svg><div class="shield-bubble"></div></div>
+        ${pet ? `<div class="pet-f" id="pet">${ART.pet(pet)}</div>` : ''}
         <div class="fighter foe-f ${isBoss ? 'boss' : ''}" id="foe">${foe.art}</div>
         <div class="combo" id="combo"></div>
       </div>`;
@@ -452,7 +475,7 @@
       ${arena}
       <section class="qcard" id="qcard"></section>
       <footer class="runebar" id="runebar"></footer>
-    </div>`, theme, isBoss ? (theme === 'castle' ? 'castle' : 'battle') : exam ? 'shrine' : 'battle');
+    </div>`, theme, isBoss ? (theme === 'castle' ? 'castle' : 'boss') : exam ? 'shrine' : 'battle');
 
     const elHearts = $('#hearts'), elProg = $('#prog'), qcard = $('#qcard');
     let prevHearts = B.hearts;
@@ -586,24 +609,32 @@
         if (btns[i]) { const [x, y] = FX.center(btns[i]); FX.burst(x, y, { n: 14, colors: ['#5ce06a', '#fff'], speed: 180, gravity: 200 }); }
         let mult = 1; if (B.bombNext) { mult *= isBoss ? 2 : 3; B.bombNext = false; } if (B.furyNext) { mult *= 3; B.furyNext = false; }
         let dmg = 1;
-        if (isBoss) { const base = cfg.boss.dmg ? cfg.boss.dmg(B) : State.weapon().dmg; dmg = Math.round(base * (1 + 0.1 * Math.min(B.streak - 1, 5)) * mult); }
+        const weak = isBoss && State.weapon().weak && State.weapon().weak === cfg.boss.element;
+        if (isBoss) { const base = cfg.boss.dmg ? cfg.boss.dmg(B) : State.weapon().dmg; dmg = Math.round(base * (1 + 0.1 * Math.min(B.streak - 1, 5)) * mult * mightMult * (weak ? 1.25 : 1)); }
+        if (weak && !B.weakShown) { B.weakShown = true; setTimeout(() => FX.banner('Super effective!', 'flurry hot'), 500); }
+        if (!exam) FX.Music.intensity(B.streak >= 5 ? 2 : B.streak >= 3 ? 1 : 0);
+        const petEl = $('#pet'); if (petEl) { petEl.classList.remove('cheer'); void petEl.offsetWidth; petEl.classList.add('cheer'); }
         B.hp = Math.max(0, B.hp - dmg);
         strike(dmg, mult > 1, B.hp <= 0);
-        const gain = Math.round((5 + Math.min(B.streak, 5)) * State.rupeeBonus() * (isBoss ? 1 : mult));
+        const gain = Math.round((5 + Math.min(B.streak, 5)) * State.rupeeBonus(subjectOf(B.cur.topic.id)) * (isBoss ? 1 : mult));
         B.rupees += gain;
         const color = gain >= 15 ? 'red' : gain >= 8 ? 'blue' : 'green';
         setTimeout(() => { FX.flyTo(foeEl, '#b-rupees', IC.rupee(color)); updateTop(); }, 300);
-        const xp = 10 + Math.min(B.streak, 5) * 2; B.xp += xp; setTimeout(() => gainXp(xp, $('#hero')), 450);
+        const xp = Math.round((10 + Math.min(B.streak, 5) * 2) * State.xpBonus()); B.xp += xp; setTimeout(() => gainXp(xp, $('#hero')), 450);
         msg = isBoss ? `<b>${U.pick(STORY.praise)}</b> You hit for <b>${dmg}</b> damage!` : `<b>${U.pick(STORY.praise)}</b> +${gain} rupees${mult > 1 ? ' (power bonus!)' : ''}`;
         if (B.streak === 3) setTimeout(() => { FX.banner('Flurry Rush!', 'flurry'); FX.flash('#3fe0ff', 0.25); }, 250);
         else if (B.streak === 5 || (B.streak > 5 && B.streak % 5 === 0)) setTimeout(() => { FX.banner(`${B.streak} Combo! Unstoppable!`, 'flurry hot'); FX.flash('#ffd23d', 0.3); }, 250);
         if (!sword && Math.random() < State.korokChance()) { B.seeds++; setTimeout(korok, 900); }
       } else {
-        U.sfx.wrong(); qcard.classList.add('flash-no');
+        U.sfx.wrong(); qcard.classList.add('flash-no'); if (!exam) FX.Music.intensity(0);
         let dmg = cfg.wrongDamage ? cfg.wrongDamage(B) : 1;
         let blockedBy = '';
         if (B.champ.daruk === true) { B.champ.daruk = 'used'; dmg = 0; blockedBy = '🛡️ Daruk\'s Protection blocked the hit!'; }
-        else if (isBoss && B.blocks > 0) { B.blocks--; dmg = 0; blockedBy = `${State.shield().emoji} Perfect Guard! Your shield blocked the hit!`; }
+        else if (isBoss && B.blocks > 0) {
+          B.blocks--; dmg = 0; const sh = State.shield(); blockedBy = `${sh.emoji} Perfect Guard! Your shield blocked the hit!`;
+          if (sh.bonus) { B.rupees += sh.bonus; blockedBy += ` +${sh.bonus} rupees!`; }
+          if (sh.reflect && B.hp > sh.reflect) { B.hp -= sh.reflect; blockedBy += ` 🪞 The light reflects for ${sh.reflect} damage!`; setTimeout(() => { const f = $('#foe'); if (f) { FX.floatText(f, `-${sh.reflect}`, 'dmg'); FX.flash('#fff6c8', 0.4); } updateTop(); }, 500); }
+        }
         B.hearts = Math.max(0, B.hearts - dmg);
         foeAttack(dmg, blockedBy);
         msg = `<b>${i < 0 ? '⏱ Out of stamina!' : U.pick(STORY.encourage)}</b>${blockedBy ? `<br>${blockedBy}` : ''}`;
@@ -753,17 +784,20 @@
     return topics[topics.length - 1];
   }
   function itemPrep(title, desc, go, art) {
-    const s = S(); const avail = ['hearty', 'hasty'].filter(k => s.items[k] > 0);
+    const s = S(); const avail = ['hearty', 'hasty', 'mighty'].filter(k => s.items[k] > 0);
+    const meals = Object.keys(s.meals).filter(k => s.meals[k] > 0 && CATALOG.EFFECTS[k.split('|')[1]] && CATALOG.EFFECTS[k.split('|')[1]].boss);
     const chosen = {};
     const html = `${art ? `<div class="prep-art">${art}</div>` : ''}<h3>${title}</h3><p>${desc}</p>
       <div class="prep">
         <div class="prep-gear">${heartsHtml(s.hearts, s.hearts)}<span>${State.weapon().emoji} ${State.weapon().name} (${State.weapon().dmg} dmg)</span><span>${State.shield().emoji} ${State.shield().name}</span></div>
         ${avail.length ? `<p><b>Drink an elixir?</b></p>${avail.map(k => { const it = State.ITEMS.find(i => i.id === k); return `<label class="chk"><input type="checkbox" data-item="${k}"> ${it.emoji} ${it.name} (×${s.items[k]}): ${it.desc}</label>`; }).join('')}` : '<p class="muted">Tip: Beedle sells elixirs that help in boss battles.</p>'}
+        ${meals.length ? `<p><b>Eat a meal?</b> (one only. A Mighty meal and a Mighty Elixir don't add together.)</p>${meals.map(k => { const m = World.mealInfo(k); const E = CATALOG.EFFECTS[m.effect]; return `<label class="chk"><input type="radio" name="meal" data-meal="${k}"> ${m.emoji} ${m.name} (×${s.meals[k]}): ${E.desc}</label>`; }).join('')}` : ''}
         ${s.items.fairy ? `<p>🧚 Your fairy (×${s.items.fairy}) will revive you if you fall.</p>` : ''}
         ${s.items.bombarrow ? `<p>🏹 Bomb Arrows ready: ${s.items.bombarrow}</p>` : ''}
       </div>`;
     modal(html, [{ label: 'Not yet' }, { label: 'Fight! ⚔', cls: 'danger', fn: () => go(chosen) }]);
     $$('[data-item]', $('#overlay')).forEach(c => c.addEventListener('change', () => (chosen[c.dataset.item] = c.checked)));
+    $$('[data-meal]', $('#overlay')).forEach(c => c.addEventListener('change', () => (chosen.meal = c.dataset.meal)));
   }
   function bossPrep(r) { itemPrep(`${r.beast}`, `${r.bossIntro}`, items => bossFight(r, items), ART.blight(r.element)); }
   function bossFight(r, items) {
@@ -777,7 +811,8 @@
         if (res.won) {
           const first = !s.bosses[r.id];
           s.bosses[r.id] = true; s.rupees += 300;
-          const rewards = [n => FX.chest([{ icon: IC.rupee('gold'), label: '300 rupees' }], n, 'Divine Beast treasure!')];
+          const drops = World.trialDrops(r.subject, '', 3, true);
+          const rewards = [n => FX.chest([{ icon: IC.rupee('gold'), label: '300 rupees' }, ...drops], n, 'Divine Beast treasure!')];
           if (first) {
             s.champions[r.ability] = true; s.hearts++; State.addMemory('m-' + r.subject);
             rewards.unshift(n => FX.itemGet(IC.heart(true), 'Heart Container!', `You now have ${s.hearts} hearts.`, n));
@@ -856,7 +891,7 @@
   /* =========================================================== MASTER SWORD & TRIAL OF THE SWORD */
   function masterSword() {
     const s = S();
-    const scene = (inner) => screen(`${hud()}<div class="page center woods"><div class="page-head"><button class="btn ghost" id="back">◀ Map</button><h2>The Lost Woods</h2></div>${inner}</div>`, 'plateau', 'shrine');
+    const scene = (inner) => { screen(`${hud()}<div class="page center woods"><div class="page-head"><button class="btn ghost" id="back">◀ Map</button><h2>The Lost Woods</h2></div>${inner}<div class="woods-side slate"><span class="emo">🍃</span><div><b>Yahaha! A Korok wants to play hide-and-seek.</b><small>Costs 🎫 1 ticket · win Korok seeds</small></div><button class="btn small primary" id="leaf">Play</button></div></div>`, 'plateau', 'shrine'); on('#leaf', World.leafIntro); };
     if (s.ownedWeapons.includes('master')) {
       scene(`<div class="pedestal">${ART.korok()}</div><p class="intro slate">The Great Deku Tree rumbles: "The <b>Trial of the Sword</b> awaits. How many floors can you climb with only three hearts and no runes?"</p><p>Your record: <b>Floor ${s.swordBest}</b></p><button class="btn big primary glow" id="go">Begin the Trial ⚔</button>`);
       on('#back', map); on('#go', swordTrial); return;
@@ -907,7 +942,7 @@
       },
       fromMistake: (cur, ok) => { if (ok && cur.mistake) { const i = s.mistakes.indexOf(cur.mistake); if (i > -1) s.mistakes.splice(i, 1); } },
       onEnd: res => {
-        const bonus = res.B.correct * 10; s.rupees += bonus; State.save();
+        const bonus = res.B.correct * 10; s.rupees += bonus; if (res.won) { State.count('bloodMoons'); s.tickets++; } State.save();
         results(res, { heading: 'The Blood Moon sets', extra: `<div class="reward">🌕 You banished ${res.B.correct} returning monster${res.B.correct === 1 ? '' : 's'}! +${bonus} rupees</div>`, next: map });
       },
     });
@@ -967,8 +1002,9 @@
         <button class="btn big ${s.orbs >= 4 ? 'primary' : ''}" id="stam" ${s.orbs >= 4 && s.stamina < 10 ? '' : 'disabled'}>🟢 Stamina Vessel<br><small>+6 seconds on every timer</small></button>
       </div>
       <p class="muted">You have ${s.hearts} hearts and ${s.stamina} stamina vessels. The Master Sword needs ${State.MASTER_SWORD_HEARTS} hearts.</p>
+      <button class="btn big fairy-btn" id="fairy">🧚‍♀️ Great Fairy Fountain<br><small>${s.fairy.open ? 'Upgrade your armour' : 'A sleeping fairy waits nearby…'}</small></button>
     </div>`, 'plateau', 'shrine');
-    on('#back', map);
+    on('#back', map); on('#fairy', World.fairy);
     on('#heart', () => { s.orbs -= 4; s.hearts++; State.save(); FX.flash('#fff6c8', 0.8); FX.itemGet(IC.heart(true), 'Heart Container!', `Your life grows. You now have ${s.hearts} hearts.`, statue); });
     on('#stam', () => { s.orbs -= 4; s.stamina++; State.save(); FX.flash('#9cff9c', 0.6); FX.itemGet('<span class="emo big">🟢</span>', 'Stamina Vessel!', 'Every timer now gives you 6 more seconds.', statue); });
   }
@@ -984,42 +1020,6 @@
     on('#back', map);
     on('#up', () => { s.seeds -= cost; s.hestuLevel++; s.runeLevel++; State.save(); U.sfx.korok(); FX.itemGet('<span class="emo big">🎒</span>', 'Your pouch grew!', `Each rune can now be used ${s.runeLevel} times per battle.`, hestu); });
   }
-  function shop(tab = 'items') {
-    const s = S();
-    const price = p => `${IC.rupee('green')} ${p}`;
-    const row = (it, owned, equipped, kind) => `<div class="shop-row slate"><span class="si">${it.emoji}</span><div><b>${it.name}</b><p class="muted">${it.desc || (it.dmg ? `Boss damage: ${it.dmg}` : `Blocks ${it.blocks} hit${it.blocks === 1 ? '' : 's'} per boss battle`)}</p></div>
-      ${kind === 'item' ? `<span class="muted">Have ${s.items[it.id]}</span><button class="btn small ${s.rupees >= it.price ? 'primary' : ''}" data-buy="${it.id}" data-kind="item" ${s.rupees >= it.price ? '' : 'disabled'}>${price(it.price)}</button>`
-        : equipped ? '<span class="tag ok">Equipped</span>' : owned ? `<button class="btn small" data-equip="${it.id}" data-kind="${kind}">Equip</button>`
-        : it.price === null ? '<span class="muted">Not for sale</span>' : `<button class="btn small ${s.rupees >= it.price ? 'primary' : ''}" data-buy="${it.id}" data-kind="${kind}" ${s.rupees >= it.price ? '' : 'disabled'}>${price(it.price)}</button>`}</div>`;
-    let body = '';
-    if (tab === 'items') body = State.ITEMS.map(it => row(it, false, false, 'item')).join('');
-    if (tab === 'weapons') body = State.WEAPONS.map(w => row(w, s.ownedWeapons.includes(w.id), s.weapon === w.id, 'weapon')).join('');
-    if (tab === 'shields') body = State.SHIELDS.map(w => row(w, s.ownedShields.includes(w.id), s.shield === w.id, 'shield')).join('');
-    if (tab === 'armour') body = State.ARMOUR.map(w => row(w, s.ownedArmour.includes(w.id), s.armour === w.id, 'armour')).join('');
-    screen(`${hud()}<div class="page">
-      <div class="page-head"><button class="btn ghost" id="back">◀ Map</button><h2>Beedle's Shop</h2></div>
-      <div class="shop-top"><div class="npc-stand">${ART.beedle()}</div><div class="mirror">${heroArt()}<small>Your gear</small></div><p class="intro slate">"Thank you! Please come again! …Oh, you haven't bought anything yet. Take a look!"</p></div>
-      <div class="tabs">${['items', 'weapons', 'shields', 'armour'].map(t => `<button class="tab ${t === tab ? 'on' : ''}" data-tab="${t}">${{ items: '🧪 Items', weapons: '⚔️ Weapons', shields: '🛡️ Shields', armour: '👕 Armour' }[t]}</button>`).join('')}</div>
-      <div class="shop">${body}</div></div>`, 'plateau', 'field');
-    on('#back', map);
-    on('[data-tab]', (e, el) => shop(el.dataset.tab));
-    on('[data-buy]', (e, el) => {
-      const k = el.dataset.kind, id = el.dataset.buy;
-      const list = { item: State.ITEMS, weapon: State.WEAPONS, shield: State.SHIELDS, armour: State.ARMOUR }[k]; const it = list.find(x => x.id === id);
-      if (s.rupees < it.price) return;
-      s.rupees -= it.price; U.sfx.coin();
-      if (k === 'item') s.items[id]++;
-      if (k === 'weapon') { s.ownedWeapons.push(id); s.weapon = id; }
-      if (k === 'shield') { s.ownedShields.push(id); s.shield = id; }
-      if (k === 'armour') { s.ownedArmour.push(id); s.armour = id; }
-      State.save();
-      if (k === 'item') { toast(`Bought ${it.emoji} ${it.name}!`, 'good'); shop(tab); }
-      else FX.itemGet(`<span class="emo big">${it.emoji}</span>`, `You got the ${it.name}!`, k === 'weapon' ? `Boss damage: ${it.dmg}` : it.desc || `Blocks ${it.blocks} hit${it.blocks === 1 ? '' : 's'} per boss battle`, () => shop(tab));
-    });
-    on('[data-equip]', (e, el) => { const k = el.dataset.kind; s[k] = el.dataset.equip; State.save(); shop(tab); });
-  }
-
-  /* =========================================================== ADVENTURE LOG */
   function adventureLog(tab = 'mastery') {
     const s = S(); const st = s.stats; const rk = State.rank();
     let body = '';
@@ -1085,6 +1085,6 @@
 
   // free static hosts like Netlify can overlay a badge in the bottom corner
   if (/netlify\.app$|netlify\.com$/.test(location.hostname)) document.documentElement.classList.add('host-badge');
-  window.Game = { title, map };
+  window.Game = { title, map, statue, ui: { screen, on, onKey, hud, toast, confetti, dialogue, modal, sequence, gainXp, heartsHtml, heroArt, speak, addInterval: id => intervals.push(id) } };
   title();
 })();
