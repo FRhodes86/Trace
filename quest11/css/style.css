@@ -792,3 +792,47 @@ button.opt:active:not(:disabled) { transform: translateY(1px); box-shadow: 0 1px
 .pet-ii svg { width: 100%; height: 100%; }
 .pot .ii { width: 1.1em; height: 1.1em; }
 html { overflow-x: hidden; overflow-x: clip; }
+
+/* ---------- the house ---------- */
+.house-page .page-head h2 { text-transform: none; }
+.room-frame { max-width: 820px; margin: 0 auto; border-radius: 16px; overflow: hidden; border: 4px solid #5a3a22; box-shadow: 0 0 0 2px #c9a227, 0 18px 40px rgba(0, 0, 0, 0.55), inset 0 0 40px rgba(0, 0, 0, 0.4); background: #3a2a1a; }
+.room-svg { display: block; width: 100%; height: auto; aspect-ratio: 400 / 250; }
+.room-svg .spot { cursor: pointer; }
+.room-svg .spot.owned:hover { filter: brightness(1.12) drop-shadow(0 0 3px #ffe680); }
+.room-svg .spot.just-placed { animation: placed 0.8s ease-out; transform-box: fill-box; transform-origin: 50% 100%; }
+@keyframes placed { 0% { transform: translateY(-14px) scale(1.1); opacity: 0; } 60% { transform: translateY(2px) scale(0.98); opacity: 1; } }
+.room-svg .hearth-fire { transform-box: fill-box; transform-origin: 50% 100%; animation: flicker 0.45s ease-in-out infinite alternate; }
+.room-svg .hearth-glow { animation: eye 1.6s ease-in-out infinite; }
+.room-svg .candle { transform-box: fill-box; transform-origin: 50% 100%; animation: flicker 0.6s ease-in-out infinite alternate; }
+.room-svg .chime { transform-box: fill-box; transform-origin: 50% 0; animation: swayC 3s ease-in-out infinite; }
+@keyframes swayC { 50% { transform: rotate(6deg); } }
+.room-svg .fish-swim { animation: swim 6s ease-in-out infinite; }
+@keyframes swim { 50% { transform: translateX(10px); } }
+.room-svg .tri-float { animation: hover 2.4s ease-in-out infinite; }
+.room-svg .tri-glow { animation: eye 2s ease-in-out infinite; }
+.room-svg .zzz { animation: float 2s ease-in-out infinite; }
+.room-hint { margin: 8px 0; font-size: 0.85rem; }
+.hof-title { margin: 20px 0 8px; color: #ffe680; }
+.hof-stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+.hof-stat { display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto auto; column-gap: 8px; align-items: center; padding: 8px 12px; border-radius: 12px; }
+.hof-stat span { grid-row: span 2; font-size: 1.6rem; }
+.hof-stat b { font-size: 1.05rem; } .hof-stat small { color: var(--muted); font-size: 0.75rem; }
+.hof-rank { display: flex; align-items: center; gap: 14px; padding: 10px 14px; border-radius: 12px; margin: 10px 0; border-color: #ffd23d; }
+.hof-rank .rank-big { width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; font: 800 1.5rem var(--font-display); background: radial-gradient(circle at 35% 30%, #fff6c8, #c9a227); color: #3a2a10; box-shadow: 0 0 16px rgba(255, 210, 61, 0.6); }
+.hof-rank small { display: block; color: var(--muted); }
+.medals { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 10px; margin: 8px 0 14px; }
+.medal { text-align: center; padding: 8px 6px; border-radius: 12px; background: var(--slate); border: 1px solid var(--edge); opacity: 0.6; }
+.medal.got { opacity: 1; border-color: #ffd23d; box-shadow: 0 0 12px rgba(255, 210, 61, 0.25); }
+.medal .medal-svg { width: 40px; height: 52px; display: block; margin: 0 auto 4px; }
+.medal.got .medal-svg { filter: drop-shadow(0 0 6px rgba(255, 210, 61, 0.6)); }
+.medal b { display: block; font-size: 0.78rem; line-height: 1.2; } .medal small { display: block; font-size: 0.66rem; color: var(--muted); line-height: 1.25; margin-top: 2px; }
+.bolson { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 8px; margin-bottom: 20px; }
+.bolson-item { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 10px 6px; border-radius: 12px; color: var(--text); cursor: pointer; border: 1px solid var(--edge); }
+.bolson-item .bi-ic { font-size: 2.2rem; line-height: 1; }
+.bolson-item b { font-size: 0.8rem; text-align: center; } .bolson-item small { font-size: 0.78rem; display: inline-flex; gap: 4px; align-items: center; }
+.bolson-item small .ic.rupee { width: 9px; height: 14px; }
+.bolson-item:not(:disabled):hover { border-color: #ffd23d; transform: translateY(-2px); }
+.bolson-item:disabled { opacity: 0.45; }
+.decor-pop { font-size: 4.5rem; text-align: center; line-height: 1; }
+.house-outside .ic.house { width: 100%; height: 100%; }
+@media (max-width: 600px) { .room-frame { border-width: 3px; margin: 0 -6px; } .hof-stats { grid-template-columns: repeat(2, 1fr); } .medals { grid-template-columns: repeat(3, 1fr); } }

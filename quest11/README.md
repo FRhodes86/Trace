@@ -87,10 +87,14 @@ The hero (named by the player, default "Link") wakes on the Great Plateau and ha
   - Kass's Song (a memory game),
   - Korok hide-and-seek in the Lost Woods,
   - horse racing.
-- **Hateno house** (2,500 rupees): furnish it with Bolson Construction furniture.
+- **Hateno house** (2,500 rupees): an illustrated room where every piece of Bolson Construction furniture has its own place. It's a trophy room to be proud of:
+  - The fireplace has a flickering fire, the chandelier has candles, and the aquarium has fish.
+  - The weapon rack shows every sword owned, and the trophy shelf shows each Blight (and Calamity Ganon) defeated.
+  - The Divine Beast models sit on the mantelpiece, and the Triforce floats over the table.
+  - The window shows your horse grazing outside, by day or by starlight.
+  - Things not owned yet show as faint silhouettes. Tap any of them to see how to get it, or to build it.
   - The bed gives a daily XP boost.
-  - The weapon rack and trophy shelf show off what you've earned.
-  - The Golden Hero Statue (6,000 rupees) is for true heroes.
+  - Below the room, the **Hall of Fame** shows lifetime stats and 14 medals to earn.
 - **Champion's Challenge:** get ★★★ in every shrine of a region to earn that Champion's one-of-a-kind reward. These can't be bought anywhere:
   - **Death Mountain:** Daruk's Boulder Breaker (the strongest weapon after the Master Sword) and a Vah Rudania model for the house.
   - **Zora's Domain:** Mipha's Lightscale Trident and a Vah Ruta model.
@@ -148,6 +152,7 @@ quest11/
   js/catalog.js         every ownable thing: gear, items, ingredients, recipes, cosmetics, decor, horses, side quests
   js/items.js           game-style SVG icons for every item (weapons, shields, armour, elixirs, ingredients, monster parts, meals, saddles, furniture)
   js/game.js            screens, battle engine, story
+  js/house.js           the Hateno house room scene and Hall of Fame
   js/world.js           side content: shop, bag, cooking, horses, mini-games, house, side quests, Great Fairy
   js/regions.js         regional mini-games unlocked by freeing each Divine Beast, and the Master Cycle Run (canvas)
   tools/test-content.js stress-tests every generator: node tools/test-content.js 1000

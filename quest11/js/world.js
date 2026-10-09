@@ -439,38 +439,8 @@
   }
 
   /* ---------------- HOUSE ---------------- */
-  function house() {
-    const s = S(); const { screen, hud, on, heroArt, toast } = UI();
-    if (!s.house.owned) {
-      screen(`${hud()}<div class="page center"><div class="page-head">${back()}<h2>Hateno Village</h2></div>
-        <div class="house-outside">${IC.house()}</div>
-        <p class="intro slate">Hudson: "This old house is for sale! It needs some love, but it could be a real home. Only <b>${fmt(K.HOUSE_PRICE)} rupees</b>, and I'll throw in the bed once you finish my quest!"</p>
-        <button class="btn big ${s.rupees >= K.HOUSE_PRICE ? 'primary glow' : ''}" id="buy" ${s.rupees >= K.HOUSE_PRICE ? '' : 'disabled'}>Buy the house (${price(K.HOUSE_PRICE)})</button>
-        <p class="muted">You have ${fmt(s.rupees)} rupees. Keep clearing shrines to save up!</p></div>`, 'plateau', 'home');
-      on('#back', Game.map);
-      on('#buy', () => { spend(K.HOUSE_PRICE); s.house.owned = true; State.save(); FX.itemGet('<span class="emo big">🏡</span>', 'You bought a house!', 'Decorate it with furniture from Bolson Construction.', house); });
-      return;
-    }
-    const has = id => s.house.decor.includes(id);
-    const rack = has('rack') ? `<div class="deco-extra" style="left:66%;top:22%">${s.ownedWeapons.map(w => K.WEAPONS.find(x => x.id === w).emoji).join('')}</div>` : '';
-    const trophies = has('trophies') ? `<div class="deco-extra" style="left:84%;top:26%">${STORY.regions.filter(r => s.bosses[r.id]).map(r => r.emoji).join('') || '—'}</div>` : '';
-    const rested = s.rested === today();
-    screen(`${hud()}<div class="page"><div class="page-head">${back()}<h2>Your House</h2></div>
-      <div class="room">
-        <svg class="room-bg" viewBox="0 0 100 100" preserveAspectRatio="none"><rect width="100" height="62" fill="#c9a87a"/><rect y="62" width="100" height="38" fill="#8a5a32"/><path d="M0,62 h100" stroke="#5a3a1a" stroke-width="1"/><g stroke="#a88a5a" stroke-width=".4">${Array.from({ length: 9 }, (_, i) => `<path d="M0,${i * 7} h100"/>`).join('')}</g><g stroke="#6a4222" stroke-width=".4">${Array.from({ length: 10 }, (_, i) => `<path d="M${i * 11},62 v38"/>`).join('')}</g><rect x="40" y="16" width="20" height="18" fill="#bfe6ff" stroke="#5a3a1a" stroke-width="1.2"/><path d="M50,16 v18 M40,25 h20" stroke="#5a3a1a" stroke-width=".8"/></svg>
-        ${K.DECOR.filter(d => has(d.id)).map(d => `<div class="deco" style="left:${d.x}%;top:${d.y}%" title="${d.name}">${d.emoji}</div>`).join('')}
-        ${rack}${trophies}
-        <div class="room-hero">${heroArt()}</div>
-        ${s.pet !== 'none' ? `<div class="room-pet">${ART.pet(s.pet)}</div>` : ''}
-      </div>
-      <div class="row center">${has('bed') ? `<button class="btn ${rested ? '' : 'primary'}" id="sleep" ${rested ? 'disabled' : ''}>🛏️ ${rested ? 'Rested today' : 'Sleep (+10% XP next trial)'}</button>` : ''}${has('pot') ? '<button class="btn" id="cook">🍲 Cook</button>' : ''}</div>
-      <h3>Bolson Construction: furniture</h3>
-      <div class="shop">${K.DECOR.filter(d => d.price !== null).map(d => `<div class="shop-row slate"><span class="si">${d.emoji}</span><div><b>${d.name}</b><p class="muted">${d.desc || 'Makes your house cosier.'}</p></div>${has(d.id) ? '<span class="tag ok">Placed</span>' : `<button class="btn small ${s.rupees >= d.price ? 'primary' : ''}" data-decor="${d.id}" ${s.rupees >= d.price ? '' : 'disabled'}>${price(d.price)}</button>`}</div>`).join('')}</div></div>`, 'plateau', 'home');
-    on('#back', Game.map);
-    on('#sleep', () => { s.rested = today(); s.restedBonus = true; State.save(); FX.flash('#0a0a30', 0.9); FX.banner('Zzz… Well rested!', 'grace'); setTimeout(house, 1200); });
-    on('#cook', () => kitchen('house'));
-    on('[data-decor]', (e, el) => { const d = K.DECOR.find(x => x.id === el.dataset.decor); if (s.rupees < d.price) return; spend(d.price); s.house.decor.push(d.id); State.save(); U.sfx.coin(); toast(`${d.emoji} ${d.name} placed!`, 'good'); house(); });
-  }
+  // the house lives in house.js (room scene + Hall of Fame)
+  function house() { return House.show(); }
 
   /* ---------------- SIDE QUESTS ---------------- */
   function quests() {
