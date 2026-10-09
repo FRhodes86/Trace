@@ -747,3 +747,5 @@ button.opt:active:not(:disabled) { transform: translateY(1px); box-shadow: 0 1px
 .wild .horse-art { width: 150px; height: 112px; }
 .deco { font-size: clamp(1.9rem, 8vw, 3.4rem); }
 .tame-horse .rider { top: -6%; left: 30%; }
+.art .flicker { animation: flicker 0.5s ease-in-out infinite alternate; transform-box: fill-box; transform-origin: 50% 100%; }
+@keyframes flicker { from { transform: scaleY(0.85); opacity: 0.8; } to { transform: scaleY(1.1); opacity: 1; } }

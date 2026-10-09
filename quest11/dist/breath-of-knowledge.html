@@ -757,6 +757,8 @@ button.opt:active:not(:disabled) { transform: translateY(1px); box-shadow: 0 1px
 .wild .horse-art { width: 150px; height: 112px; }
 .deco { font-size: clamp(1.9rem, 8vw, 3.4rem); }
 .tame-horse .rider { top: -6%; left: 30%; }
+.art .flicker { animation: flicker 0.5s ease-in-out infinite alternate; transform-box: fill-box; transform-origin: 50% 100%; }
+@keyframes flicker { from { transform: scaleY(0.85); opacity: 0.8; } to { transform: scaleY(1.1); opacity: 1; } }
 </style>
 </head>
 <body>
@@ -3279,37 +3281,49 @@ Symin`,
     const SL = (window.CATALOG && (CATALOG.SHIELDS.find(x => x.id === o.shield) || {}).look) || (o.shield === 'none' ? 'pot' : o.shield) || 'pot';
     const shieldSvg = SHIELD_ART[SL] || SHIELD_ART.pot;
     const face = (f.mask
-      ? `<path d="M48,48 Q62,58 79,48 L79,60 Q62,66 48,58 Z" fill="${f.mask}" stroke="${INK}" stroke-width="1.5"/><path d="M58,54 l4,3 l4,-3" stroke="${f.trim}" stroke-width="1.5" fill="none"/>`
-      : `<path d="M66,57 q4,2 7,0" stroke="#a5604a" stroke-width="1.6" fill="none" stroke-linecap="round"/>`)
-      + (f.paint ? `<path d="M70,51 l6,0 M68,54 l8,1" stroke="${f.paint}" stroke-width="1.8" stroke-linecap="round"/>` : '');
+      ? `<path d="M48,49 Q62,59 80,49 L80,61 Q62,67 48,59 Z" fill="${f.mask}" stroke="${INK}" stroke-width="1.5"/><path d="M58,55 l4,3 l4,-3" stroke="${f.trim}" stroke-width="1.5" fill="none"/>`
+      : `<path d="M66,58 q4,2.2 7.5,0" stroke="#a5604a" stroke-width="1.6" fill="none" stroke-linecap="round"/>`)
+      + (f.paint ? `<path d="M71,52 l6,0 M69,55 l8,1" stroke="${f.paint}" stroke-width="1.8" stroke-linecap="round"/>` : '');
     const hat = f.hat ? `<path d="M46,32 Q58,10 80,26 Q60,22 50,40 Q36,60 22,70 Q34,48 46,32Z" fill="${f.hat}" stroke="${INK}" stroke-width="2"/>` : '';
     const band = f.band ? `<path d="M46,33 Q63,26 81,34" stroke="${f.band}" stroke-width="3.5" fill="none"/>` : '';
     const aura = f.aura ? `<ellipse cx="60" cy="85" rx="44" ry="62" fill="${f.aura}" opacity=".18" class="aura-pulse"/>` : '';
-    return svg('0 0 120 150', `<defs>${lg(g + 't', f.tunic, f.shade)}${lg(g + 'h', '#ffe08a', '#d9a62e')}${lg(g + 'b', blade, '#9fb4c8', false)}</defs>
+    const hem = Array.from({ length: 11 }, (_, i) => `${i ? 'l' : 'M40,113 l'}3.8,${i % 2 ? 3 : -3}`).join(' ');
+    return svg('0 0 120 150', `<defs>${lg(g + 't', f.tunic, f.shade)}${lg(g + 'h', '#f6d77a', '#c9962a')}${lg(g + 'b', blade, '#9fb4c8', false)}${lg(g + 'p', '#6a5644', '#463729')}</defs>
       ${shadow(60, 145, 30)}${aura}
       <g class="h-body">
+        <path d="M48,38 Q30,42 28,58 Q28,70 36,78 Q34,66 40,58 Q46,50 52,46 Z" fill="url(#${g}h)" stroke="${INK}" stroke-width="2"/>
+        <path d="M44,44 l5,4" stroke="#7a5230" stroke-width="3" stroke-linecap="round"/>
         <g class="h-shield">${shieldSvg}</g>
-        <path d="M50,108 h11 v26 h-11z" fill="#8a6a45" stroke="${INK}" stroke-width="2"/>
-        <path d="M48,131 h15 v12 h-18 q-1,-7 3,-12z" fill="#4a2f1c" stroke="${INK}" stroke-width="2"/>
-        <path d="M63,108 h11 v26 h-11z" fill="#9b7a52" stroke="${INK}" stroke-width="2"/>
-        <path d="M61,131 h14 q8,3 8,12 h-22z" fill="#5a3a22" stroke="${INK}" stroke-width="2"/>
+        <path d="M50,110 h11 l-1,22 h-9z" fill="url(#${g}p)" stroke="${INK}" stroke-width="2"/>
+        <path d="M48,128 h14 l1,15 h-19 q-1,-8 4,-15z" fill="#5a3a22" stroke="${INK}" stroke-width="2"/><path d="M48,128 h14 v4 h-14z" fill="#8a6a45" stroke="${INK}" stroke-width="1.4"/>
+        <path d="M63,110 h11 l1,22 h-11z" fill="url(#${g}p)" stroke="${INK}" stroke-width="2"/>
+        <path d="M62,128 h14 q9,4 9,15 h-23z" fill="#6b4423" stroke="${INK}" stroke-width="2"/><path d="M62,128 h14 v4 h-14z" fill="#9b7a52" stroke="${INK}" stroke-width="1.4"/>
         <path d="M43,74 Q60,64 78,74 L84,117 Q60,124 37,117 Z" fill="url(#${g}t)" stroke="${INK}" stroke-width="2.2"/>
         <path d="M62,70 L66,118" stroke="${f.shade}" stroke-width="3" opacity=".5"/>
-        <path d="M38,113 Q60,120 83,113" stroke="${f.trim}" stroke-width="3" fill="none"/>
-        <path d="M50,72 Q60,82 71,72" stroke="${f.trim}" stroke-width="3" fill="none"/>
+        <path d="M38,111 Q60,118 83,111" stroke="${f.trim}" stroke-width="2" fill="none"/>
+        <path d="${hem}" stroke="${f.trim}" stroke-width="1.4" fill="none" opacity=".9"/>
+        <path d="M52,71 L60,82 L69,71 Z" fill="#efe6c8" stroke="${INK}" stroke-width="1.2"/>
+        <path d="M49,72 L60,85 L72,72" stroke="${f.trim}" stroke-width="2.6" fill="none"/>
+        <path d="M43,92 Q60,88 80,93" stroke="#7a5230" stroke-width="2.2" fill="none"/>
         <rect x="41" y="97" width="41" height="6" rx="2" fill="#6b4423" stroke="${INK}" stroke-width="1.5"/>
-        <rect x="58" y="96" width="7" height="8" rx="1" fill="#e2b33c" stroke="${INK}" stroke-width="1"/>
-        <path d="M44,78 Q34,88 40,104" stroke="${INK}" stroke-width="7" stroke-linecap="round" fill="none"/>
-        <path d="M44,78 Q34,88 40,104" stroke="#f5cfa8" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+        <rect x="57" y="96" width="7" height="8" rx="1" fill="#c9a227" stroke="${INK}" stroke-width="1"/>
+        <rect x="44" y="102" width="8" height="8" rx="1.5" fill="#7a5230" stroke="${INK}" stroke-width="1.2"/>
+        <g class="h-slate"><rect x="69" y="101" width="13" height="10" rx="2" fill="#2b3240" stroke="${INK}" stroke-width="1.4"/><path d="M72,106 q3.5,-3 7,0 q-3.5,3 -7,0z" fill="none" stroke="#3fe0ff" stroke-width="1"/><circle cx="75.5" cy="106" r="1.2" fill="#3fe0ff"/></g>
+        <path d="M44,78 Q34,88 40,104" stroke="${INK}" stroke-width="8" stroke-linecap="round" fill="none"/>
+        <path d="M44,78 Q37,85 38,92" stroke="${f.tunic}" stroke-width="5.5" stroke-linecap="round" fill="none"/>
+        <path d="M38,92 Q37,99 40,104" stroke="#f5cfa8" stroke-width="5" stroke-linecap="round" fill="none"/>
+        <path d="M37,96 l5,1" stroke="#6b4423" stroke-width="4"/>
         <rect x="55" y="60" width="11" height="10" fill="#f5cfa8" stroke="${INK}" stroke-width="1.5"/>
         <g class="h-head">
-          <path d="M46,34 Q28,42 33,70 Q42,58 50,44 Z" fill="url(#${g}h)" stroke="${INK}" stroke-width="2"/>
-          <ellipse cx="63" cy="46" rx="17" ry="19" fill="#f8d6b3" stroke="${INK}" stroke-width="2.2"/>
-          <path d="M48,46 L29,37 L49,54 Z" fill="#f8d6b3" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>
-          <path d="M45,44 Q41,22 63,22 Q86,22 81,46 Q78,35 72,34 Q70,42 62,37 Q58,44 50,41 Q48,46 45,44Z" fill="url(#${g}h)" stroke="${INK}" stroke-width="2"/>
-          <path d="M56,26 Q66,22 74,28" stroke="#fff3c4" stroke-width="2" fill="none" opacity=".8"/>
-          <g class="h-eye"><ellipse cx="72" cy="47" rx="2.8" ry="3.8" fill="#2e6fbf"/><circle cx="73" cy="45.6" r="1" fill="#fff"/></g>
-          <path d="M68,40.5 q4,-2 7,0" stroke="#b8862a" stroke-width="1.6" fill="none"/>
+          <path d="M48,47 L24,33 Q30,44 48,56 Z" fill="#f8d6b3" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M45,47 L31,39 Q36,45 46,52Z" fill="#eab796"/>
+          <ellipse cx="63" cy="47" rx="17" ry="19" fill="#f8d6b3" stroke="${INK}" stroke-width="2.2"/>
+          <path d="M45,47 Q39,21 63,20 Q88,20 82,49 Q80,39 76,35 Q77,44 72,48 Q71,38 66,33 Q63,40 58,38 Q57,44 51,42 Q48,48 45,47Z" fill="url(#${g}h)" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M79,36 Q85,48 80,61 Q78,52 75,45Z" fill="url(#${g}h)" stroke="${INK}" stroke-width="1.6"/>
+          <path d="M55,25 Q65,21 74,27 M66,33 Q66,27 62,24" stroke="#fff3c4" stroke-width="1.8" fill="none" opacity=".8"/>
+          <g class="h-eye"><ellipse cx="72" cy="48" rx="3" ry="4" fill="#fff"/><ellipse cx="72.6" cy="48.4" rx="2.4" ry="3.3" fill="#2e6fbf"/><circle cx="73.3" cy="47" r="1" fill="#fff"/>
+            <ellipse cx="60" cy="48" rx="2.4" ry="3.6" fill="#fff"/><ellipse cx="60.6" cy="48.4" rx="1.9" ry="3" fill="#2e6fbf"/><circle cx="61.2" cy="47" r=".8" fill="#fff"/></g>
+          <path d="M68,41.5 q4,-2 7.5,0 M57,42 q3,-1.5 5.5,0" stroke="#a87a22" stroke-width="1.6" fill="none" stroke-linecap="round"/>
           ${face}${band}${hat}
         </g>
         <g class="h-arm">
@@ -3322,8 +3336,10 @@ Symin`,
           <path d="M80,86 L98,94" stroke="${INK}" stroke-width="1" fill="none" opacity=".4"/>
           <path d="M86,96 L82,104" stroke="#5a3a22" stroke-width="5" stroke-linecap="round"/>
           <path d="M66,76 Q80,80 86,92" stroke="${INK}" stroke-width="10" stroke-linecap="round" fill="none"/>
-          <path d="M66,76 Q80,80 86,92" stroke="${f.tunic}" stroke-width="7.5" stroke-linecap="round" fill="none"/>
-          <circle cx="88" cy="94" r="5.5" fill="#f5cfa8" stroke="${INK}" stroke-width="2"/>
+          <path d="M66,76 Q76,78 80,84" stroke="${f.tunic}" stroke-width="7.5" stroke-linecap="round" fill="none"/>
+          <path d="M80,84 Q84,88 86,92" stroke="#f5cfa8" stroke-width="7" stroke-linecap="round" fill="none"/>
+          <path d="M81,86 l4,-2" stroke="#6b4423" stroke-width="5"/>
+          <circle cx="88" cy="94" r="5.5" fill="#8a5a2b" stroke="${INK}" stroke-width="2"/><path d="M85,96 q3,2 6,0" stroke="#f5cfa8" stroke-width="1.6" fill="none"/>
         </g>
       </g>`, 'hero');
   }
@@ -3437,109 +3453,154 @@ Symin`,
   /* ======================= MONSTERS ======================= */
   const EL = { fire: ['#ff7a45', '#c2381c'], water: ['#5cc8ff', '#1f73c9'], wind: ['#bff2dc', '#4fb08a'], thunder: ['#ffe866', '#d1a30c'], malice: ['#ff4f8b', '#7a0f3c'], plain: ['#7fb4ff', '#3a67c9'] };
   function chuchu(el = 'plain') {
+    // a wobbly, see-through jelly with a darker core and big hollow eyes; elemental ones glow
     const [c1, c2] = EL[el] || EL.plain; const g = id('cc');
-    return svg('0 0 120 110', `<defs>${rg(g, c1, c2)}</defs>${shadow(60, 104, 36)}
+    const spark = el === 'fire' ? `<path d="M60,26 Q54,14 60,4 Q62,14 68,10 Q66,20 60,26Z" fill="#ffd23d" stroke="#c2381c" stroke-width="1.4" class="flicker"/>`
+      : el === 'thunder' ? `<path d="M58,24 l6,-10 l-4,0 l6,-10" stroke="#fff6a0" stroke-width="2.4" fill="none" class="flicker"/>`
+      : el === 'water' ? `<path d="M48,30 l4,-6 l4,6 M66,28 l4,-6 l4,6" stroke="#e8f8ff" stroke-width="1.8" fill="none"/>` : '';
+    return svg('0 0 120 110', `<defs><radialGradient id="${g}" cx="40%" cy="35%"><stop offset="0" stop-color="#fff" stop-opacity=".9"/><stop offset=".25" stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/></radialGradient></defs>${shadow(60, 104, 38)}
       <g class="m-body squish">
-        <path d="M20,98 Q14,48 60,30 Q106,48 100,98 Q60,108 20,98Z" fill="url(#${g})" stroke="${INK}" stroke-width="2.4"/>
-        <ellipse cx="44" cy="52" rx="10" ry="6" fill="#fff" opacity=".55" transform="rotate(-25 44 52)"/>
-        <ellipse cx="48" cy="72" rx="7" ry="10" fill="${INK}"/><ellipse cx="72" cy="72" rx="7" ry="10" fill="${INK}"/>
-        <circle cx="50" cy="68" r="2.6" fill="#fff"/><circle cx="74" cy="68" r="2.6" fill="#fff"/>
-        <path d="M54,90 Q60,94 66,90" stroke="${INK}" stroke-width="2" fill="none"/>
+        ${spark}
+        <path d="M16,96 Q10,54 50,32 Q60,22 70,32 Q110,54 104,96 Q98,104 92,98 Q86,106 78,100 Q70,106 62,101 Q54,106 46,100 Q38,106 30,99 Q22,104 16,96Z" fill="url(#${g})" fill-opacity=".9" stroke="${INK}" stroke-width="2.4" stroke-linejoin="round"/>
+        <ellipse cx="62" cy="80" rx="28" ry="14" fill="${c2}" opacity=".35"/>
+        <ellipse cx="40" cy="52" rx="9" ry="5" fill="#fff" opacity=".7" transform="rotate(-30 40 52)"/><circle cx="50" cy="44" r="2.2" fill="#fff" opacity=".8"/>
+        <ellipse cx="47" cy="68" rx="8.5" ry="11" fill="${INK}"/><ellipse cx="73" cy="68" rx="8.5" ry="11" fill="${INK}"/>
+        <ellipse cx="47" cy="70" rx="5" ry="6.5" fill="${c2}" opacity=".55"/><ellipse cx="73" cy="70" rx="5" ry="6.5" fill="${c2}" opacity=".55"/>
+        <circle cx="44" cy="63" r="2.4" fill="#fff"/><circle cx="70" cy="63" r="2.4" fill="#fff"/>
       </g>`, 'monster');
   }
   function keese(el = 'plain') {
-    const c = el === 'fire' ? '#ff7a45' : el === 'thunder' ? '#ffe866' : el === 'water' ? '#7ad3ff' : '#6b4f8f';
+    // a bat with one huge eye in the middle of its body and ragged, bony wings
+    const c = el === 'fire' ? '#ff7a45' : el === 'thunder' ? '#ffe866' : el === 'water' ? '#7ad3ff' : '#c9ff5a';
+    const wing = (s) => `<g transform="translate(70 0) scale(${s} 1) translate(-70 0)"><g class="wing l">
+        <path d="M58,46 Q44,12 8,16 Q16,24 10,34 Q22,32 22,44 Q32,40 36,54 Q46,46 58,56Z" fill="#33264a" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M58,47 L10,17 M58,49 L11,34 M58,51 L22,44 M58,53 L36,53" stroke="#6b5490" stroke-width="1.4"/></g></g>`;
+    const tuft = el === 'fire' ? `<path d="M60,34 Q58,20 64,14 Q66,24 70,18 Q74,24 76,14 Q82,22 80,34Z" fill="#ff9a2e" stroke="#c2381c" stroke-width="1.2" class="flicker"/>` : el === 'thunder' ? `<path d="M62,30 l4,-8 l-3,0 l4,-8 M78,30 l-4,-8 l3,0 l-4,-8" stroke="#ffe866" stroke-width="2" fill="none" class="flicker"/>` : '';
     return svg('0 0 140 100', `${shadow(70, 96, 22)}
       <g class="m-body hover">
-        <g class="wing l"><path d="M60,44 Q30,10 4,30 Q20,36 14,50 Q30,44 34,58 Q44,48 60,54Z" fill="#3a2c4f" stroke="${INK}" stroke-width="2"/></g>
-        <g class="wing r"><path d="M80,44 Q110,10 136,30 Q120,36 126,50 Q110,44 106,58 Q96,48 80,54Z" fill="#3a2c4f" stroke="${INK}" stroke-width="2"/></g>
-        <circle cx="70" cy="50" r="18" fill="#4a3866" stroke="${INK}" stroke-width="2.4"/>
-        <path d="M56,36 L60,24 L66,34 M84,36 L80,24 L74,34" fill="#4a3866" stroke="${INK}" stroke-width="2"/>
-        <circle cx="70" cy="48" r="8" fill="${c}" stroke="${INK}" stroke-width="2"/><circle cx="70" cy="48" r="3" fill="${INK}"/>
-        <path d="M62,60 l3,5 l3,-4 l3,4 l3,-4 l3,5" stroke="#fff" stroke-width="1.5" fill="none"/>
+        ${wing(-1)}${wing(1)}${tuft}
+        <path d="M58,36 L56,22 L64,32 M82,36 L84,22 L76,32" fill="#3d2d57" stroke="${INK}" stroke-width="2"/>
+        <ellipse cx="70" cy="51" rx="17" ry="19" fill="#3d2d57" stroke="${INK}" stroke-width="2.4"/>
+        <ellipse cx="70" cy="47" rx="11" ry="10" fill="#f6f0e0" stroke="${INK}" stroke-width="1.8"/>
+        <circle cx="70" cy="47" r="7" fill="${c}"/><ellipse cx="70" cy="47" rx="2" ry="6" fill="${INK}"/><circle cx="67" cy="44" r="1.6" fill="#fff"/>
+        <path d="M63,62 l2,4 l2,-3 l3,4 l3,-4 l2,3 l2,-4" stroke="#fff" stroke-width="1.4" fill="none"/>
+        <path d="M64,69 l-2,6 M76,69 l2,6" stroke="${INK}" stroke-width="2" stroke-linecap="round"/>
       </g>`, 'monster');
   }
   function bokoblin(kind = 'red') {
+    // pot-bellied pig-snouted brute with long ears, a single horn and a Boko Club
     const skin = { red: ['#e0574f', '#a8352f'], blue: ['#4f7fe0', '#2f4fa8'], black: ['#4a3d52', '#2a2230'], silver: ['#d9d9e3', '#8f8fa3'] }[kind];
     const g = id('bk');
+    const stripes = kind === 'silver' ? `<path d="M44,40 q6,4 4,10 M84,40 q-6,4 -4,10 M60,30 q4,4 8,0" stroke="#7a3aa0" stroke-width="2.4" fill="none"/>` : '';
     return svg('0 0 130 150', `<defs>${lg(g, skin[0], skin[1])}</defs>${shadow(64, 145, 32)}
       <g class="m-body bob">
-        <path d="M46,112 l-6,30 h14 l4,-26 M78,112 l6,30 h-14 l-4,-26" fill="url(#${g})" stroke="${INK}" stroke-width="2"/>
-        <path d="M38,80 Q64,64 90,80 L92,118 Q64,128 36,118Z" fill="url(#${g})" stroke="${INK}" stroke-width="2.2"/>
-        <ellipse cx="64" cy="100" rx="16" ry="14" fill="#f1d9b8" opacity=".85"/>
-        <path d="M38,112 Q64,124 92,112 L88,126 Q64,132 40,126Z" fill="#7a5230" stroke="${INK}" stroke-width="2"/>
-        <g class="m-arm"><path d="M30,84 Q18,100 26,112" stroke="${INK}" stroke-width="10" stroke-linecap="round" fill="none"/><path d="M30,84 Q18,100 26,112" stroke="${skin[0]}" stroke-width="7" stroke-linecap="round" fill="none"/>
-          <path d="M26,112 L14,64" stroke="#8a5a2b" stroke-width="7" stroke-linecap="round"/><path d="M14,64 L8,48 L22,52 Z" fill="#cfcfcf" stroke="${INK}" stroke-width="2"/></g>
-        <path d="M30,46 L6,30 L28,60 Z M98,46 L122,30 L100,60 Z" fill="url(#${g})" stroke="${INK}" stroke-width="2"/>
-        <ellipse cx="64" cy="54" rx="34" ry="28" fill="url(#${g})" stroke="${INK}" stroke-width="2.4"/>
-        <path d="M60,28 L64,8 L70,28 Z" fill="#f3e2b8" stroke="${INK}" stroke-width="2"/>
-        <ellipse cx="64" cy="66" rx="16" ry="11" fill="${skin[1]}" stroke="${INK}" stroke-width="2"/>
-        <ellipse cx="58" cy="66" rx="2.6" ry="3.6" fill="${INK}"/><ellipse cx="70" cy="66" rx="2.6" ry="3.6" fill="${INK}"/>
-        <ellipse cx="48" cy="48" rx="7" ry="8" fill="#ffe17a" stroke="${INK}" stroke-width="2"/><ellipse cx="80" cy="48" rx="7" ry="8" fill="#ffe17a" stroke="${INK}" stroke-width="2"/>
-        <circle cx="49" cy="49" r="3.4" fill="${INK}"/><circle cx="79" cy="49" r="3.4" fill="${INK}"/>
-        <path d="M50,76 L54,82 L58,76 M70,76 L74,82 L78,76" fill="#fff" stroke="${INK}" stroke-width="1.4"/>
+        <path d="M48,114 l-4,24 l-6,4 h16 l2,-26 M76,114 l4,24 l6,4 h-16 l-2,-26" fill="url(#${g})" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M40,80 Q64,66 88,80 Q98,100 90,118 Q64,128 38,118 Q30,100 40,80Z" fill="url(#${g})" stroke="${INK}" stroke-width="2.2"/>
+        <ellipse cx="64" cy="102" rx="17" ry="15" fill="#f1d9b8" opacity=".8"/><path d="M60,104 q4,3 8,0" stroke="${skin[1]}" stroke-width="1.6" fill="none"/>
+        <path d="M38,112 Q64,124 90,112 L86,128 L78,124 L72,130 L64,124 L56,130 L50,124 L42,128Z" fill="#7a5230" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M92,86 Q104,98 98,112" stroke="${INK}" stroke-width="10" stroke-linecap="round" fill="none"/><path d="M92,86 Q104,98 98,112" stroke="${skin[0]}" stroke-width="7" stroke-linecap="round" fill="none"/>
+        <g class="m-arm"><path d="M36,86 Q22,98 28,112" stroke="${INK}" stroke-width="10" stroke-linecap="round" fill="none"/><path d="M36,86 Q22,98 28,112" stroke="${skin[0]}" stroke-width="7" stroke-linecap="round" fill="none"/>
+          <path d="M30,116 Q16,92 12,62 Q8,46 18,44 Q28,46 26,60 Q26,88 34,112Z" fill="#9c6b3d" stroke="${INK}" stroke-width="2"/><path d="M16,52 l-6,-4 M22,66 l6,-3 M18,78 l-6,0" stroke="#5a3a22" stroke-width="2.4" stroke-linecap="round"/>
+          <circle cx="29" cy="112" r="6" fill="${skin[0]}" stroke="${INK}" stroke-width="2"/></g>
+        <path d="M34,50 Q12,42 2,52 Q14,56 18,62 Q26,62 36,64Z M94,50 Q116,42 126,52 Q114,56 110,62 Q102,62 92,64Z" fill="url(#${g})" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M30,30 Q64,14 98,30 Q104,64 92,78 Q64,92 36,78 Q24,64 30,30Z" fill="url(#${g})" stroke="${INK}" stroke-width="2.4"/>
+        <path d="M58,22 Q58,6 70,0 Q66,12 70,22Z" fill="#f3e2b8" stroke="${INK}" stroke-width="2"/>
+        ${stripes}
+        <path d="M40,40 Q50,34 58,42 M70,42 Q78,34 88,40" stroke="${skin[1]}" stroke-width="4" fill="none" stroke-linecap="round"/>
+        <ellipse cx="49" cy="47" rx="7" ry="6.5" fill="#fff6c8" stroke="${INK}" stroke-width="1.8"/><ellipse cx="78" cy="47" rx="7" ry="6.5" fill="#fff6c8" stroke="${INK}" stroke-width="1.8"/>
+        <circle cx="47" cy="48" r="3.2" fill="${INK}"/><circle cx="76" cy="48" r="3.2" fill="${INK}"/>
+        <ellipse cx="62" cy="60" rx="15" ry="10" fill="${skin[1]}" stroke="${INK}" stroke-width="2"/>
+        <ellipse cx="56" cy="60" rx="3" ry="4" fill="${INK}"/><ellipse cx="68" cy="60" rx="3" ry="4" fill="${INK}"/>
+        <path d="M42,72 Q62,82 84,72" stroke="${INK}" stroke-width="2" fill="none"/>
+        <path d="M46,74 L48,64 L52,75 M74,75 L78,64 L80,73" fill="#fffdf0" stroke="${INK}" stroke-width="1.4" stroke-linejoin="round"/>
       </g>`, 'monster');
   }
   function moblin() {
+    // tall, hunched brute with a long dog-like snout, curved horns and a spear
     const g = id('mb');
-    return svg('0 0 140 170', `<defs>${lg(g, '#5f86d6', '#334f96')}</defs>${shadow(70, 165, 36)}
+    return svg('0 0 140 170', `<defs>${lg(g, '#5f86d6', '#334f96')}</defs>${shadow(72, 165, 38)}
       <g class="m-body bob">
-        <path d="M50,128 l-8,34 h16 l6,-30 M90,128 l8,34 h-16 l-6,-30" fill="url(#${g})" stroke="${INK}" stroke-width="2"/>
-        <path d="M36,82 Q70,60 104,82 L106,134 Q70,146 34,134Z" fill="url(#${g})" stroke="${INK}" stroke-width="2.4"/>
-        <path d="M36,128 Q70,140 106,128 L102,144 Q70,150 40,144Z" fill="#5a3a22" stroke="${INK}" stroke-width="2"/>
-        <g class="m-arm"><path d="M30,88 Q16,110 26,128" stroke="${INK}" stroke-width="13" stroke-linecap="round" fill="none"/><path d="M30,88 Q16,110 26,128" stroke="#5f86d6" stroke-width="10" stroke-linecap="round" fill="none"/>
-          <path d="M26,128 L18,52" stroke="#8a5a2b" stroke-width="9" stroke-linecap="round"/><path d="M12,58 L18,40 L26,58 Z" fill="#cfcfcf" stroke="${INK}" stroke-width="2"/></g>
-        <path d="M44,40 L22,20 L40,56 Z M96,40 L118,20 L100,56 Z" fill="#334f96" stroke="${INK}" stroke-width="2"/>
-        <path d="M40,54 Q42,22 70,22 Q98,22 100,54 L98,70 Q70,92 42,70Z" fill="url(#${g})" stroke="${INK}" stroke-width="2.4"/>
-        <path d="M58,58 Q70,94 82,58 Q76,52 70,52 Q64,52 58,58Z" fill="#2a3f78" stroke="${INK}" stroke-width="2"/>
-        <circle cx="54" cy="46" r="5" fill="#ff6a3d" stroke="${INK}" stroke-width="1.6"/><circle cx="86" cy="46" r="5" fill="#ff6a3d" stroke="${INK}" stroke-width="1.6"/>
-        <path d="M60,26 L54,8 L66,24 M80,26 L86,8 L74,24" fill="#e6d6ad" stroke="${INK}" stroke-width="2"/>
+        <path d="M56,130 l-8,28 l-6,4 h18 l4,-30 M92,130 l6,28 l6,4 h-18 l-2,-30" fill="url(#${g})" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M44,84 Q74,58 108,80 Q120,110 108,136 Q74,148 42,136 Q34,110 44,84Z" fill="url(#${g})" stroke="${INK}" stroke-width="2.4"/>
+        <ellipse cx="76" cy="112" rx="20" ry="16" fill="#9fb8e8" opacity=".55"/>
+        <path d="M42,128 Q74,140 108,128 L104,146 L94,142 L84,150 L74,142 L64,150 L54,142 L44,146Z" fill="#5a3a22" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M108,90 Q124,110 116,130" stroke="${INK}" stroke-width="13" stroke-linecap="round" fill="none"/><path d="M108,90 Q124,110 116,130" stroke="#5f86d6" stroke-width="10" stroke-linecap="round" fill="none"/>
+        <g class="m-arm"><path d="M44,92 Q26,108 32,126" stroke="${INK}" stroke-width="13" stroke-linecap="round" fill="none"/><path d="M44,92 Q26,108 32,126" stroke="#5f86d6" stroke-width="10" stroke-linecap="round" fill="none"/>
+          <path d="M34,150 L20,36" stroke="#8a5a2b" stroke-width="7" stroke-linecap="round"/><path d="M14,44 L18,18 L28,42 Z" fill="#d8d8d0" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/><path d="M16,46 h12" stroke="#7a3a2a" stroke-width="3"/>
+          <circle cx="32" cy="126" r="7" fill="#5f86d6" stroke="${INK}" stroke-width="2"/></g>
+        <path d="M90,40 Q112,30 126,40 Q112,46 96,52Z" fill="#334f96" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M84,32 Q90,8 112,4 Q100,14 96,34Z M72,30 Q72,10 90,2 Q82,14 82,32Z" fill="#e6d6ad" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M58,42 Q64,24 84,24 Q104,28 102,50 Q100,62 90,68 L62,84 Q46,90 36,82 Q30,74 38,66 Q48,58 58,54Z" fill="url(#${g})" stroke="${INK}" stroke-width="2.4" stroke-linejoin="round"/>
+        <path d="M38,80 Q56,82 74,72" stroke="${INK}" stroke-width="1.8" fill="none"/><path d="M48,80 l2,-7 l4,6 M62,76 l3,-7 l3,5" fill="#fffdf0" stroke="${INK}" stroke-width="1.2"/>
+        <ellipse cx="40" cy="70" rx="5" ry="4" fill="#24396e"/><circle cx="38.5" cy="69.5" r="1.4" fill="${INK}"/><circle cx="42" cy="70" r="1.4" fill="${INK}"/>
+        <path d="M62,42 Q70,38 78,44" stroke="#24396e" stroke-width="4" fill="none" stroke-linecap="round"/>
+        <circle cx="70" cy="48" r="4.6" fill="#ff6a3d" stroke="${INK}" stroke-width="1.6"/><circle cx="69" cy="48" r="1.8" fill="${INK}"/>
       </g>`, 'monster');
   }
   function lizalfos(el = 'plain') {
+    // crouching lizard warrior with a frilled crest, swivelling eyes and a long tail; elementals have a horn
     const c = el === 'fire' ? ['#e9764a', '#9b3a1e'] : el === 'thunder' ? ['#e9cf4a', '#9b7d1e'] : el === 'water' ? ['#4ab6e9', '#1e5f9b'] : ['#6fcf6a', '#2f7f3a'];
+    const hornC = el === 'fire' ? '#ff9a2e' : el === 'thunder' ? '#fff3a0' : el === 'water' ? '#c8f4ff' : null;
     const g = id('lz');
-    return svg('0 0 150 140', `<defs>${lg(g, c[0], c[1])}</defs>${shadow(70, 135, 34)}
+    return svg('0 0 150 140', `<defs>${lg(g, c[0], c[1])}</defs>${shadow(76, 135, 38)}
       <g class="m-body bob">
-        <path d="M44,104 Q10,110 4,84 Q20,98 46,92" fill="url(#${g})" stroke="${INK}" stroke-width="2"/>
-        <path d="M56,108 l-8,26 h14 l4,-22 M80,108 l6,26 h-14 l-2,-22" fill="url(#${g})" stroke="${INK}" stroke-width="2"/>
-        <path d="M46,70 Q68,56 90,72 L88,112 Q66,120 46,110Z" fill="url(#${g})" stroke="${INK}" stroke-width="2.2"/>
-        <path d="M54,78 Q66,100 76,78" fill="#f2e2a8" opacity=".8"/>
-        <g class="m-arm"><path d="M88,80 Q104,88 108,100" stroke="${INK}" stroke-width="9" stroke-linecap="round" fill="none"/><path d="M88,80 Q104,88 108,100" stroke="${c[0]}" stroke-width="6" stroke-linecap="round" fill="none"/>
-          <path d="M108,100 L136,52" stroke="#8a5a2b" stroke-width="4" stroke-linecap="round"/><path d="M132,58 L142,40 L140,60 Z" fill="#dcdcdc" stroke="${INK}" stroke-width="1.6"/></g>
-        <path d="M66,62 Q70,30 100,34 Q122,38 124,50 Q110,58 92,56 Q82,62 66,62Z" fill="url(#${g})" stroke="${INK}" stroke-width="2.4"/>
-        <path d="M70,40 l4,-12 l4,10 l4,-12 l4,12 l4,-10" fill="${c[1]}" stroke="${INK}" stroke-width="1.6"/>
-        <circle cx="96" cy="44" r="5" fill="#ffe17a" stroke="${INK}" stroke-width="1.6"/><ellipse cx="96" cy="44" rx="1.4" ry="4" fill="${INK}"/>
-        <path d="M104,54 L120,52" stroke="${INK}" stroke-width="1.6"/>
+        <path d="M96,100 Q128,108 146,86 Q144,104 128,114 Q112,120 94,114Z" fill="url(#${g})" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M84,104 Q98,112 94,124 L102,132 h-16 l-2,-10 Q78,114 78,108 M62,104 Q52,114 58,124 L52,132 h16 l0,-10 Q70,114 70,108" fill="url(#${g})" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M54,70 Q74,56 96,72 Q102,94 92,112 Q72,120 56,110 Q48,92 54,70Z" fill="url(#${g})" stroke="${INK}" stroke-width="2.2"/>
+        <path d="M60,76 Q70,104 84,80" fill="#f2e2a8" opacity=".85"/><path d="M62,84 h18 M64,92 h14 M67,100 h9" stroke="${c[1]}" stroke-width="1.2" opacity=".6"/>
+        <g class="m-arm"><path d="M58,78 Q44,86 40,98" stroke="${INK}" stroke-width="9" stroke-linecap="round" fill="none"/><path d="M58,78 Q44,86 40,98" stroke="${c[0]}" stroke-width="6" stroke-linecap="round" fill="none"/>
+          <path d="M46,112 L14,44" stroke="#8a5a2b" stroke-width="4" stroke-linecap="round"/><path d="M18,52 L8,30 L24,46 Z" fill="#dcdcdc" stroke="${INK}" stroke-width="1.6" stroke-linejoin="round"/>
+          <circle cx="40" cy="99" r="4.5" fill="${c[0]}" stroke="${INK}" stroke-width="1.6"/></g>
+        <path d="M70,40 L78,22 L82,36 L90,20 L92,36 L102,24 L100,42 L110,34 L104,52 L86,56Z" fill="${c[1]}" stroke="${INK}" stroke-width="1.8" stroke-linejoin="round"/>
+        <path d="M84,62 Q86,40 66,36 Q42,32 24,44 Q20,52 28,56 Q46,62 64,60 Q74,66 84,62Z" fill="url(#${g})" stroke="${INK}" stroke-width="2.4" stroke-linejoin="round"/>
+        <path d="M26,54 Q44,56 62,54" stroke="${INK}" stroke-width="1.6" fill="none"/><path d="M34,55 l1,3 l2,-3 M44,56 l1,3 l2,-3" stroke="${INK}" stroke-width="1" fill="#fff"/>
+        ${hornC ? `<path d="M30,44 L22,30 L36,40Z" fill="${hornC}" stroke="${INK}" stroke-width="1.6"/>` : ''}
+        <circle cx="62" cy="42" r="7.5" fill="${c[1]}" stroke="${INK}" stroke-width="1.8"/><circle cx="60.5" cy="42" r="5" fill="#ffe17a"/><ellipse cx="59.5" cy="42" rx="1.4" ry="4" fill="${INK}"/>
+        <circle cx="30" cy="47" r="1.4" fill="${INK}"/>
       </g>`, 'monster');
   }
   function guardianScout() {
-    return svg('0 0 130 140', `${shadow(64, 134, 34)}<defs>${glowFilter('gsg', '#ff9a2e', 2.5)}</defs>
+    // the shrines' small ancient robot: a domed head with one glowing eye, spindly legs and a glowing ancient blade
+    return svg('0 0 130 140', `${shadow(64, 134, 36)}<defs>${glowFilter('gsg', '#ff9a2e', 2.5)}${glowFilter('gsb', '#3fe0ff', 2)}</defs>
       <g class="m-body hover">
-        <path d="M36,104 L18,132 M52,108 L44,134 M76,108 L84,134 M92,104 L110,132" stroke="#6f6a5c" stroke-width="7" stroke-linecap="round"/>
-        <path d="M36,104 L18,132 M52,108 L44,134 M76,108 L84,134 M92,104 L110,132" stroke="#ff9a2e" stroke-width="1.6" stroke-linecap="round" opacity=".8"/>
-        <ellipse cx="64" cy="98" rx="38" ry="14" fill="#8c8674" stroke="${INK}" stroke-width="2.2"/>
-        <path d="M28,92 Q28,40 64,36 Q100,40 100,92 Z" fill="#a8a28d" stroke="${INK}" stroke-width="2.4"/>
-        <path d="M34,80 Q64,70 94,80" stroke="#ff9a2e" stroke-width="2" fill="none" filter="url(#gsg)"/>
-        <path d="M44,56 Q64,48 84,56" stroke="#6f6a5c" stroke-width="2" fill="none"/>
-        <circle cx="64" cy="66" r="12" fill="#3a3628" stroke="${INK}" stroke-width="2"/>
-        <circle class="eye-glow" cx="64" cy="66" r="7" fill="#ff7a1a" filter="url(#gsg)"/><circle cx="64" cy="66" r="3" fill="#fff3c4"/>
+        <g stroke-linecap="round" stroke-linejoin="round" fill="none">
+          <path d="M44,98 L24,108 L14,134 M54,102 L46,116 L42,134 M76,102 L86,116 L90,134 M86,98 L106,108 L116,134" stroke="#6f6a5c" stroke-width="6"/>
+          <path d="M44,98 L24,108 L14,134 M54,102 L46,116 L42,134 M76,102 L86,116 L90,134 M86,98 L106,108 L116,134" stroke="#ff9a2e" stroke-width="1.4" opacity=".75"/>
+        </g>
+        <circle cx="24" cy="108" r="3.5" fill="#8c8674" stroke="${INK}" stroke-width="1.4"/><circle cx="106" cy="108" r="3.5" fill="#8c8674" stroke="${INK}" stroke-width="1.4"/>
+        <path d="M48,84 h34 l-4,18 h-26z" fill="#7d7768" stroke="${INK}" stroke-width="2"/>
+        <g class="m-arm"><path d="M48,88 L30,92" stroke="#6f6a5c" stroke-width="6" stroke-linecap="round"/><path d="M30,92 L8,56" stroke="#ffb36b" stroke-width="6" stroke-linecap="round" filter="url(#gsg)"/><path d="M30,92 L8,56" stroke="#fff3c4" stroke-width="2" stroke-linecap="round"/><circle cx="30" cy="92" r="4" fill="#8c8674" stroke="${INK}" stroke-width="1.4"/></g>
+        <ellipse cx="65" cy="84" rx="38" ry="10" fill="#8c8674" stroke="${INK}" stroke-width="2.2"/>
+        <path d="M28,82 Q28,38 65,34 Q102,38 102,82 Z" fill="#b2ab95" stroke="${INK}" stroke-width="2.4"/>
+        <path d="M36,74 Q65,66 94,74 M42,52 Q65,44 88,52 M65,34 V44" stroke="#6f6a5c" stroke-width="1.6" fill="none"/>
+        <path d="M34,78 Q65,70 96,78" stroke="#ff9a2e" stroke-width="2" fill="none" filter="url(#gsg)"/>
+        <path d="M86,44 l6,-10 l2,12" fill="#8c8674" stroke="${INK}" stroke-width="1.4"/>
+        <circle cx="52" cy="60" r="12" fill="#2f2b22" stroke="${INK}" stroke-width="2"/><circle cx="52" cy="60" r="9" fill="none" stroke="#6f6a5c" stroke-width="1.4"/>
+        <circle class="eye-glow" cx="52" cy="60" r="6.5" fill="#ff7a1a" filter="url(#gsg)"/><circle cx="52" cy="60" r="2.8" fill="#fff3c4"/>
       </g>`, 'monster');
   }
   function lynel() {
+    // the lion-headed centaur: red mane, curling horns, a huge sword and a golden horse body
     const g = id('ly');
-    return svg('0 0 180 160', `<defs>${lg(g, '#d9b06b', '#9b6f33')}</defs>${shadow(92, 154, 56)}
+    return svg('0 0 180 160', `<defs>${lg(g, '#e2b86f', '#9b6f33')}</defs>${shadow(100, 154, 58)}
       <g class="m-body bob">
-        <path d="M60,96 Q92,80 150,92 Q166,100 160,120 L150,124 L146,150 h-12 l2,-26 L80,124 l-4,26 h-12 l0,-28 Q54,112 60,96Z" fill="url(#${g})" stroke="${INK}" stroke-width="2.4"/>
-        <path d="M156,100 Q178,104 172,130" stroke="#7a3f1f" stroke-width="6" fill="none" stroke-linecap="round"/>
-        <path d="M54,104 Q50,70 64,56 Q80,50 84,70 L80,104Z" fill="url(#${g})" stroke="${INK}" stroke-width="2.2"/>
-        <g class="m-arm"><path d="M58,70 Q34,80 30,96" stroke="${INK}" stroke-width="11" stroke-linecap="round" fill="none"/><path d="M58,70 Q34,80 30,96" stroke="#d9b06b" stroke-width="8" stroke-linecap="round" fill="none"/>
-          <path d="M30,96 L10,30" stroke="#5a3a22" stroke-width="5"/><path d="M4,40 Q2,18 14,14 Q12,30 18,36 Z" fill="#cfd8e0" stroke="${INK}" stroke-width="2"/></g>
-        <path d="M48,52 Q36,30 52,18 Q66,4 82,16 Q96,30 86,52 Q76,64 64,62 Q52,62 48,52Z" fill="#b5462c" stroke="${INK}" stroke-width="2.4"/>
-        <ellipse cx="66" cy="40" rx="13" ry="14" fill="#e4c07f" stroke="${INK}" stroke-width="2"/>
-        <path d="M56,22 L48,6 L60,18 M76,22 L84,6 L72,18" fill="#f3e2b8" stroke="${INK}" stroke-width="2"/>
-        <circle cx="61" cy="38" r="2.6" fill="#c0392b"/><circle cx="71" cy="38" r="2.6" fill="#c0392b"/>
-        <path d="M60,48 L66,52 L72,48" stroke="${INK}" stroke-width="1.6" fill="none"/>
+        <path d="M166,98 Q184,104 176,134 Q172,118 164,112Z" fill="#b5462c" stroke="${INK}" stroke-width="2"/>
+        <path d="M74,96 Q100,82 156,92 Q172,100 164,122 L156,126 L152,146 h-12 l2,-22 L96,126 L92,146 h-12 l0,-24 Q66,114 74,96Z" fill="url(#${g})" stroke="${INK}" stroke-width="2.4" stroke-linejoin="round"/>
+        <path d="M100,100 q8,10 0,20 M120,98 q8,10 0,22 M140,98 q6,10 0,20" stroke="#9b6f33" stroke-width="2.4" fill="none" opacity=".7"/>
+        <path d="M80,144 h12 v6 h-12z M140,144 h12 v6 h-12z" fill="#3a2a1a"/>
+        <path d="M60,108 Q54,72 70,58 Q88,50 94,72 L90,108Z" fill="url(#${g})" stroke="${INK}" stroke-width="2.2"/>
+        <path d="M66,74 Q78,82 88,74 M68,88 Q78,94 88,88" stroke="#9b6f33" stroke-width="1.8" fill="none"/>
+        <path d="M90,66 Q104,80 100,98" stroke="${INK}" stroke-width="11" stroke-linecap="round" fill="none"/><path d="M90,66 Q104,80 100,98" stroke="#e2b86f" stroke-width="8" stroke-linecap="round" fill="none"/>
+        <g class="m-arm"><path d="M64,70 Q42,78 36,96" stroke="${INK}" stroke-width="12" stroke-linecap="round" fill="none"/><path d="M64,70 Q42,78 36,96" stroke="#e2b86f" stroke-width="9" stroke-linecap="round" fill="none"/>
+          <path d="M42,104 L28,96" stroke="#5a3a22" stroke-width="6" stroke-linecap="round"/><path d="M28,98 L6,10 Q16,6 22,14 L40,92 Z" fill="#e8dcc8" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/><path d="M10,16 l20,76" stroke="#b8a888" stroke-width="2"/>
+          <path d="M24,92 L46,86" stroke="#b5462c" stroke-width="5" stroke-linecap="round"/><circle cx="36" cy="96" r="6" fill="#e2b86f" stroke="${INK}" stroke-width="2"/></g>
+        <path d="M58,50 L44,46 L52,38 L40,28 L56,26 L52,12 L66,18 L72,4 L80,18 L94,10 L92,26 L106,28 L96,40 L104,52 L90,54 L88,66 L76,60 L66,68Z" fill="#c23b22" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/>
+        <path d="M60,30 Q46,14 58,4 Q56,14 64,22Z M86,26 Q100,14 94,2 Q90,12 82,20Z" fill="#f3e2b8" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>
+        <ellipse cx="72" cy="40" rx="16" ry="17" fill="#e8c483" stroke="${INK}" stroke-width="2"/>
+        <path d="M58,34 Q64,30 70,35 M76,35 Q82,30 88,34" stroke="#7a3a1a" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+        <ellipse cx="64" cy="39" rx="3" ry="2.4" fill="#ffe17a" stroke="${INK}" stroke-width="1"/><ellipse cx="81" cy="39" rx="3" ry="2.4" fill="#ffe17a" stroke="${INK}" stroke-width="1"/><circle cx="63.6" cy="39" r="1.2" fill="${INK}"/><circle cx="80.6" cy="39" r="1.2" fill="${INK}"/>
+        <ellipse cx="72" cy="50" rx="9" ry="6" fill="#f6e2b8" stroke="${INK}" stroke-width="1.4"/><path d="M68,45 h8 l-4,4z" fill="${INK}"/>
+        <path d="M64,54 Q72,60 80,54" stroke="${INK}" stroke-width="1.6" fill="none"/><path d="M66,55 l1,4 l2,-3 M78,55 l-1,4 l-2,-3" fill="#fff" stroke="${INK}" stroke-width="1"/>
       </g>`, 'monster');
   }
 
