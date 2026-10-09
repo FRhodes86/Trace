@@ -25,7 +25,7 @@
       house: { owned: false, decor: [] }, rested: '',
       theme: 'sheikah', glider: 'hylian', pet: 'none', ownedThemes: ['sheikah'], ownedGliders: ['hylian'], ownedPets: ['none'], ownedSaddles: ['stable'],
       fairy: { open: false, levels: {} },
-      quests: {}, counters: {}, mastered: {},
+      quests: {}, counters: {}, mastered: {}, orbShrines: {}, // shrines whose Spirit Orb has been given
       plateau: {}, // subject -> true
       stars: {}, // topicId -> 0..3 (highest trial cleared)
       bosses: {}, // regionId -> true
@@ -54,6 +54,8 @@
     migrate(obj) {
       const f = fresh(); const s = Object.assign(f, obj);
       for (const k of ['items', 'buffs', 'house', 'fairy', 'wild', 'settings']) s[k] = Object.assign(fresh()[k], obj[k] || {});
+      // older saves gave each shrine's orb for the first star; record those so no shrine gives a second orb
+      if (!obj.orbShrines) { s.orbShrines = {}; for (const [id, st] of Object.entries(s.stars || {})) if (st >= 1) s.orbShrines[id] = true; }
       return s;
     },
     newGame(hero) { this.s = fresh(); this.s.hero = hero || 'Link'; this.save(); },

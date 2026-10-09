@@ -896,6 +896,25 @@ html { overflow-x: hidden; overflow-x: clip; }
 .leaf.show .lf { transform: translateY(-58px) rotate(-14deg); }
 @media (max-width: 600px) { .cpad { grid-template-columns: repeat(3, 48px); grid-template-rows: repeat(3, 48px); } .oc-c { width: 48px; height: 48px; } .oc-a { width: 74px; height: 74px; } .ocarina { gap: 16px; } }
 .tame-field .tame-horse .rider { top: 14%; left: 33%; width: 64px; height: 82px; }
+
+/* ---------- monk ceremony (Spirit Orb) ---------- */
+.monk-scene { position: fixed; inset: 0; z-index: 45; opacity: 0; transition: opacity 0.5s; overflow: hidden; }
+.monk-scene.in { opacity: 1; }
+.monk-scene .ms-room { position: absolute; inset: 0; width: 100%; height: 100%; }
+.monk-scene .ms-lines { animation: eye 2.4s ease-in-out infinite; }
+.ms-monk { position: absolute; left: 50%; bottom: max(25.5vw, 34vh); width: min(46vw, 230px); height: min(56vw, 290px); transform: translate(-50%, 0); transition: transform 1.4s ease-in, opacity 1.4s, filter 1.4s; }
+.ms-monk .art > circle, .ms-monk .art > path { transition: opacity 0.25s, transform 0.35s; transform-box: fill-box; transform-origin: center; }
+.ms-monk.shatter .art > circle, .ms-monk.shatter .art > path { opacity: 0; transform: scale(1.4); }
+.ms-monk.ascend { transform: translate(-50%, -40%); opacity: 0; filter: brightness(3) blur(2px); }
+.ms-hero { position: absolute; left: 22%; bottom: max(12vw, 16vh); width: min(26vw, 120px); height: min(33vw, 150px); }
+.ms-orb { position: fixed; left: 50%; top: 50%; width: 56px; height: 56px; transform: translate(-50%, -50%) scale(0); opacity: 0; filter: drop-shadow(0 0 16px #ffb347) drop-shadow(0 0 30px #fff2c0); transition: left 1.1s cubic-bezier(.5, 0, .3, 1), top 1.1s cubic-bezier(.5, 0, .3, 1), transform 0.9s cubic-bezier(.2, 1.5, .4, 1), opacity 0.5s; }
+.ms-orb .ic.orb { width: 100%; height: 100%; }
+.ms-orb.rise { opacity: 1; transform: translate(-50%, -50%) scale(1.2); animation: orbPulse 0.9s ease-in-out infinite alternate; }
+.ms-orb.give { transform: translate(-50%, -50%) scale(0.9); }
+.ms-orb.gone { opacity: 0; transform: translate(-50%, -50%) scale(0.2); }
+@keyframes orbPulse { to { filter: drop-shadow(0 0 26px #ffb347) drop-shadow(0 0 44px #fff2c0); } }
+.t-orb { display: inline-flex; align-items: center; gap: 4px; font-size: 0.78rem; color: #ffd08a; font-weight: 700; }
+.t-orb .ic.orb { width: 16px; height: 16px; }
 </style>
 </head>
 <body>
@@ -5265,7 +5284,7 @@ Symin`,
       house: { owned: false, decor: [] }, rested: '',
       theme: 'sheikah', glider: 'hylian', pet: 'none', ownedThemes: ['sheikah'], ownedGliders: ['hylian'], ownedPets: ['none'], ownedSaddles: ['stable'],
       fairy: { open: false, levels: {} },
-      quests: {}, counters: {}, mastered: {},
+      quests: {}, counters: {}, mastered: {}, orbShrines: {}, // shrines whose Spirit Orb has been given
       plateau: {}, // subject -> true
       stars: {}, // topicId -> 0..3 (highest trial cleared)
       bosses: {}, // regionId -> true
@@ -5294,6 +5313,8 @@ Symin`,
     migrate(obj) {
       const f = fresh(); const s = Object.assign(f, obj);
       for (const k of ['items', 'buffs', 'house', 'fairy', 'wild', 'settings']) s[k] = Object.assign(fresh()[k], obj[k] || {});
+      // older saves gave each shrine's orb for the first star; record those so no shrine gives a second orb
+      if (!obj.orbShrines) { s.orbShrines = {}; for (const [id, st] of Object.entries(s.stars || {})) if (st >= 1) s.orbShrines[id] = true; }
       return s;
     },
     newGame(hero) { this.s = fresh(); this.s.hero = hero || 'Link'; this.save(); },
@@ -5486,7 +5507,7 @@ Symin`,
     const ov = $('#overlay'); ov.className = 'dlg-wrap'; let i = 0; let typing = null; let full = '';
     const show = () => {
       const [who, text] = lines[i]; full = fillName(text);
-      const pf = PORTRAIT[who];
+      const pf = PORTRAIT[who] || PORTRAIT[lines[i][2]]; // optional 3rd item names a portrait
       ov.innerHTML = `<div class="dlg ${pf ? 'has-p' : ''}" role="dialog">${pf ? `<div class="portrait">${pf()}</div>` : ''}<div class="dlg-body"><div class="who">${U.esc(fillName(who))}</div><p class="txt"></p><div class="more">${i < lines.length - 1 ? '▼' : '✔'}</div></div></div>`;
       const p = $('.txt', ov); let k = 0; clearInterval(typing);
       typing = setInterval(() => { k += 2; p.textContent = full.slice(0, k); if (k % 6 === 0) U.sfx.tick(); if (k >= full.length) { clearInterval(typing); typing = null; } }, 22);
@@ -5693,7 +5714,7 @@ Symin`,
           if (firstTime) {
             s.runes[p.rune] = true; s.orbs++; s.orbsTotal++;
             rewards.push(n => FX.itemGet(`<div class="rune-big">${IC.rune(p.rune)}</div>`, `You got the ${rune.name} rune!`, rune.desc, n));
-            rewards.push(n => FX.itemGet(IC.orb(), 'You got a Spirit Orb!', 'Collect four and offer them at a Goddess Statue.', n));
+            rewards.push(n => monkCeremony(p.name, n, true));
           }
           State.save();
           results(r, { rewards, next: () => {
@@ -5789,10 +5810,10 @@ Symin`,
         return `<button class="trial ${done ? 'done' : ''} ${open ? '' : 'locked'}" data-lv="${tr.lv}" ${open ? '' : 'disabled'}>
           <span class="tlv">${'★'.repeat(tr.lv)}</span>
           <span class="t-foe">${open ? foe.art : '<span class="qm">?</span>'}</span>
-          <b>${tr.name}</b><span class="muted">${tr.label} · ${open ? foe.name : 'locked'}${tr.lv === 3 ? ' · timed' : ''}</span>
+          <b>${tr.name}</b><span class="muted">${tr.label} · ${open ? foe.name : 'locked'}${tr.lv === 3 ? ' · timed' : ''}</span>${tr.lv === 3 && !s.orbShrines[topicId] ? `<span class="t-orb">${IC.orb()} Spirit Orb</span>` : ''}
           <span class="t-go">${done ? '✔ Cleared · replay' : open ? 'Fight ⚔' : '🔒'}</span></button>`;
       }).join('')}</div>
-      <p class="muted center">Land <b>6 hits</b> before the monster lands 3 on you. ${st === 0 ? 'Your first win here earns a <b>Spirit Orb</b>!' : ''}</p>
+      <p class="muted center">Land <b>6 hits</b> before the monster lands 3 on you. ${S().orbShrines[topicId] ? '' : `Clear the <b>Test of Strength (★★★)</b> and the monk will give you this shrine's <b>Spirit Orb</b>!`}</p>
     </div>`, 'shrine', 'shrine');
     on('#back', () => regionScreen(r.id));
     on('#read', () => speak(plain(t.lesson)));
@@ -5817,11 +5838,12 @@ Symin`,
           const prev = s.stars[topicId] || 0; const rewards = []; const loot = [];
           if (lv > prev) {
             s.stars[topicId] = lv;
-            if (lv === 1) { s.orbs++; s.orbsTotal++; rewards.push(n => FX.itemGet(IC.orb(), 'You got a Spirit Orb!', 'Take four to a Goddess Statue for a Heart Container.', n)); }
             const chestR = [0, 30, 60, 120][lv]; s.rupees += chestR; loot.push({ icon: IC.rupee(lv === 3 ? 'purple' : lv === 2 ? 'red' : 'blue'), label: `${chestR} rupees` });
             if (lv === 3) { const it = U.pick(['hearty', 'fairy', 'bombarrow', 'hasty']); s.items[it]++; const I = State.ITEMS.find(i => i.id === it); loot.push({ icon: `<span class="emo">${I.emoji}</span>`, label: I.name }); }
             loot.push({ icon: '⭐', label: `${'★'.repeat(lv)} star${lv > 1 ? 's' : ''}` });
             rewards.push(n => FX.chest(loot, n, 'Shrine treasure!'));
+            // mastering the Test of Strength earns the shrine's Spirit Orb, presented by its monk
+            if (lv === 3 && !s.orbShrines[topicId]) { s.orbShrines[topicId] = true; s.orbs++; s.orbsTotal++; rewards.push(n => monkCeremony(name.replace(/ Shrine$/, ''), n)); }
             if (lv === 3) rewards.push(...World.checkMastery());
           }
           const drops = World.trialDrops(subj, foe.name, lv, false);
@@ -5832,6 +5854,50 @@ Symin`,
         } else { endTrialBuffs(); State.save(); results(r, { retry: () => trial(topicId, lv), next: () => shrineScreen(topicId) }); }
       },
     });
+  }
+
+  /* =========================================================== MONK CEREMONY */
+  // As in the game: the monk's blue barrier shatters, he speaks, and a Spirit Orb floats from his hands to the hero before he fades into light.
+  function monkCeremony(monkName, done, plateau) {
+    const T = ms => (FX.reduce ? 0 : ms);
+    const scene = document.createElement('div'); scene.className = 'monk-scene';
+    scene.innerHTML = `<svg class="ms-room" viewBox="0 0 400 300" preserveAspectRatio="xMidYMax slice">
+        <defs><radialGradient id="ms-g" cx="50%" cy="45%" r="60%"><stop offset="0" stop-color="#1c3a52"/><stop offset="1" stop-color="#060d16"/></radialGradient></defs>
+        <rect width="400" height="300" fill="url(#ms-g)"/>
+        <g stroke="#3fe0ff" stroke-width="1.6" fill="none" opacity=".55" class="ms-lines"><path d="M0,60 H90 L110,80 H150 M400,60 H310 L290,80 H250 M0,120 H60 L80,100 M400,120 H340 L320,100 M30,0 V40 L50,60 M370,0 V40 L350,60"/></g>
+        <ellipse cx="200" cy="230" rx="170" ry="40" fill="#0f2233" stroke="#3fe0ff" stroke-width="1.2" opacity=".9"/>
+        <ellipse cx="200" cy="196" rx="70" ry="16" fill="#1a3448" stroke="#3fe0ff" stroke-width="1.4"/>
+        <path d="M130,196 v14 a70,16 0 0 0 140,0 v-14" fill="#122636" stroke="#3fe0ff" stroke-width="1"/>
+        <path d="M200,186 l-10,5 l10,5 l10,-5z" fill="none" stroke="#7ff3ff" stroke-width="1.4"/>
+      </svg>
+      <div class="ms-monk">${ART.monk()}</div><div class="ms-hero">${heroArt()}</div><div class="ms-orb">${IC.orb()}</div>`;
+    document.body.appendChild(scene);
+    const monk = scene.querySelector('.ms-monk'), orb = scene.querySelector('.ms-orb'), hero = scene.querySelector('.ms-hero');
+    const moveOrb = (el, fy) => { const r = el.getBoundingClientRect(); orb.style.left = (r.left + r.width / 2) + 'px'; orb.style.top = (r.top + r.height * fy) + 'px'; };
+    moveOrb(monk, 0.62);
+    requestAnimationFrame(() => scene.classList.add('in'));
+    setTimeout(() => {
+      monk.classList.add('shatter'); U.sfx.korok(); FX.flash('#bff8ff', 0.6);
+      const [x, y] = FX.center(monk); FX.burst(x, y, { n: 46, colors: ['#bff8ff', '#3fe0ff', '#ffffff'], speed: 340, size: 4, life: 1, gravity: 260 });
+    }, T(900));
+    setTimeout(() => dialogue([
+      [monkName, `I am ${monkName}. I have waited for so long for a hero to come…`, 'Monk'],
+      [monkName, plateau ? `You have proven your skill in this shrine, ${S().hero}.` : `You have mastered every trial of this shrine: the Trial of Beginnings, the Trial of Wisdom, and the Test of Strength.`, 'Monk'],
+      [monkName, 'In the name of the goddess Hylia, I bestow upon you this Spirit Orb.', 'Monk'],
+    ], () => {
+      U.sfx.orb(); moveOrb(monk, 0.3); orb.classList.add('rise');
+      setTimeout(() => { orb.classList.add('give'); moveOrb(hero, 0.35); }, T(1100));
+      setTimeout(() => {
+        const [x, y] = FX.center(orb); FX.flash('#fff6c8', 0.7); FX.burst(x, y, { n: 40, colors: ['#ffb347', '#fff6c8', '#ffffff'], kind: 'star', speed: 260 });
+        orb.classList.add('gone');
+        FX.itemGet(IC.orb(), 'Spirit Orb', `Proof of conquering a shrine. You have ${S().orbs} — offer four at a Goddess Statue for a Heart Container or a Stamina Vessel.`, () =>
+          dialogue([[monkName, 'May the goddess smile upon you…', 'Monk']], () => {
+            monk.classList.add('ascend'); U.sfx.solved();
+            const [mx, my] = FX.center(monk); FX.burst(mx, my, { n: 50, colors: ['#bff8ff', '#ffe8a0', '#ffffff'], kind: 'star', speed: 180, gravity: -120, life: 1.6 });
+            setTimeout(() => { scene.classList.remove('in'); setTimeout(() => { scene.remove(); done && done(); }, T(500)); }, T(1600));
+          }));
+      }, T(2300));
+    }), T(1700));
   }
 
   /* =========================================================== BATTLE ENGINE */
@@ -6497,7 +6563,7 @@ Symin`,
 
   // free static hosts like Netlify can overlay a badge in the bottom corner
   if (/netlify\.app$|netlify\.com$/.test(location.hostname)) document.documentElement.classList.add('host-badge');
-  window.Game = { title, map, statue, regionScreen, ui: { screen, on, onKey, hud, toast, confetti, dialogue, modal, sequence, gainXp, heartsHtml, heroArt, speak, addInterval: id => intervals.push(id) } };
+  window.Game = { title, map, statue, regionScreen, monkCeremony, ui: { screen, on, onKey, hud, toast, confetti, dialogue, modal, sequence, gainXp, heartsHtml, heroArt, speak, addInterval: id => intervals.push(id) } };
   title();
 })();
 </script>

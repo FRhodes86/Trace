@@ -111,7 +111,7 @@ The hero (named by the player, default "Link") wakes on the Great Plateau and ha
 - **Master Cycle Zero:** 3-star every shrine in Hyrule to win the final Divine Beast. The **Master Cycle Run** appears on the map: jump boulders and Bokoblins and collect rupees. Rides are free, and rupee prizes cover the first 3 rides each day.
 - **22 side quests** from Hudson, Sidon, Yunobo, Teba, Riju, Kass, Purah, Beedle and others. Rewards include armour sets, companions, saddles, colour themes and decor.
 - **Great Fairy Fountain** (next to the Goddess Statue): upgrade armour up to ★★★★ with rupees and monster parts, which boosts its perks.
-- **Spirit Orbs** (first clear of each shrine) can be swapped at the Goddess Statue: 4 orbs make a Heart Container or a Stamina Vessel.
+- **Spirit Orbs:** master a shrine's Test of Strength (★★★), and its monk breaks free of his barrier and presents the orb, just like in the game. Swap 4 orbs at the Goddess Statue for a Heart Container or a Stamina Vessel.
 - **Korok seeds** pop up at random after correct answers. Give them to Hestu for extra rune uses.
 - **Sheikah Runes** in battle:
   - Magnesis: removes two wrong answers.
