@@ -85,7 +85,7 @@ button:focus-visible, input:focus-visible, summary:focus-visible { outline: 3px 
 @keyframes eye { 50% { opacity: 0.55; } }
 .art .aura-pulse { transform-box: fill-box; transform-origin: center; animation: aura 2.6s ease-in-out infinite; }
 @keyframes aura { 50% { transform: scale(1.08); opacity: 0.25; } }
-.art .h-arm { transform-box: view-box; transform-origin: 66px 78px; }
+.art .h-arm { transform-box: view-box; transform-origin: 71px 49px; }
 .art .m-arm { transform-box: fill-box; transform-origin: 80% 10%; }
 .art .h-eye { animation: blink 4s infinite; transform-box: fill-box; transform-origin: center; }
 @keyframes blink { 0%, 94%, 100% { transform: scaleY(1); } 96% { transform: scaleY(0.1); } }
@@ -3492,6 +3492,7 @@ Symin`,
             <path d="M99,62 L105,50" stroke="#fff" stroke-width="1.2" opacity=".8"/>`;
   }
   function hero(o = {}) {
+    // heroic proportions (about 5½ heads tall), almond eyes, defined jaw; outfits, weapons and shields still apply
     const f = OUTFITS[o.armour] || OUTFITS.tunic;
     const g = id('hg');
     const W = (window.CATALOG && CATALOG.WEAPONS.find(w => w.id === o.weapon)) || { blade: '#d7dde4', hilt: '#7a5230' };
@@ -3499,98 +3500,87 @@ Symin`,
     const bladeLen = { boulder: 1.15, trident: 1.1, scimitar: 1.05, traveler: 0.85, boko: 0.8, soldier: 1, knight: 1.15, flame: 1.05, frost: 1.05, thunder: 1.05, eightfold: 1.12, royal: 1.12, lynel: 1.15, biggoron: 1.4, goddess: 1.2, master: 1.2 }[o.weapon] || 0.85;
     const SL = (window.CATALOG && (CATALOG.SHIELDS.find(x => x.id === o.shield) || {}).look) || (o.shield === 'none' ? 'pot' : o.shield) || 'pot';
     const shieldSvg = SHIELD_ART[SL] || SHIELD_ART.pot;
+    const skin = '#f2cfae', skinD = '#d9a986';
     const face = (f.mask
-      ? `<path d="M48,49 Q62,59 80,49 L80,61 Q62,67 48,59 Z" fill="${f.mask}" stroke="${INK}" stroke-width="1.5"/><path d="M58,55 l4,3 l4,-3" stroke="${f.trim}" stroke-width="1.5" fill="none"/>`
-      : `<path d="M66,58 q4,2.2 7.5,0" stroke="#a5604a" stroke-width="1.6" fill="none" stroke-linecap="round"/>`)
-      + (f.paint ? `<path d="M71,52 l6,0 M69,55 l8,1" stroke="${f.paint}" stroke-width="1.8" stroke-linecap="round"/>` : '');
-    const hat = f.hat ? `<path d="M46,32 Q58,10 80,26 Q60,22 50,40 Q36,60 22,70 Q34,48 46,32Z" fill="${f.hat}" stroke="${INK}" stroke-width="2"/>` : '';
-    const band = f.band ? `<path d="M46,33 Q63,26 81,34" stroke="${f.band}" stroke-width="3.5" fill="none"/>` : '';
-    const aura = f.aura ? `<ellipse cx="60" cy="85" rx="44" ry="62" fill="${f.aura}" opacity=".18" class="aura-pulse"/>` : '';
-    const hem = Array.from({ length: 11 }, (_, i) => `${i ? 'l' : 'M40,113 l'}3.8,${i % 2 ? 3 : -3}`).join(' ');
-    return svg('0 0 120 150', `<defs>${lg(g + 't', f.tunic, f.shade)}${lg(g + 'h', '#f6d77a', '#c9962a')}${lg(g + 'b', blade, '#9fb4c8', false)}${lg(g + 'p', '#6a5644', '#463729')}</defs>
-      ${shadow(60, 145, 30)}${aura}
+      ? `<path d="M55,31 Q63,37 72.5,31 L72,38 Q63,44 55.5,38 Z" fill="${f.mask}" stroke="${INK}" stroke-width="1.2"/><path d="M60,35 l3,2 l3,-2" stroke="${f.trim}" stroke-width="1.2" fill="none"/>`
+      : `<path d="M65.6,35.6 q2,.9 4,-.1" stroke="#9a5a44" stroke-width="1.2" fill="none" stroke-linecap="round"/>`)
+      + (f.paint ? `<path d="M69,31.5 l4,0 M68.5,33.5 l4.6,.6" stroke="${f.paint}" stroke-width="1.4" stroke-linecap="round"/>` : '');
+    const hat = f.hat ? `<path d="M53,22 Q59,6 76,17 Q62,14 56,26 Q46,38 37,45 Q44,32 53,22Z" fill="${f.hat}" stroke="${INK}" stroke-width="1.6"/>` : '';
+    const band = f.band ? `<path d="M53,22 Q63,17 74.5,23" stroke="${f.band}" stroke-width="2.6" fill="none"/>` : '';
+    const aura = f.aura ? `<ellipse cx="60" cy="82" rx="40" ry="64" fill="${f.aura}" opacity=".16" class="aura-pulse"/>` : '';
+    const hem = Array.from({ length: 10 }, (_, i) => `${i ? 'l' : 'M45,101 l'}3.4,${i % 2 ? 2.4 : -2.4}`).join(' ');
+    return svg('0 0 120 150', `<defs>${lg(g + 't', f.tunic, f.shade)}${lg(g + 'h', '#f1d27a', '#b88a2a')}${lg(g + 'b', blade, '#9fb4c8', false)}${lg(g + 'p', '#6a5644', '#3f3226')}${lg(g + 's', skin, skinD)}</defs>
+      ${shadow(60, 145, 24)}${aura}
       <g class="h-body">
-        <path d="M48,38 Q30,42 28,58 Q28,70 36,78 Q34,66 40,58 Q46,50 52,46 Z" fill="url(#${g}h)" stroke="${INK}" stroke-width="2"/>
-        <path d="M44,44 l5,4" stroke="#7a5230" stroke-width="3" stroke-linecap="round"/>
-        <g class="h-shield">${shieldSvg}</g>
-        <path d="M50,110 h11 l-1,22 h-9z" fill="url(#${g}p)" stroke="${INK}" stroke-width="2"/>
-        <path d="M48,128 h14 l1,15 h-19 q-1,-8 4,-15z" fill="#5a3a22" stroke="${INK}" stroke-width="2"/><path d="M48,128 h14 v4 h-14z" fill="#8a6a45" stroke="${INK}" stroke-width="1.4"/>
-        <path d="M63,110 h11 l1,22 h-11z" fill="url(#${g}p)" stroke="${INK}" stroke-width="2"/>
-        <path d="M62,128 h14 q9,4 9,15 h-23z" fill="#6b4423" stroke="${INK}" stroke-width="2"/><path d="M62,128 h14 v4 h-14z" fill="#9b7a52" stroke="${INK}" stroke-width="1.4"/>
-        <path d="M43,74 Q60,64 78,74 L84,117 Q60,124 37,117 Z" fill="url(#${g}t)" stroke="${INK}" stroke-width="2.2"/>
-        <path d="M62,70 L66,118" stroke="${f.shade}" stroke-width="3" opacity=".5"/>
-        <path d="M38,111 Q60,118 83,111" stroke="${f.trim}" stroke-width="2" fill="none"/>
-        <path d="${hem}" stroke="${f.trim}" stroke-width="1.4" fill="none" opacity=".9"/>
-        <path d="M52,71 L60,82 L69,71 Z" fill="#efe6c8" stroke="${INK}" stroke-width="1.2"/>
-        <path d="M49,72 L60,85 L72,72" stroke="${f.trim}" stroke-width="2.6" fill="none"/>
-        <path d="M43,92 Q60,88 80,93" stroke="#7a5230" stroke-width="2.2" fill="none"/>
-        <rect x="41" y="97" width="41" height="6" rx="2" fill="#6b4423" stroke="${INK}" stroke-width="1.5"/>
-        <rect x="57" y="96" width="7" height="8" rx="1" fill="#c9a227" stroke="${INK}" stroke-width="1"/>
-        <rect x="44" y="102" width="8" height="8" rx="1.5" fill="#7a5230" stroke="${INK}" stroke-width="1.2"/>
-        <g class="h-slate"><rect x="69" y="101" width="13" height="10" rx="2" fill="#2b3240" stroke="${INK}" stroke-width="1.4"/><path d="M72,106 q3.5,-3 7,0 q-3.5,3 -7,0z" fill="none" stroke="#3fe0ff" stroke-width="1"/><circle cx="75.5" cy="106" r="1.2" fill="#3fe0ff"/></g>
-        <path d="M44,78 Q34,88 40,104" stroke="${INK}" stroke-width="8" stroke-linecap="round" fill="none"/>
-        <path d="M44,78 Q37,85 38,92" stroke="${f.tunic}" stroke-width="5.5" stroke-linecap="round" fill="none"/>
-        <path d="M38,92 Q37,99 40,104" stroke="#f5cfa8" stroke-width="5" stroke-linecap="round" fill="none"/>
-        <path d="M37,96 l5,1" stroke="#6b4423" stroke-width="4"/>
-        <rect x="55" y="60" width="11" height="10" fill="#f5cfa8" stroke="${INK}" stroke-width="1.5"/>
+        <path d="M56,21 Q44,25 43,40 Q44,49 48,54 Q47,43 51,35 Q55,29 58,26Z" fill="url(#${g}h)" stroke="${INK}" stroke-width="1.5"/>
+        <path d="M49,33 l4,2" stroke="#6b4423" stroke-width="2.4" stroke-linecap="round"/>
+        <g class="h-shield"><g transform="translate(42 88) scale(.78) translate(-40 -92)">${shieldSvg}</g></g>
+        <path d="M53,98 L51,127 h9 L62,100Z" fill="url(#${g}p)" stroke="${INK}" stroke-width="1.5"/>
+        <path d="M49.5,125 h11 l.8,18 h-14 q-.6,-10 2.2,-18z" fill="#4e3220" stroke="${INK}" stroke-width="1.5"/><path d="M49.5,125 h11 v3.6 h-11z" fill="#8a6a45"/>
+        <path d="M63,99 L65,127 h9 L72,98Z" fill="url(#${g}p)" stroke="${INK}" stroke-width="1.5"/>
+        <path d="M64,125 h10.6 q8,4 8.6,18 h-19.4z" fill="#5e3c24" stroke="${INK}" stroke-width="1.5"/><path d="M64,125 h10.6 v3.6 h-10.6z" fill="#9b7a52"/>
+        <path d="M52,49 Q46,58 46,72" stroke="${INK}" stroke-width="7.4" stroke-linecap="round" fill="none"/><path d="M52,49 Q46,58 46,72" stroke="${f.shade}" stroke-width="5" stroke-linecap="round" fill="none"/>
+        <path d="M46,72 Q45,80 47,87" stroke="${INK}" stroke-width="6" stroke-linecap="round" fill="none"/><path d="M46,72 Q45,80 47,87" stroke="${skinD}" stroke-width="4" stroke-linecap="round" fill="none"/>
+        <path d="M51,45 Q61.5,41 73,45 L76,74 L80,102 Q62,109 43,102 L47,74 Z" fill="url(#${g}t)" stroke="${INK}" stroke-width="1.7"/>
+        <path d="M61.5,46 L63,104" stroke="${f.shade}" stroke-width="2" opacity=".55"/><path d="M48,74 Q54,70 58,74" stroke="${f.shade}" stroke-width="1.6" fill="none" opacity=".7"/>
+        <path d="M44,99 Q62,105 79.5,99" stroke="${f.trim}" stroke-width="1.6" fill="none"/>
+        <path d="${hem}" stroke="${f.trim}" stroke-width="1.1" fill="none" opacity=".9"/>
+        <path d="M56,45 L61.5,54 L67,45 Z" fill="#efe6c8" stroke="${INK}" stroke-width="1"/><path d="M53.5,45.5 L61.5,57 L70,45.5" stroke="${f.trim}" stroke-width="2" fill="none"/>
+        <path d="M47,73 Q61,70 77,74" stroke="#7a5230" stroke-width="1.6" fill="none"/>
+        <rect x="46" y="76" width="32" height="4.6" rx="1.6" fill="#5e3c22" stroke="${INK}" stroke-width="1.1"/><rect x="59" y="75.4" width="5.4" height="5.8" rx="1" fill="#c9a227" stroke="${INK}" stroke-width=".8"/>
+        <rect x="48" y="80" width="6.4" height="7" rx="1.2" fill="#6b4423" stroke="${INK}" stroke-width=".9"/>
+        <g class="h-slate"><rect x="69" y="80" width="10" height="8" rx="1.6" fill="#2b3240" stroke="${INK}" stroke-width="1.1"/><path d="M71.5,84 q2.6,-2.3 5.2,0 q-2.6,2.3 -5.2,0z" fill="none" stroke="#3fe0ff" stroke-width=".8"/><circle cx="74.1" cy="84" r=".9" fill="#3fe0ff"/></g>
+        <rect x="58.5" y="38" width="7" height="8.5" fill="url(#${g}s)" stroke="${INK}" stroke-width="1.1"/>
         <g class="h-head">
-          <path d="M48,47 L24,33 Q30,44 48,56 Z" fill="#f8d6b3" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>
-          <path d="M45,47 L31,39 Q36,45 46,52Z" fill="#eab796"/>
-          <ellipse cx="63" cy="47" rx="17" ry="19" fill="#f8d6b3" stroke="${INK}" stroke-width="2.2"/>
-          <path d="M45,47 Q39,21 63,20 Q88,20 82,49 Q80,39 76,35 Q77,44 72,48 Q71,38 66,33 Q63,40 58,38 Q57,44 51,42 Q48,48 45,47Z" fill="url(#${g}h)" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>
-          <path d="M79,36 Q85,48 80,61 Q78,52 75,45Z" fill="url(#${g}h)" stroke="${INK}" stroke-width="1.6"/>
-          <path d="M55,25 Q65,21 74,27 M66,33 Q66,27 62,24" stroke="#fff3c4" stroke-width="1.8" fill="none" opacity=".8"/>
-          <g class="h-eye"><ellipse cx="72" cy="48" rx="3" ry="4" fill="#fff"/><ellipse cx="72.6" cy="48.4" rx="2.4" ry="3.3" fill="#2e6fbf"/><circle cx="73.3" cy="47" r="1" fill="#fff"/>
-            <ellipse cx="60" cy="48" rx="2.4" ry="3.6" fill="#fff"/><ellipse cx="60.6" cy="48.4" rx="1.9" ry="3" fill="#2e6fbf"/><circle cx="61.2" cy="47" r=".8" fill="#fff"/></g>
-          <path d="M68,41.5 q4,-2 7.5,0 M57,42 q3,-1.5 5.5,0" stroke="#a87a22" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+          <path d="M55.5,27 L43.5,20 Q46.5,27 55,33.5Z" fill="${skin}" stroke="${INK}" stroke-width="1.4" stroke-linejoin="round"/><path d="M54,27.4 L47,23.6 Q49.4,27.6 54,31Z" fill="#e2aa8a"/>
+          <path d="M54,26 Q54,15.5 63.4,15.4 Q72.6,15.6 73,26.4 Q72.6,35 67.4,39.6 Q63.4,42.4 59.4,40 Q54.4,36.4 54,26Z" fill="url(#${g}s)" stroke="${INK}" stroke-width="1.6"/>
+          <path d="M66,39.6 Q70.6,36 72.4,30" stroke="${skinD}" stroke-width="1.2" fill="none" opacity=".7"/>
+          <path d="M52.8,28.6 Q49.6,13 63.4,12.4 Q76.4,12.6 74.6,27 Q73,21 69.4,19.8 Q68.6,25 63.8,22.4 Q60.6,26.4 57.6,23.4 Q55.4,27.6 52.8,28.6Z" fill="url(#${g}h)" stroke="${INK}" stroke-width="1.5" stroke-linejoin="round"/>
+          <path d="M71.4,19.6 Q76,28 73,37.4 Q72,31 69.6,25.4Z" fill="url(#${g}h)" stroke="${INK}" stroke-width="1.2"/>
+          <path d="M57,17.4 Q64,13.8 70.6,17.6 M64,22.4 Q64,18 61.4,15.6" stroke="#fff3c4" stroke-width="1.2" fill="none" opacity=".75"/>
+          <g class="h-eye"><path d="M65.4,28.4 Q68,26.4 70.8,27.9 Q68.4,30 65.4,28.4Z" fill="#fff" stroke="${INK}" stroke-width=".7"/><circle cx="68.2" cy="28.2" r="1.25" fill="#2e6fbf"/><circle cx="68.5" cy="27.8" r=".35" fill="#fff"/>
+            <path d="M57.6,28.6 Q59.6,27 61.8,28.3 Q59.8,29.8 57.6,28.6Z" fill="#fff" stroke="${INK}" stroke-width=".7"/><circle cx="59.9" cy="28.5" r="1.05" fill="#2e6fbf"/></g>
+          <path d="M65,25.6 q3,-1.4 6.2,-.2 M57.2,25.8 q2.4,-1 4.6,0" stroke="#8a6a1a" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+          <path d="M70.6,29.8 l1.8,3 l-1.9,.5" stroke="${skinD}" stroke-width=".9" fill="none" stroke-linejoin="round"/>
           ${face}${band}${hat}
         </g>
         <g class="h-arm">
-          <g transform="translate(88 92) scale(${bladeLen}) translate(-88 -92)">${bladeShape(W.shape, g, blade, hilt)}</g>
-          <path d="M80,86 L98,94" stroke="${hilt}" stroke-width="5" stroke-linecap="round"/>
-          <path d="M80,86 L98,94" stroke="${INK}" stroke-width="1" fill="none" opacity=".4"/>
-          <path d="M86,96 L82,104" stroke="#5a3a22" stroke-width="5" stroke-linecap="round"/>
-          <path d="M66,76 Q80,80 86,92" stroke="${INK}" stroke-width="10" stroke-linecap="round" fill="none"/>
-          <path d="M66,76 Q76,78 80,84" stroke="${f.tunic}" stroke-width="7.5" stroke-linecap="round" fill="none"/>
-          <path d="M80,84 Q84,88 86,92" stroke="#f5cfa8" stroke-width="7" stroke-linecap="round" fill="none"/>
-          <path d="M81,86 l4,-2" stroke="#6b4423" stroke-width="5"/>
-          <circle cx="88" cy="94" r="5.5" fill="#8a5a2b" stroke="${INK}" stroke-width="2"/><path d="M85,96 q3,2 6,0" stroke="#f5cfa8" stroke-width="1.6" fill="none"/>
+          <g transform="translate(-4 -12)"><g transform="translate(88 92) scale(${bladeLen}) translate(-88 -92)">${bladeShape(W.shape, g, blade, hilt)}</g>
+            <path d="M80,86 L98,94" stroke="${hilt}" stroke-width="4.4" stroke-linecap="round"/><path d="M86,96 L82,104" stroke="#5a3a22" stroke-width="4.4" stroke-linecap="round"/></g>
+          <path d="M71,48 Q78,55 79,65" stroke="${INK}" stroke-width="7.4" stroke-linecap="round" fill="none"/><path d="M71,48 Q78,55 79,65" stroke="${f.tunic}" stroke-width="5" stroke-linecap="round" fill="none"/>
+          <path d="M79,65 Q81,73 84,80" stroke="${INK}" stroke-width="6" stroke-linecap="round" fill="none"/><path d="M79,65 Q81,73 84,80" stroke="${skin}" stroke-width="4" stroke-linecap="round" fill="none"/>
+          <path d="M80,70 l3.4,-1.2 M81,74 l3.4,-1.2" stroke="#6b4423" stroke-width="3.2"/>
+          <circle cx="84.6" cy="81" r="3.8" fill="#7a5230" stroke="${INK}" stroke-width="1.3"/>
         </g>
       </g>`, 'hero');
   }
-
   /* ======================= NPCs ======================= */
   function zelda() {
-    // Zelda in her royal blue travelling outfit: waist-length golden hair, braided crown, front braids, Sheikah Slate in hand
-    const g = id('zg');
-    return svg('0 0 120 150', `<defs>${lg(g + 'h', '#ffe7a3', '#d8a842')}${lg(g + 'd', '#3b6fd1', '#1f3f8a')}${lg(g + 'p', '#5a4636', '#3a2c20')}</defs>
-      ${shadow(60, 145, 28)}
+    // the princess: tall, graceful proportions, long golden hair, a scholar's blue travelling outfit, Sheikah Slate in hand
+    const g = id('zg'); const skin = '#f4d4b6', skinD = '#dcae8c';
+    return svg('0 0 120 150', `<defs>${lg(g + 'h', '#f6dc8a', '#c19434')}${lg(g + 'd', '#3d6cc8', '#1f3a7e')}${lg(g + 'p', '#5a4636', '#352a20')}${lg(g + 's', skin, skinD)}</defs>
+      ${shadow(60, 145, 22)}
       <g class="h-body">
-        <path d="M42,36 Q30,70 36,104 Q46,112 52,100 L52,58 Z M78,36 Q90,70 84,104 Q74,112 68,100 L68,58 Z" fill="url(#${g}h)" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>
-        <path d="M48,112 h10 l-1,22 h-9z M62,112 h10 l0,22 h-9z" fill="url(#${g}p)" stroke="${INK}" stroke-width="2"/>
-        <path d="M46,128 h13 l1,16 h-16 q-1,-8 2,-16z M61,128 h13 q3,8 2,16 h-16z" fill="#6b4a2e" stroke="${INK}" stroke-width="2"/><path d="M46,128 h13 v4 h-13z M61,128 h13 v4 h-13z" fill="#8a6a45"/>
-        <path d="M44,72 Q60,64 76,72 L80,116 Q60,121 40,116 Z" fill="url(#${g}d)" stroke="${INK}" stroke-width="2.2"/>
-        <path d="M41,110 Q60,116 79,110" stroke="#f1e3b5" stroke-width="2.2" fill="none"/>
-        <path d="M51,71 L60,84 L69,71" stroke="#f1e3b5" stroke-width="2.6" fill="none"/>
-        <path d="M56,76 l4,-3 l4,3 l-4,6z" fill="#c9a227" stroke="${INK}" stroke-width=".8"/>
-        <rect x="42" y="97" width="36" height="5" rx="1.5" fill="#6b4423" stroke="${INK}" stroke-width="1"/><rect x="57" y="96.5" width="6" height="6" rx="1" fill="#c9a227" stroke="${INK}" stroke-width=".8"/>
-        <path d="M44,76 Q38,90 46,100 M76,76 Q82,90 74,100" stroke="${INK}" stroke-width="8" stroke-linecap="round" fill="none"/>
-        <path d="M44,76 Q38,90 46,100 M76,76 Q82,90 74,100" stroke="#2f5fc0" stroke-width="5.5" stroke-linecap="round" fill="none"/>
-        <rect x="47" y="96" width="26" height="15" rx="3" fill="#2b3240" stroke="${INK}" stroke-width="1.6"/><path d="M53,103.5 q7,-6 14,0 q-7,6 -14,0z" fill="none" stroke="#3fe0ff" stroke-width="1.2"/><circle cx="60" cy="103.5" r="2" fill="#3fe0ff"/>
-        <circle cx="47" cy="101" r="3.6" fill="#f8d6b3" stroke="${INK}" stroke-width="1.4"/><circle cx="73" cy="101" r="3.6" fill="#f8d6b3" stroke="${INK}" stroke-width="1.4"/>
-        <rect x="55" y="58" width="10" height="10" fill="#f8d6b3" stroke="${INK}" stroke-width="1.5"/>
-        <path d="M43,48 L28,40 L44,56 Z M77,48 L92,40 L76,56 Z" fill="#f8d6b3" stroke="${INK}" stroke-width="1.8" stroke-linejoin="round"/>
-        <ellipse cx="60" cy="45" rx="17" ry="19" fill="#f8d6b3" stroke="${INK}" stroke-width="2.2"/>
-        <path d="M43,47 Q40,20 60,20 Q80,20 77,47 Q74,34 68,31 Q62,38 60,32 Q58,38 52,31 Q46,34 43,47Z" fill="url(#${g}h)" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>
-        <path d="M45,33 Q60,23 75,33" stroke="#b8862a" stroke-width="4.2" fill="none" stroke-linecap="round"/>
-        <path d="M47,31 l3,2 M52,28.5 l3,2 M58,27.5 l3,1.6 M64,28 l3,1.4 M70,30 l3,1" stroke="#ffe7a3" stroke-width="1.2"/>
-        <path d="M45,46 Q43,58 46,70 M75,46 Q77,58 74,70" stroke="#c9962a" stroke-width="3.6" fill="none" stroke-linecap="round"/>
-        <path d="M44.5,52 l3,1 M45,58 l3,1 M45.5,64 l3,1 M75.5,52 l-3,1 M75,58 l-3,1 M74.5,64 l-3,1" stroke="#ffe7a3" stroke-width="1"/>
-        <circle cx="60" cy="26" r="2.2" fill="#4fd1ff" stroke="${INK}" stroke-width=".8"/>
-        <g class="h-eye"><ellipse cx="53.5" cy="47" rx="3.2" ry="4.2" fill="#fff"/><ellipse cx="54" cy="47.4" rx="2.5" ry="3.4" fill="#3b8d4f"/><circle cx="54.8" cy="46" r="1" fill="#fff"/>
-          <ellipse cx="66.5" cy="47" rx="3.2" ry="4.2" fill="#fff"/><ellipse cx="67" cy="47.4" rx="2.5" ry="3.4" fill="#3b8d4f"/><circle cx="67.8" cy="46" r="1" fill="#fff"/></g>
-        <path d="M50,41 q3.5,-2 7,0 M63,41 q3.5,-2 7,0" stroke="#a87a22" stroke-width="1.4" fill="none" stroke-linecap="round"/>
-        <path d="M56,56 q4,2.6 8,0" stroke="#b5604a" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+        <path d="M50,22 Q40,58 44,98 Q52,104 56,94 L56,40Z M70,22 Q80,58 76,98 Q68,104 64,94 L64,40Z" fill="url(#${g}h)" stroke="${INK}" stroke-width="1.5" stroke-linejoin="round"/>
+        <path d="M53,98 l-1,28 h8 l1,-28 M61,98 l1,28 h8 l-1,-28" fill="url(#${g}p)" stroke="${INK}" stroke-width="1.4"/>
+        <path d="M51,124 h9.6 l.6,19 h-12 q-.4,-10 1.8,-19z M61.6,124 h9.6 q2.4,9 1.4,19 h-11.6z" fill="#5e3c24" stroke="${INK}" stroke-width="1.4"/><path d="M51,124 h9.6 v3 h-9.6z M61.6,124 h9.6 v3 h-9.6z" fill="#8a6a45"/>
+        <path d="M51,45 Q60,41 69,45 L72,74 L74,100 Q60,106 46,100 L48,74 Z" fill="url(#${g}d)" stroke="${INK}" stroke-width="1.6"/>
+        <path d="M47,97 Q60,102 73,97" stroke="#f1e3b5" stroke-width="1.6" fill="none"/><path d="M52,85 L52,100 M68,85 L68,100" stroke="#f1e3b5" stroke-width="1" opacity=".7"/>
+        <path d="M54.5,45 L60,55 L65.5,45" stroke="#f1e3b5" stroke-width="2" fill="none"/><path d="M57.6,49 l2.4,-2 l2.4,2 l-2.4,3.6z" fill="#c9a227" stroke="${INK}" stroke-width=".6"/>
+        <rect x="48" y="74" width="24" height="4" rx="1.4" fill="#6b4423" stroke="${INK}" stroke-width=".9"/>
+        <path d="M52,48 Q46,58 48,70 Q50,78 55,82 M68,48 Q74,58 72,70 Q70,78 65,82" stroke="${INK}" stroke-width="6.4" stroke-linecap="round" fill="none"/>
+        <path d="M52,48 Q46,58 48,70 Q50,78 55,82 M68,48 Q74,58 72,70 Q70,78 65,82" stroke="#2f5fc0" stroke-width="4.4" stroke-linecap="round" fill="none"/>
+        <rect x="51" y="78" width="18" height="11" rx="2" fill="#2b3240" stroke="${INK}" stroke-width="1.2"/><path d="M55,83.5 q5,-4.4 10,0 q-5,4.4 -10,0z" fill="none" stroke="#3fe0ff" stroke-width=".9"/><circle cx="60" cy="83.5" r="1.4" fill="#3fe0ff"/>
+        <circle cx="53" cy="82" r="2.6" fill="${skin}" stroke="${INK}" stroke-width="1"/><circle cx="67" cy="82" r="2.6" fill="${skin}" stroke="${INK}" stroke-width="1"/>
+        <rect x="57" y="37" width="6" height="8.5" fill="url(#${g}s)" stroke="${INK}" stroke-width="1"/>
+        <path d="M51.4,27 L44.6,22.4 L51.6,31.6Z M68.6,27 L75.4,22.4 L68.4,31.6Z" fill="${skin}" stroke="${INK}" stroke-width="1.2" stroke-linejoin="round"/>
+        <path d="M51,26 Q51,15 60,15 Q69,15 69,26 Q69,34.6 63.6,38.8 Q60,41.2 56.4,38.8 Q51,34.6 51,26Z" fill="url(#${g}s)" stroke="${INK}" stroke-width="1.5"/>
+        <path d="M49.6,27.6 Q47,12 60,11.4 Q73,12 70.4,27.6 Q68.4,19.6 62.6,18.6 Q60,22 57.4,18.6 Q51.6,19.6 49.6,27.6Z" fill="url(#${g}h)" stroke="${INK}" stroke-width="1.4" stroke-linejoin="round"/>
+        <path d="M51,19.4 Q60,13.4 69,19.4" stroke="#a8802a" stroke-width="2.8" fill="none" stroke-linecap="round"/><path d="M53,18 l2,1.4 M57,16.4 l2,1.2 M61,16.2 l2,1 M65,17 l2,1" stroke="#fff0b8" stroke-width=".8"/>
+        <path d="M51.6,27 Q50.4,36 52,44 M68.4,27 Q69.6,36 68,44" stroke="#b8902e" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+        <g class="h-eye"><path d="M53.6,27.6 Q56,25.8 58.4,27.4 Q56.2,29.2 53.6,27.6Z M61.6,27.4 Q64,25.8 66.4,27.6 Q63.8,29.2 61.6,27.4Z" fill="#fff" stroke="${INK}" stroke-width=".7"/><circle cx="56.1" cy="27.5" r="1.1" fill="#3b8d4f"/><circle cx="63.9" cy="27.5" r="1.1" fill="#3b8d4f"/></g>
+        <path d="M53.4,24.6 q2.6,-1.2 5,0 M61.6,24.6 q2.4,-1.2 5,0" stroke="#9a7a2a" stroke-width="1" fill="none" stroke-linecap="round"/>
+        <path d="M60,29 l.9,3.4 l-1.6,.3" stroke="${skinD}" stroke-width=".9" fill="none"/><path d="M57.8,35.4 q2.2,1 4.4,0" stroke="#b5604a" stroke-width="1.1" fill="none" stroke-linecap="round"/>
       </g>`, 'npc zelda');
   }
   function oldMan() {
@@ -3673,24 +3663,26 @@ Symin`,
       </g>`, 'npc hestu');
   }
   function beedle() {
-    // the travelling merchant with his enormous beetle-shaped backpack (horn and all)
-    return svg('0 0 140 150', `${shadow(72, 145, 46)}
+    // the travelling merchant: a lean, wiry trader with a top-knot, carrying a towering beetle-shell pack
+    const skin = '#eccaa6';
+    return svg('0 0 140 150', `${shadow(72, 145, 44)}
       <g class="h-body">
-        <path d="M44,44 Q48,14 82,12 Q118,14 122,50 L122,120 Q84,140 46,126 Z" fill="#6b4a2e" stroke="${INK}" stroke-width="2.4"/>
-        <path d="M84,12 V132" stroke="${INK}" stroke-width="2"/><path d="M50,46 Q84,36 120,48" stroke="#4a3220" stroke-width="2" fill="none"/>
-        <path d="M56,30 Q70,20 82,22 M88,22 Q104,22 114,34" stroke="#a87a4a" stroke-width="3" fill="none" stroke-linecap="round" opacity=".8"/>
-        <path d="M78,16 Q72,-2 84,-6 Q80,4 90,14 Z" fill="#4a3220" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>
-        <path d="M60,128 l-4,10 M108,124 l6,10" stroke="#3a2618" stroke-width="4" stroke-linecap="round"/>
-        <path d="M28,112 Q26,142 38,142 Q50,142 48,112" fill="#c8b48a" stroke="${INK}" stroke-width="2"/>
-        <path d="M24,92 Q38,84 52,92 L50,118 Q38,122 26,118 Z" fill="#4b6fb0" stroke="${INK}" stroke-width="2"/>
-        <path d="M40,90 L36,118" stroke="#e8d6a8" stroke-width="2"/>
-        <path d="M50,96 L58,84" stroke="#8a5a2b" stroke-width="4" stroke-linecap="round"/>
-        <circle cx="36" cy="76" r="15" fill="#f1cfa8" stroke="${INK}" stroke-width="2"/>
-        <path d="M21,74 Q22,58 38,58 Q50,60 50,72 Q42,66 34,68 Q28,66 21,74Z" fill="#2a2a32" stroke="${INK}" stroke-width="1.6"/>
-        <path d="M40,58 Q44,48 52,52 Q48,56 46,62" fill="#2a2a32" stroke="${INK}" stroke-width="1.6"/>
-        <path d="M24,78 Q18,82 22,86" fill="#f1cfa8" stroke="${INK}" stroke-width="1.6"/>
-        <ellipse cx="31" cy="76" rx="2" ry="3" fill="${INK}"/><ellipse cx="41" cy="76" rx="2" ry="3" fill="${INK}"/>
-        <path d="M33,82 q3,3 7,0" stroke="#a5604a" stroke-width="1.6" fill="none"/><path d="M36,77 q-2,4 1,5" stroke="#c9946a" stroke-width="1.4" fill="none"/>
+        <path d="M54,40 Q58,10 88,8 Q122,12 126,48 L126,120 Q92,140 58,126 Z" fill="#6b4a2e" stroke="${INK}" stroke-width="2"/>
+        <path d="M90,8 V132" stroke="${INK}" stroke-width="1.6"/><path d="M60,44 Q90,34 124,46" stroke="#4a3220" stroke-width="1.6" fill="none"/>
+        <path d="M64,26 Q78,16 88,18 M94,18 Q110,18 120,30" stroke="#a87a4a" stroke-width="2.6" fill="none" stroke-linecap="round" opacity=".8"/>
+        <path d="M84,12 Q78,-4 90,-8 Q86,2 96,10 Z" fill="#4a3220" stroke="${INK}" stroke-width="1.6" stroke-linejoin="round"/>
+        <path d="M62,124 l-3,12 M114,122 l5,12" stroke="#3a2618" stroke-width="3.4" stroke-linecap="round"/>
+        <path d="M36,104 l-2,32 h7 l2,-30 M46,104 l2,32 h7 l-2,-32" fill="#c8b48a" stroke="${INK}" stroke-width="1.4"/>
+        <path d="M32,134 h10 l.6,8 h-12z M47,134 h10 q2,4 1,8 h-11z" fill="#4a3220" stroke="${INK}" stroke-width="1.2"/>
+        <path d="M33,62 Q43,58 53,62 L55,106 Q43,110 31,106 Z" fill="#4b6fb0" stroke="${INK}" stroke-width="1.6"/>
+        <path d="M43,62 L42,106" stroke="#e8d6a8" stroke-width="1.6"/><path d="M31,84 h24" stroke="#7a5230" stroke-width="2.4"/>
+        <path d="M52,66 Q60,62 62,50" stroke="${INK}" stroke-width="5.6" stroke-linecap="round" fill="none"/><path d="M52,66 Q60,62 62,50" stroke="#4b6fb0" stroke-width="3.8" stroke-linecap="round" fill="none"/>
+        <path d="M34,66 Q28,78 32,90" stroke="${INK}" stroke-width="5.6" stroke-linecap="round" fill="none"/><path d="M34,66 Q28,78 32,90" stroke="#4b6fb0" stroke-width="3.8" stroke-linecap="round" fill="none"/><circle cx="32" cy="91" r="2.6" fill="${skin}" stroke="${INK}" stroke-width=".9"/>
+        <rect x="40" y="52" width="6" height="8" fill="${skin}" stroke="${INK}" stroke-width=".9"/>
+        <path d="M34,40 Q34,30 43,30 Q52,30 52,40 Q52,48 47,52 Q43,54.6 39.6,52 Q34,48 34,40Z" fill="${skin}" stroke="${INK}" stroke-width="1.4"/>
+        <path d="M33,40 Q31,27 43,26 Q55,27 53,40 Q51,33 43,33 Q36,33 33,40Z" fill="#26262e" stroke="${INK}" stroke-width="1.2"/><path d="M42,26 Q44,17 51,19 Q48,22 47,27" fill="#26262e" stroke="${INK}" stroke-width="1.2"/>
+        <path d="M37,40.6 q2.4,-1.4 4.6,0 M45,40.6 q2.4,-1.4 4.6,0" stroke="${INK}" stroke-width="1.2" fill="none"/><circle cx="39.4" cy="41.4" r=".9" fill="${INK}"/><circle cx="47.4" cy="41.4" r=".9" fill="${INK}"/>
+        <path d="M43.6,42 l1,3.4 l-1.8,.4" stroke="#c49a74" stroke-width=".9" fill="none"/><path d="M40.6,48 q2.6,1.6 5.4,0" stroke="#9a5a44" stroke-width="1.1" fill="none"/>
       </g>`, 'npc beedle');
   }
   function goddess() {
@@ -4233,22 +4225,23 @@ Symin`,
       <path d="M40,22 q10,-6 20,0" stroke="#f4f2ea" stroke-width="5" stroke-linecap="round"/>`, 'ball');
   }
   function sidon() {
-    // the Zora prince: red shark-like head fin, white chest, big confident grin
+    // a tall, athletic fish-folk prince with a sweeping crimson head-fin, silver chest scales and a confident smile
     const g = id('sd');
-    return svg('0 0 120 150', `<defs>${lg(g, '#ff5a4a', '#c2302a')}</defs>${shadow(60, 145, 28)}
+    return svg('0 0 120 150', `<defs>${lg(g, '#f0584a', '#a8282a')}</defs>${shadow(60, 145, 22)}
       <g class="h-body">
-        <path d="M48,112 l-2,30 h12 l2,-30 M66,112 l2,30 h12 l-4,-30" fill="url(#${g})" stroke="${INK}" stroke-width="2"/>
-        <path d="M40,72 Q60,62 80,72 L82,116 Q60,122 38,116 Z" fill="url(#${g})" stroke="${INK}" stroke-width="2.2"/>
-        <path d="M48,74 Q60,104 72,74 Q60,80 48,74Z" fill="#f4f2ea" stroke="${INK}" stroke-width="1.4"/>
-        <path d="M44,76 Q60,86 76,76" stroke="#c9a227" stroke-width="3" fill="none"/><circle cx="60" cy="82" r="3" fill="#3fe0ff" stroke="${INK}" stroke-width="1"/>
-        <path d="M40,76 Q30,92 34,106 M80,76 Q90,92 86,106" stroke="${INK}" stroke-width="8" stroke-linecap="round" fill="none"/><path d="M40,76 Q30,92 34,106 M80,76 Q90,92 86,106" stroke="#ff5a4a" stroke-width="5.5" stroke-linecap="round" fill="none"/>
-        <path d="M60,22 Q90,24 104,60 Q90,52 82,58 Q78,46 66,46Z" fill="url(#${g})" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/>
-        <ellipse cx="60" cy="48" rx="18" ry="20" fill="url(#${g})" stroke="${INK}" stroke-width="2.2"/>
-        <path d="M46,56 Q60,66 74,56 Q66,62 60,62 Q54,62 46,56Z" fill="#f4f2ea" stroke="${INK}" stroke-width="1.4"/>
-        <path d="M48,56 l2,4 l2,-3 l2,3 l2,-3 l2,3 l2,-3 l2,3 l2,-3 l2,3 l2,-4" stroke="${INK}" stroke-width=".9" fill="none"/>
-        <ellipse cx="53" cy="45" rx="3.2" ry="3.8" fill="#ffe17a" stroke="${INK}" stroke-width="1"/><ellipse cx="67" cy="45" rx="3.2" ry="3.8" fill="#ffe17a" stroke="${INK}" stroke-width="1"/>
-        <circle cx="53" cy="45.5" r="1.8" fill="${INK}"/><circle cx="67" cy="45.5" r="1.8" fill="${INK}"/>
-        <path d="M42,44 L32,38 L42,52Z M78,44 L88,38 L78,52Z" fill="#f4f2ea" stroke="${INK}" stroke-width="1.4"/>
+        <path d="M52,100 l-2,40 h9 l2,-40 M64,100 l2,40 h9 l-3,-40" fill="url(#${g})" stroke="${INK}" stroke-width="1.4"/>
+        <path d="M47,50 Q60,44 73,50 L76,98 Q60,104 44,98 Z" fill="url(#${g})" stroke="${INK}" stroke-width="1.6"/>
+        <path d="M53,52 Q60,84 67,52 Q60,56 53,52Z" fill="#eef2f6" stroke="${INK}" stroke-width="1"/>${[60, 66, 72, 78].map(y => `<path d="M${55 + (y - 60) * 0.14},${y} q${5 - (y - 60) * 0.14},2 ${10 - (y - 60) * 0.28},0" stroke="#c8d0dc" stroke-width=".8" fill="none"/>`).join('')}
+        <path d="M49,54 Q60,62 71,54" stroke="#c9a227" stroke-width="2.2" fill="none"/><circle cx="60" cy="58" r="2.4" fill="#3fe0ff" stroke="${INK}" stroke-width=".8"/>
+        <path d="M47,54 Q39,70 42,88 M73,54 Q81,70 78,88" stroke="${INK}" stroke-width="6.6" stroke-linecap="round" fill="none"/><path d="M47,54 Q39,70 42,88 M73,54 Q81,70 78,88" stroke="#e8484a" stroke-width="4.6" stroke-linecap="round" fill="none"/>
+        <path d="M40,74 l-5,4 l5,1 M80,74 l5,4 l-5,1" fill="#c8d0dc" stroke="${INK}" stroke-width=".8"/>
+        <path d="M60,16 Q86,14 104,40 Q90,36 82,42 Q78,30 66,30Z" fill="url(#${g})" stroke="${INK}" stroke-width="1.6" stroke-linejoin="round"/><path d="M70,22 Q86,24 96,36" stroke="#ff9a8a" stroke-width="1.2" fill="none"/>
+        <rect x="56.6" y="42" width="7" height="9" fill="url(#${g})" stroke="${INK}" stroke-width="1"/>
+        <path d="M50,28 Q50,16 60,15 Q70,16 70,28 Q70,38 64,43 Q60,45.6 56,43 Q50,38 50,28Z" fill="url(#${g})" stroke="${INK}" stroke-width="1.5"/>
+        <path d="M54,38 Q60,42 66,38 Q63,41 60,41 Q57,41 54,38Z" fill="#fff" stroke="${INK}" stroke-width=".8"/>
+        <path d="M53,29.4 Q55.6,27.6 58,29.2 Q55.6,30.8 53,29.4Z M62,29.2 Q64.4,27.6 67,29.4 Q64.4,30.8 62,29.2Z" fill="#ffe17a" stroke="${INK}" stroke-width=".7"/><circle cx="55.6" cy="29.3" r="1" fill="${INK}"/><circle cx="64.4" cy="29.3" r="1" fill="${INK}"/>
+        <path d="M53,26.4 q2.6,-1.4 5,0 M62,26.4 q2.4,-1.4 5,0" stroke="#7a1a1a" stroke-width="1.1" fill="none"/>
+        <path d="M50.4,28 L44,24 L50.6,33Z M69.6,28 L76,24 L69.4,33Z" fill="#eef2f6" stroke="${INK}" stroke-width="1"/>
       </g>`, 'npc sidon');
   }
   function teba() {
@@ -4290,27 +4283,26 @@ Symin`,
       </g>`, 'npc kass');
   }
   function riju() {
-    // the young Gerudo chief: bright red hair in a topknot, golden circlet and jewellery, deep blue and white outfit
-    const g = id('rj');
-    return svg('0 0 120 150', `<defs>${lg(g, '#ff7a4a', '#c2381c')}</defs>${shadow(60, 145, 26)}
+    // the young desert chief: confident stance, red hair in a high tail, gold circlet and armbands, indigo and white garb
+    const g = id('rj'); const skin = '#a8744a', skinD = '#8a5a36';
+    return svg('0 0 120 150', `<defs>${lg(g, '#ff7a4a', '#b8301a')}</defs>${shadow(60, 145, 22)}
       <g class="h-body">
-        <path d="M48,112 Q46,126 46,142 h12 l2,-30 M64,112 l2,30 h12 q0,-16 -2,-30" fill="#f4f2ea" stroke="${INK}" stroke-width="2"/>
-        <path d="M44,138 h14 v6 h-14z M64,138 h14 v6 h-14z" fill="#c9a227" stroke="${INK}" stroke-width="1.4"/>
-        <path d="M44,96 Q60,92 76,96 L80,116 Q60,122 40,116 Z" fill="#2b3f8a" stroke="${INK}" stroke-width="2"/>
-        <path d="M42,100 h36" stroke="#c9a227" stroke-width="3"/>
-        <path d="M46,72 Q60,66 74,72 L76,90 Q60,94 44,90Z" fill="#2b3f8a" stroke="${INK}" stroke-width="2"/>
-        <path d="M46,90 Q60,96 74,90 L74,98 Q60,100 46,98Z" fill="#9a6a42" stroke="${INK}" stroke-width="1.4"/>
-        <path d="M46,74 Q36,90 40,104 M74,74 Q84,90 80,104" stroke="${INK}" stroke-width="7" stroke-linecap="round" fill="none"/><path d="M46,74 Q36,90 40,104 M74,74 Q84,90 80,104" stroke="#9a6a42" stroke-width="4.5" stroke-linecap="round" fill="none"/>
-        <path d="M37,92 h6 M77,92 h6" stroke="#c9a227" stroke-width="3"/>
-        <path d="M44,40 Q40,22 60,18 Q80,22 76,40 Q72,30 60,30 Q48,30 44,40Z" fill="url(#${g})" stroke="${INK}" stroke-width="2"/>
-        <path d="M52,18 Q56,2 66,4 Q74,10 68,20 Q62,14 52,18Z" fill="url(#${g})" stroke="${INK}" stroke-width="1.8"/>
-        <ellipse cx="60" cy="46" rx="15" ry="17" fill="#9a6a42" stroke="${INK}" stroke-width="2.2"/>
-        <path d="M45,32 Q60,26 75,32" stroke="#c9a227" stroke-width="3" fill="none"/><path d="M57,30 l3,-6 l3,6z" fill="#3fe0ff" stroke="${INK}" stroke-width=".8"/>
-        <path d="M44,40 Q40,56 46,66 M76,40 Q80,56 74,66" stroke="#c2381c" stroke-width="4" fill="none" stroke-linecap="round"/>
-        <ellipse cx="54" cy="47" rx="2.6" ry="3.4" fill="#fff"/><ellipse cx="66" cy="47" rx="2.6" ry="3.4" fill="#fff"/><circle cx="54.4" cy="47.4" r="1.8" fill="#3b8d4f"/><circle cx="66.4" cy="47.4" r="1.8" fill="#3b8d4f"/>
-        <path d="M51,42 q3,-1.6 6,0 M63,42 q3,-1.6 6,0" stroke="#5a2a1a" stroke-width="1.4" fill="none"/>
-        <path d="M56,55 q4,2 8,0" stroke="#5a2a1a" stroke-width="1.6" fill="none" stroke-linecap="round"/>
-        <circle cx="45" cy="52" r="2" fill="#c9a227"/><circle cx="75" cy="52" r="2" fill="#c9a227"/>
+        <path d="M53,100 Q51,120 52,138 h8 l1,-38 M62,100 l1,38 h8 q1,-18 -1,-38" fill="#f4f2ea" stroke="${INK}" stroke-width="1.4"/>
+        <path d="M51,136 h10 v7 h-10z M62,136 h10 v7 h-10z" fill="#c9a227" stroke="${INK}" stroke-width="1.1"/>
+        <path d="M49,84 Q60,80 71,84 L74,102 Q60,108 46,102 Z" fill="#2b3f8a" stroke="${INK}" stroke-width="1.5"/><path d="M47,88 h26" stroke="#c9a227" stroke-width="2.4"/>
+        <path d="M51,50 Q60,46 69,50 L71,76 Q60,80 49,76Z" fill="#2b3f8a" stroke="${INK}" stroke-width="1.5"/><path d="M51,76 Q60,82 69,76 L69,84 Q60,86 51,84Z" fill="${skin}" stroke="${INK}" stroke-width="1"/>
+        <path d="M51,52 Q44,64 46,78 M69,52 Q76,64 74,78" stroke="${INK}" stroke-width="5.6" stroke-linecap="round" fill="none"/><path d="M51,52 Q44,64 46,78 M69,52 Q76,64 74,78" stroke="${skin}" stroke-width="3.8" stroke-linecap="round" fill="none"/>
+        <path d="M43.4,68 h5 M71.6,68 h5" stroke="#c9a227" stroke-width="2.6"/><circle cx="46.2" cy="79" r="2.4" fill="${skin}" stroke="${INK}" stroke-width=".9"/><circle cx="73.8" cy="79" r="2.4" fill="${skin}" stroke="${INK}" stroke-width=".9"/>
+        <rect x="57" y="42" width="6" height="8" fill="${skin}" stroke="${INK}" stroke-width="1"/>
+        <path d="M53,20 Q55,4 64,4 Q72,8 66,20 Q62,14 53,20Z" fill="url(#${g})" stroke="${INK}" stroke-width="1.3"/>
+        <path d="M51,32 Q51,21 60,21 Q69,21 69,32 Q69,40 63.6,44 Q60,46.4 56.4,44 Q51,40 51,32Z" fill="${skin}" stroke="${INK}" stroke-width="1.5"/>
+        <path d="M50,33 Q47,19 60,17 Q73,19 70,33 Q68,25 60,25 Q52,25 50,33Z" fill="url(#${g})" stroke="${INK}" stroke-width="1.3"/>
+        <path d="M51,24 Q60,20 69,24" stroke="#c9a227" stroke-width="2.2" fill="none"/><path d="M58.4,22.4 l1.6,-4 l1.6,4z" fill="#3fe0ff" stroke="${INK}" stroke-width=".5"/>
+        <path d="M50.6,32 Q48.6,42 52,48" stroke="#b8301a" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+        <path d="M53.6,32.4 Q55.8,30.8 58,32.2 Q55.8,33.8 53.6,32.4Z M62,32.2 Q64.2,30.8 66.4,32.4 Q64.2,33.8 62,32.2Z" fill="#fff" stroke="${INK}" stroke-width=".6"/><circle cx="55.8" cy="32.3" r="1" fill="#3b8d4f"/><circle cx="64.2" cy="32.3" r="1" fill="#3b8d4f"/>
+        <path d="M53.4,29.6 q2.4,-1.2 4.8,.2 M61.8,29.8 q2.4,-1.4 4.8,-.2" stroke="#5a2a1a" stroke-width="1.1" fill="none"/>
+        <path d="M60,34 l.8,2.8 l-1.4,.3" stroke="${skinD}" stroke-width=".9" fill="none"/><path d="M58,39.6 q2,.9 4,0" stroke="#5a2a1a" stroke-width="1.1" fill="none"/>
+        <circle cx="50.6" cy="36" r="1.4" fill="#c9a227"/><circle cx="69.4" cy="36" r="1.4" fill="#c9a227"/>
       </g>`, 'npc riju');
   }
   function sandSeal() {
@@ -4405,24 +4397,27 @@ Symin`,
       </g>`, 'monster molduga lv' + level);
   }
   function elder() {
-    // Elder Kiyo, the wise old Sheikah who guides the hero's journey (an original character)
-    return svg('0 0 120 150', `${shadow(60, 145, 32)}
+    // Elder Kiyo: a dignified old Sheikah scholar with a white topknot, indigo robe and walking staff (an original character)
+    const skin = '#e6c09c';
+    return svg('0 0 120 150', `${shadow(60, 145, 26)}
       <g class="h-body">
-        <path d="M86,72 L94,142" stroke="#5a3a22" stroke-width="4" stroke-linecap="round"/><circle cx="86" cy="70" r="4" fill="#c9a227" stroke="${INK}" stroke-width="1"/>
-        <path d="M30,142 Q32,92 60,80 Q88,92 90,142 Z" fill="#3a3a6e" stroke="${INK}" stroke-width="2.4"/>
-        <path d="M44,142 Q48,104 60,94 Q72,104 76,142 Z" fill="#c63b4f" opacity=".9"/>
-        <path d="M50,108 q10,-8 20,0 q-10,8 -20,0z" fill="none" stroke="#f4f2ea" stroke-width="1.6"/><circle cx="60" cy="108" r="2.4" fill="#f4f2ea"/><path d="M60,112 l-2,6 h4z" fill="#f4f2ea"/>
-        <path d="M40,90 Q60,84 80,90 L78,98 Q60,92 42,98Z" fill="#f4f2ea" stroke="${INK}" stroke-width="1.4"/>
-        <ellipse cx="60" cy="62" rx="15" ry="16" fill="#e9c39e" stroke="${INK}" stroke-width="2"/>
-        <path d="M44,58 Q42,40 60,38 Q78,40 76,58 Q70,48 60,48 Q50,48 44,58Z" fill="#f4f2ea" stroke="${INK}" stroke-width="1.8"/>
-        <ellipse cx="60" cy="34" rx="10" ry="7" fill="#f4f2ea" stroke="${INK}" stroke-width="1.6"/><path d="M52,34 h16" stroke="#c63b4f" stroke-width="2.4"/>
-        <path d="M52,62 q3,2 6,0 M62,62 q3,2 6,0" stroke="${INK}" stroke-width="1.6" fill="none"/>
-        <path d="M55,70 q5,3 10,0" stroke="#a5604a" stroke-width="1.6" fill="none" stroke-linecap="round"/>
-        <path d="M50,57 q4,-3 8,0 M62,57 q4,-3 8,0" stroke="#f4f2ea" stroke-width="2.2" fill="none" stroke-linecap="round"/>
-        <circle cx="60" cy="50" r="2" fill="#c63b4f"/>
+        <path d="M84,58 L92,142" stroke="#5a3a22" stroke-width="3.4" stroke-linecap="round"/><circle cx="84" cy="56" r="3.4" fill="#c9a227" stroke="${INK}" stroke-width=".9"/><path d="M84,60 q-3,4 0,8" stroke="#c63b4f" stroke-width="1.6" fill="none"/>
+        <path d="M38,142 Q40,86 60,70 Q80,86 82,142 Z" fill="#33356a" stroke="${INK}" stroke-width="1.8"/>
+        <path d="M50,142 Q52,98 60,86 Q68,98 70,142 Z" fill="#c63b4f" opacity=".92"/>
+        <path d="M53,108 q7,-6 14,0 q-7,6 -14,0z" fill="none" stroke="#f4f2ea" stroke-width="1.3"/><circle cx="60" cy="108" r="1.9" fill="#f4f2ea"/><path d="M60,111.4 l-1.6,4.6 h3.2z" fill="#f4f2ea"/>
+        <path d="M46,80 Q60,74 74,80 L72,87 Q60,82 48,87Z" fill="#f4f2ea" stroke="${INK}" stroke-width="1.1"/>
+        <path d="M48,84 Q42,98 46,108 M72,84 Q80,92 84,64" stroke="${INK}" stroke-width="6" stroke-linecap="round" fill="none"/><path d="M48,84 Q42,98 46,108 M72,84 Q80,92 84,64" stroke="#33356a" stroke-width="4.2" stroke-linecap="round" fill="none"/>
+        <circle cx="84" cy="64" r="2.8" fill="${skin}" stroke="${INK}" stroke-width=".9"/>
+        <rect x="57" y="62" width="6" height="8" fill="${skin}" stroke="${INK}" stroke-width=".9"/>
+        <path d="M51,50 Q51,39 60,39 Q69,39 69,50 Q69,58 63.6,62 Q60,64.4 56.4,62 Q51,58 51,50Z" fill="${skin}" stroke="${INK}" stroke-width="1.5"/>
+        <path d="M50,50 Q48,36 60,35 Q72,36 70,50 Q68,43 60,43 Q52,43 50,50Z" fill="#f4f2ea" stroke="${INK}" stroke-width="1.3"/>
+        <ellipse cx="60" cy="31" rx="7" ry="5" fill="#f4f2ea" stroke="${INK}" stroke-width="1.2"/><path d="M53.6,32 h12.8" stroke="#c63b4f" stroke-width="2"/><path d="M60,26 l-4,-4 M60,26 l4,-4" stroke="#c9a227" stroke-width="1.4"/>
+        <path d="M54,50.6 q2.6,-.8 4.4,.2 M61.6,50.8 q2,-1 4.4,-.2" stroke="${INK}" stroke-width="1.1" fill="none"/>
+        <path d="M53.6,48 q2.6,-2 5,-.4 M61.4,47.6 q2.4,-1.6 5,.4" stroke="#f4f2ea" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+        <path d="M60,52 l.8,3 l-1.4,.3" stroke="#b88a66" stroke-width=".9" fill="none"/><path d="M57.4,57.8 q2.6,1.4 5.2,0" stroke="#9a5a44" stroke-width="1.1" fill="none"/>
+        <path d="M55,55 q-1,2 .4,3.6 M65,55 q1,2 -.4,3.6" stroke="#cfa27e" stroke-width=".8" fill="none"/><circle cx="60" cy="44.6" r="1.4" fill="#c63b4f"/>
       </g>`, 'npc elder');
   }
-
   window.ART = { hinox, molduga, elder, kass, yunobo, goronBall, sidon, teba, riju, sandSeal, masterCycle, glider, pet, horse, hero, zelda, oldMan, monk, korok, hestu, beedle, goddess, chuchu, keese, bokoblin, moblin, lizalfos, guardianScout, lynel, blight, calamity, darkBeast, icons, beast, worldMap, EL };
 })();
 </script>

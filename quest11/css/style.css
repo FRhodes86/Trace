@@ -75,7 +75,7 @@ button:focus-visible, input:focus-visible, summary:focus-visible { outline: 3px 
 @keyframes eye { 50% { opacity: 0.55; } }
 .art .aura-pulse { transform-box: fill-box; transform-origin: center; animation: aura 2.6s ease-in-out infinite; }
 @keyframes aura { 50% { transform: scale(1.08); opacity: 0.25; } }
-.art .h-arm { transform-box: view-box; transform-origin: 66px 78px; }
+.art .h-arm { transform-box: view-box; transform-origin: 71px 49px; }
 .art .m-arm { transform-box: fill-box; transform-origin: 80% 10%; }
 .art .h-eye { animation: blink 4s infinite; transform-box: fill-box; transform-origin: center; }
 @keyframes blink { 0%, 94%, 100% { transform: scaleY(1); } 96% { transform: scaleY(0.1); } }
