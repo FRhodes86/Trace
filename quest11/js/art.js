@@ -49,6 +49,25 @@
             <path d="M109,40 L112,33 L114,42 Z" fill="${blade}" stroke="${INK}" stroke-width="1.5"/>
             <path d="M99,62 L105,50" stroke="#fff" stroke-width="1.2" opacity=".8"/>`;
   }
+  // Anime-style eye: almond white, glossy gradient iris clipped to the eye, big pupil, two catch-lights and a bold upper lash line.
+  // squash < 1 narrows the far eye for a three-quarter view.
+  function aEye(cx, cy, w, h, iris, dark, o = {}) {
+    const g = id('ae'), c = id('ac'); const L = cx - w / 2, R = cx + w / 2;
+    const shape = `M${L},${cy} Q${cx - w * 0.05},${cy - h * 0.66} ${R},${cy - h * 0.12} Q${cx + w * 0.12},${cy + h * 0.6} ${L},${cy}Z`;
+    return `<defs><radialGradient id="${g}" cx="50%" cy="70%" r="65%"><stop offset="0" stop-color="${o.light || '#d8f2ff'}"/><stop offset=".5" stop-color="${iris}"/><stop offset="1" stop-color="${dark}"/></radialGradient><clipPath id="${c}"><path d="${shape}"/></clipPath></defs>
+      <path d="${shape}" fill="#fffdf8"/>
+      <g clip-path="url(#${c})"><ellipse cx="${cx + w * 0.05}" cy="${cy + h * 0.04}" rx="${w * 0.32}" ry="${h * 0.5}" fill="url(#${g})"/><ellipse cx="${cx + w * 0.05}" cy="${cy + h * 0.1}" rx="${w * 0.15}" ry="${h * 0.24}" fill="${dark}"/>
+        <path d="M${L},${cy - h * 0.2} Q${cx},${cy - h * 0.62} ${R},${cy - h * 0.3} L${R},${cy - h * 0.16} Q${cx},${cy - h * 0.4} ${L},${cy - h * 0.06}Z" fill="#000" opacity=".18"/></g>
+      <ellipse cx="${cx - w * 0.07}" cy="${cy - h * 0.16}" rx="${w * 0.11}" ry="${h * 0.14}" fill="#fff"/><circle cx="${cx + w * 0.16}" cy="${cy + h * 0.24}" r="${w * 0.055}" fill="#fff" opacity=".9"/>
+      <path d="M${L - 0.5},${cy + 0.3} Q${cx - w * 0.05},${cy - h * 0.74} ${R + 0.6},${cy - h * 0.14}" stroke="#1d1a2b" stroke-width="${o.lash || 1.4}" fill="none" stroke-linecap="round"/>
+      <path d="M${R + 0.3},${cy - h * 0.14} l${w * 0.12},${-h * 0.1}" stroke="#1d1a2b" stroke-width="${(o.lash || 1.4) * 0.8}" stroke-linecap="round"/>
+      <path d="M${L + w * 0.2},${cy + h * 0.32} Q${cx + w * 0.05},${cy + h * 0.44} ${R - w * 0.12},${cy + h * 0.2}" stroke="#7a4a3a" stroke-width=".5" fill="none" opacity=".6"/>`;
+  }
+  // soft 3D shading for a face: forehead light, cheek blush, shadow under the hair line and chin
+  const faceShade = (cx, cy, w, blush = true) => `<ellipse cx="${cx - w * 0.15}" cy="${cy - w * 0.35}" rx="${w * 0.28}" ry="${w * 0.18}" fill="#fff" opacity=".22"/>
+      ${blush ? `<ellipse cx="${cx - w * 0.3}" cy="${cy + w * 0.22}" rx="${w * 0.12}" ry="${w * 0.06}" fill="#ff8a8a" opacity=".35"/><ellipse cx="${cx + w * 0.3}" cy="${cy + w * 0.22}" rx="${w * 0.12}" ry="${w * 0.06}" fill="#ff8a8a" opacity=".35"/>` : ''}`;
+  const hairShine = (d) => `<path d="${d}" stroke="#fff" stroke-width="1.6" fill="none" opacity=".55" stroke-linecap="round"/>`;
+
   function hero(o = {}) {
     // heroic proportions (about 5½ heads tall), almond eyes, defined jaw; outfits, weapons and shields still apply
     const f = OUTFITS[o.armour] || OUTFITS.tunic;
@@ -89,17 +108,18 @@
         <rect x="48" y="80" width="6.4" height="7" rx="1.2" fill="#6b4423" stroke="${INK}" stroke-width=".9"/>
         <g class="h-slate"><rect x="69" y="80" width="10" height="8" rx="1.6" fill="#2b3240" stroke="${INK}" stroke-width="1.1"/><path d="M71.5,84 q2.6,-2.3 5.2,0 q-2.6,2.3 -5.2,0z" fill="none" stroke="#3fe0ff" stroke-width=".8"/><circle cx="74.1" cy="84" r=".9" fill="#3fe0ff"/></g>
         <rect x="58.5" y="38" width="7" height="8.5" fill="url(#${g}s)" stroke="${INK}" stroke-width="1.1"/>
-        <g class="h-head">
+        <g class="h-head" transform="translate(63 41) scale(1.14) translate(-63 -41)">
           <path d="M55.5,27 L43.5,20 Q46.5,27 55,33.5Z" fill="${skin}" stroke="${INK}" stroke-width="1.4" stroke-linejoin="round"/><path d="M54,27.4 L47,23.6 Q49.4,27.6 54,31Z" fill="#e2aa8a"/>
           <path d="M54,26 Q54,15.5 63.4,15.4 Q72.6,15.6 73,26.4 Q72.6,35 67.4,39.6 Q63.4,42.4 59.4,40 Q54.4,36.4 54,26Z" fill="url(#${g}s)" stroke="${INK}" stroke-width="1.6"/>
           <path d="M66,39.6 Q70.6,36 72.4,30" stroke="${skinD}" stroke-width="1.2" fill="none" opacity=".7"/>
           <path d="M52.8,28.6 Q49.6,13 63.4,12.4 Q76.4,12.6 74.6,27 Q73,21 69.4,19.8 Q68.6,25 63.8,22.4 Q60.6,26.4 57.6,23.4 Q55.4,27.6 52.8,28.6Z" fill="url(#${g}h)" stroke="${INK}" stroke-width="1.5" stroke-linejoin="round"/>
           <path d="M71.4,19.6 Q76,28 73,37.4 Q72,31 69.6,25.4Z" fill="url(#${g}h)" stroke="${INK}" stroke-width="1.2"/>
           <path d="M57,17.4 Q64,13.8 70.6,17.6 M64,22.4 Q64,18 61.4,15.6" stroke="#fff3c4" stroke-width="1.2" fill="none" opacity=".75"/>
-          <g class="h-eye"><path d="M65.4,28.4 Q68,26.4 70.8,27.9 Q68.4,30 65.4,28.4Z" fill="#fff" stroke="${INK}" stroke-width=".7"/><circle cx="68.2" cy="28.2" r="1.25" fill="#2e6fbf"/><circle cx="68.5" cy="27.8" r=".35" fill="#fff"/>
-            <path d="M57.6,28.6 Q59.6,27 61.8,28.3 Q59.8,29.8 57.6,28.6Z" fill="#fff" stroke="${INK}" stroke-width=".7"/><circle cx="59.9" cy="28.5" r="1.05" fill="#2e6fbf"/></g>
-          <path d="M65,25.6 q3,-1.4 6.2,-.2 M57.2,25.8 q2.4,-1 4.6,0" stroke="#8a6a1a" stroke-width="1.1" fill="none" stroke-linecap="round"/>
-          <path d="M70.6,29.8 l1.8,3 l-1.9,.5" stroke="${skinD}" stroke-width=".9" fill="none" stroke-linejoin="round"/>
+          ${faceShade(64, 31, 14)}
+          <g class="h-eye">${aEye(67.9, 29.6, 6.2, 7, '#4a9ae8', '#123a7a')}${aEye(59.6, 29.8, 4.4, 6.6, '#4a9ae8', '#123a7a', { lash: 1.2 })}</g>
+          <path d="M64.6,24.6 q3.2,-1.6 6.6,-.2 M56.8,25 q2.4,-1.2 4.6,-.2" stroke="#8a6a1a" stroke-width="1" fill="none" stroke-linecap="round"/>
+          ${hairShine('M57,17.6 Q63,14.6 69.4,17.4')}
+          <path d="M71.2,32.4 l.9,1 l-1,.3" stroke="${skinD}" stroke-width=".8" fill="none" stroke-linejoin="round"/>
           ${face}${band}${hat}
         </g>
         <g class="h-arm">
@@ -136,9 +156,11 @@
         <path d="M49.6,27.6 Q47,12 60,11.4 Q73,12 70.4,27.6 Q68.4,19.6 62.6,18.6 Q60,22 57.4,18.6 Q51.6,19.6 49.6,27.6Z" fill="url(#${g}h)" stroke="${INK}" stroke-width="1.4" stroke-linejoin="round"/>
         <path d="M51,19.4 Q60,13.4 69,19.4" stroke="#a8802a" stroke-width="2.8" fill="none" stroke-linecap="round"/><path d="M53,18 l2,1.4 M57,16.4 l2,1.2 M61,16.2 l2,1 M65,17 l2,1" stroke="#fff0b8" stroke-width=".8"/>
         <path d="M51.6,27 Q50.4,36 52,44 M68.4,27 Q69.6,36 68,44" stroke="#b8902e" stroke-width="2.4" fill="none" stroke-linecap="round"/>
-        <g class="h-eye"><path d="M53.6,27.6 Q56,25.8 58.4,27.4 Q56.2,29.2 53.6,27.6Z M61.6,27.4 Q64,25.8 66.4,27.6 Q63.8,29.2 61.6,27.4Z" fill="#fff" stroke="${INK}" stroke-width=".7"/><circle cx="56.1" cy="27.5" r="1.1" fill="#3b8d4f"/><circle cx="63.9" cy="27.5" r="1.1" fill="#3b8d4f"/></g>
-        <path d="M53.4,24.6 q2.6,-1.2 5,0 M61.6,24.6 q2.4,-1.2 5,0" stroke="#9a7a2a" stroke-width="1" fill="none" stroke-linecap="round"/>
-        <path d="M60,29 l.9,3.4 l-1.6,.3" stroke="${skinD}" stroke-width=".9" fill="none"/><path d="M57.8,35.4 q2.2,1 4.4,0" stroke="#b5604a" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+        ${faceShade(60, 29, 16)}
+        <g class="h-eye">${aEye(55.8, 28.6, 6, 7.2, '#4ab86a', '#16502a')}<g transform="translate(120 0) scale(-1 1)">${aEye(55.8, 28.6, 6, 7.2, '#4ab86a', '#16502a')}</g></g>
+        <path d="M52.8,23.8 q2.8,-1.4 5.6,-.2 M61.6,23.6 q2.8,-1.2 5.6,.2" stroke="#9a7a2a" stroke-width=".9" fill="none" stroke-linecap="round"/>
+        ${hairShine('M53,16.6 Q60,13.4 67,16.6')}
+        <path d="M60,31.4 l.6,1 l-.9,.2" stroke="${skinD}" stroke-width=".8" fill="none"/><path d="M57.8,35.4 q2.2,1 4.4,0" stroke="#b5604a" stroke-width="1.1" fill="none" stroke-linecap="round"/>
       </g>`, 'npc zelda');
   }
   function oldMan() {
@@ -239,7 +261,8 @@
         <rect x="40" y="52" width="6" height="8" fill="${skin}" stroke="${INK}" stroke-width=".9"/>
         <path d="M34,40 Q34,30 43,30 Q52,30 52,40 Q52,48 47,52 Q43,54.6 39.6,52 Q34,48 34,40Z" fill="${skin}" stroke="${INK}" stroke-width="1.4"/>
         <path d="M33,40 Q31,27 43,26 Q55,27 53,40 Q51,33 43,33 Q36,33 33,40Z" fill="#26262e" stroke="${INK}" stroke-width="1.2"/><path d="M42,26 Q44,17 51,19 Q48,22 47,27" fill="#26262e" stroke="${INK}" stroke-width="1.2"/>
-        <path d="M37,40.6 q2.4,-1.4 4.6,0 M45,40.6 q2.4,-1.4 4.6,0" stroke="${INK}" stroke-width="1.2" fill="none"/><circle cx="39.4" cy="41.4" r=".9" fill="${INK}"/><circle cx="47.4" cy="41.4" r=".9" fill="${INK}"/>
+        ${faceShade(43, 42, 14, false)}${aEye(39.2, 41.6, 4.6, 5.4, '#6a5a4a', '#2a1a10', { lash: 1.1 })}${aEye(47.2, 41.6, 4.6, 5.4, '#6a5a4a', '#2a1a10', { lash: 1.1 })}
+        <path d="M36.6,37.6 q2.4,-1 4.8,0 M44.8,37.6 q2.4,-1 4.8,0" stroke="${INK}" stroke-width="1" fill="none"/>
         <path d="M43.6,42 l1,3.4 l-1.8,.4" stroke="#c49a74" stroke-width=".9" fill="none"/><path d="M40.6,48 q2.6,1.6 5.4,0" stroke="#9a5a44" stroke-width="1.1" fill="none"/>
       </g>`, 'npc beedle');
   }
@@ -797,7 +820,7 @@
         <rect x="56.6" y="42" width="7" height="9" fill="url(#${g})" stroke="${INK}" stroke-width="1"/>
         <path d="M50,28 Q50,16 60,15 Q70,16 70,28 Q70,38 64,43 Q60,45.6 56,43 Q50,38 50,28Z" fill="url(#${g})" stroke="${INK}" stroke-width="1.5"/>
         <path d="M54,38 Q60,42 66,38 Q63,41 60,41 Q57,41 54,38Z" fill="#fff" stroke="${INK}" stroke-width=".8"/>
-        <path d="M53,29.4 Q55.6,27.6 58,29.2 Q55.6,30.8 53,29.4Z M62,29.2 Q64.4,27.6 67,29.4 Q64.4,30.8 62,29.2Z" fill="#ffe17a" stroke="${INK}" stroke-width=".7"/><circle cx="55.6" cy="29.3" r="1" fill="${INK}"/><circle cx="64.4" cy="29.3" r="1" fill="${INK}"/>
+        ${faceShade(60, 30, 16, false)}${aEye(55.4, 30, 5.6, 6.4, '#ffd23d', '#8a5a0a', { light: '#fff6c8' })}<g transform="translate(120 0) scale(-1 1)">${aEye(55.4, 30, 5.6, 6.4, '#ffd23d', '#8a5a0a', { light: '#fff6c8' })}</g>
         <path d="M53,26.4 q2.6,-1.4 5,0 M62,26.4 q2.4,-1.4 5,0" stroke="#7a1a1a" stroke-width="1.1" fill="none"/>
         <path d="M50.4,28 L44,24 L50.6,33Z M69.6,28 L76,24 L69.4,33Z" fill="#eef2f6" stroke="${INK}" stroke-width="1"/>
       </g>`, 'npc sidon');
@@ -857,9 +880,11 @@
         <path d="M50,33 Q47,19 60,17 Q73,19 70,33 Q68,25 60,25 Q52,25 50,33Z" fill="url(#${g})" stroke="${INK}" stroke-width="1.3"/>
         <path d="M51,24 Q60,20 69,24" stroke="#c9a227" stroke-width="2.2" fill="none"/><path d="M58.4,22.4 l1.6,-4 l1.6,4z" fill="#3fe0ff" stroke="${INK}" stroke-width=".5"/>
         <path d="M50.6,32 Q48.6,42 52,48" stroke="#b8301a" stroke-width="2.6" fill="none" stroke-linecap="round"/>
-        <path d="M53.6,32.4 Q55.8,30.8 58,32.2 Q55.8,33.8 53.6,32.4Z M62,32.2 Q64.2,30.8 66.4,32.4 Q64.2,33.8 62,32.2Z" fill="#fff" stroke="${INK}" stroke-width=".6"/><circle cx="55.8" cy="32.3" r="1" fill="#3b8d4f"/><circle cx="64.2" cy="32.3" r="1" fill="#3b8d4f"/>
-        <path d="M53.4,29.6 q2.4,-1.2 4.8,.2 M61.8,29.8 q2.4,-1.4 4.8,-.2" stroke="#5a2a1a" stroke-width="1.1" fill="none"/>
-        <path d="M60,34 l.8,2.8 l-1.4,.3" stroke="${skinD}" stroke-width=".9" fill="none"/><path d="M58,39.6 q2,.9 4,0" stroke="#5a2a1a" stroke-width="1.1" fill="none"/>
+        ${faceShade(60, 34, 15)}
+        <g class="h-eye">${aEye(55.6, 33, 5.6, 6.8, '#46c070', '#145a2a')}<g transform="translate(120 0) scale(-1 1)">${aEye(55.6, 33, 5.6, 6.8, '#46c070', '#145a2a')}</g></g>
+        <path d="M52.8,28.6 q2.6,-1.4 5.2,0 M62,28.6 q2.6,-1.4 5.2,0" stroke="#5a2a1a" stroke-width="1" fill="none"/>
+        ${hairShine('M53,21 Q60,18.6 67,21.4')}
+        <path d="M60,36 l.6,.9 l-.9,.2" stroke="${skinD}" stroke-width=".8" fill="none"/><path d="M58,39.6 q2,.9 4,0" stroke="#5a2a1a" stroke-width="1.1" fill="none"/>
         <circle cx="50.6" cy="36" r="1.4" fill="#c9a227"/><circle cx="69.4" cy="36" r="1.4" fill="#c9a227"/>
       </g>`, 'npc riju');
   }
