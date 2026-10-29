@@ -59,7 +59,7 @@
       return s;
     },
     newGame(hero) { this.s = fresh(); this.s.hero = hero || 'Link'; this.save(); },
-    save() { try { localStorage.setItem(KEY, JSON.stringify(this.s)); } catch (e) { /* storage full or blocked */ } },
+    save() { try { this.s.savedAt = Date.now(); localStorage.setItem(KEY, JSON.stringify(this.s)); } catch (e) { /* storage full or blocked */ } },
     wipe() { try { localStorage.removeItem(KEY); } catch (e) { /* ignore */ } this.s = null; },
     exportCode() { return btoa(unescape(encodeURIComponent(JSON.stringify(this.s)))); },
     importCode(code) { const obj = JSON.parse(decodeURIComponent(escape(atob(code.trim())))); if (!obj || obj.v !== 1) throw new Error('Not a save code'); this.s = this.migrate(obj); this.save(); },

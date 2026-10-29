@@ -907,6 +907,24 @@ html { overflow-x: hidden; overflow-x: clip; }
 @keyframes orbPulse { to { filter: drop-shadow(0 0 26px #ffb347) drop-shadow(0 0 44px #fff2c0); } }
 .t-orb { display: inline-flex; align-items: center; gap: 4px; font-size: 0.78rem; color: #ffd08a; font-weight: 700; }
 .t-orb .ic.orb { width: 16px; height: 16px; }
+
+/* ---------- transfer progress ---------- */
+.xfer-page h3 { margin: 18px 0 8px; }
+.xfer-card { display: grid; grid-template-columns: 70px 1fr; gap: 12px; align-items: center; padding: 10px 14px; border-radius: var(--r); text-align: left; margin: 8px 0; }
+.xfer-card .xfer-hero { width: 70px; height: 88px; }
+.xfer-card b { font-size: 1.1rem; } .xfer-card small { display: block; color: var(--muted); }
+.xfer-card ul { margin: 6px 0 0; padding: 0; list-style: none; font-size: 0.88rem; }
+.xfer-card .ic.rupee { width: 9px; height: 14px; vertical-align: -2px; }
+.xfer-btns { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
+.xfer-btns label.btn { cursor: pointer; }
+.xfer-page textarea { width: 100%; font: 0.75rem/1.3 ui-monospace, monospace; background: var(--slate-solid); color: var(--text); border: 1px solid var(--edge); border-radius: 10px; padding: 8px; word-break: break-all; }
+.xfer-undo { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; padding: 10px 14px; border-radius: var(--r); margin: 14px 0; border-color: #ffd23d; }
+.xfer-undo span { font-size: 1.5rem; } .xfer-undo small { display: block; color: var(--muted); }
+.xfer-help { padding: 10px 14px; border-radius: var(--r); margin: 16px 0 24px; }
+.xfer-help summary { cursor: pointer; font-weight: 700; }
+.xfer-help ol { padding-left: 20px; } .xfer-help li { margin: 6px 0; }
+.title-screen .xfer-title { font-size: 0.95rem; background: rgba(9, 20, 31, 0.72); color: #eef7fd; border: 1px solid var(--edge); }
+.modal .xfer-card { margin: 8px 0 12px; }
 </style>
 </head>
 <body>
@@ -5310,7 +5328,7 @@ Symin`,
       return s;
     },
     newGame(hero) { this.s = fresh(); this.s.hero = hero || 'Link'; this.save(); },
-    save() { try { localStorage.setItem(KEY, JSON.stringify(this.s)); } catch (e) { /* storage full or blocked */ } },
+    save() { try { this.s.savedAt = Date.now(); localStorage.setItem(KEY, JSON.stringify(this.s)); } catch (e) { /* storage full or blocked */ } },
     wipe() { try { localStorage.removeItem(KEY); } catch (e) { /* ignore */ } this.s = null; },
     exportCode() { return btoa(unescape(encodeURIComponent(JSON.stringify(this.s)))); },
     importCode(code) { const obj = JSON.parse(decodeURIComponent(escape(atob(code.trim())))); if (!obj || obj.v !== 1) throw new Error('Not a save code'); this.s = this.migrate(obj); this.save(); },
@@ -5543,11 +5561,13 @@ Symin`,
       <div class="menu">
         ${has ? `<button class="btn big primary glow" id="cont">▶ Continue: ${U.esc(S().hero)} <small>Rank ${State.rank().level}</small></button>` : ''}
         <button class="btn big ${has ? '' : 'primary glow'}" id="new">✦ New Adventure</button>
+        <button class="btn ghost xfer-title" id="xfer">📲 Continue from another device</button>
       </div>
       <p class="fine">A fan-made learning game for the GL Assessment 11+: English · Maths · Verbal Reasoning · Non-Verbal Reasoning.<br>Not affiliated with or endorsed by Nintendo.</p>
     </div>`, 'title');
     const start = () => { FX.Music.unlock(); if (S()) FX.Music.set(S().settings.music !== false); FX.Music.play('field'); };
     on('#cont', () => { start(); State.touchDay(); U.soundOn = S().settings.sound; FX.flash('#fff', 0.7); map(); });
+    on('#xfer', () => { start(); Transfer.show('title'); });
     on('#new', () => {
       start();
       if (has) modal('<h3>Start a new adventure?</h3><p>This will replace your current save.</p>', [{ label: 'Cancel' }, { label: 'Start over', cls: 'danger', fn: newGame }]);
@@ -6533,9 +6553,8 @@ Symin`,
         <label>Hero name <input id="nm" maxlength="14" value="${U.esc(s.hero)}"></label>
       </div>
       <h3>👪 Grown-ups' corner</h3>
-      <p class="muted">Progress is saved in this browser. To move to another device, copy the save code and paste it there.</p>
-      <div class="row"><button class="btn" id="exp">Copy save code</button><button class="btn" id="imp">Load save code</button><button class="btn danger" id="wipe">Delete save</button></div>
-      <textarea id="code" rows="3" placeholder="Save code appears / paste here"></textarea>
+      <p class="muted">Progress is saved on this device, in this browser. To carry on with another device, browser or sign-in, use <b>Transfer progress</b>.</p>
+      <div class="row"><button class="btn primary" id="xfer">📲 Transfer progress</button><button class="btn danger" id="wipe">Delete save</button></div>
       <p class="muted">Content follows the GL Assessment 11+ format (English, Maths, Verbal Reasoning, Non-Verbal Reasoning). Free official familiarisation papers: <a href="https://11plus.gl-assessment.co.uk/pages/free-materials" target="_blank" rel="noopener">11plus.gl-assessment.co.uk</a>.</p>
       <p class="muted">Fan-made educational game. Not affiliated with or endorsed by Nintendo.</p>
     </div>`, 'map', 'field');
@@ -6545,8 +6564,7 @@ Symin`,
     $('#tmr').addEventListener('change', e => { st.timers = e.target.checked; State.save(); });
     $('#auto').addEventListener('change', e => { st.autoRead = e.target.checked; State.save(); });
     $('#nm').addEventListener('change', e => { s.hero = e.target.value.trim() || s.hero; State.save(); });
-    on('#exp', () => { const c = State.exportCode(); $('#code').value = c; $('#code').select(); const fallback = () => toast('Select the code above and copy it.'); try { navigator.clipboard.writeText(c).then(() => toast('Save code copied!'), fallback); } catch (e) { fallback(); } });
-    on('#imp', () => { try { State.importCode($('#code').value); toast('Save loaded!', 'good'); map(); } catch (e) { toast('That code didn\'t work.', 'bad'); } });
+    on('#xfer', () => Transfer.show('settings'));
     on('#wipe', () => modal('<h3>Delete this save?</h3><p>All progress will be lost forever.</p>', [{ label: 'Cancel' }, { label: 'Delete', cls: 'danger', fn: () => { State.wipe(); title(); } }]));
   }
 
@@ -6555,7 +6573,7 @@ Symin`,
 
   // free static hosts like Netlify can overlay a badge in the bottom corner
   if (/netlify\.app$|netlify\.com$/.test(location.hostname)) document.documentElement.classList.add('host-badge');
-  window.Game = { title, map, statue, regionScreen, monkCeremony, ui: { screen, on, onKey, hud, toast, confetti, dialogue, modal, sequence, gainXp, heartsHtml, heroArt, speak, addInterval: id => intervals.push(id) } };
+  window.Game = { title, map, settings, statue, regionScreen, monkCeremony, ui: { screen, on, onKey, hud, toast, confetti, dialogue, modal, sequence, gainXp, heartsHtml, heroArt, speak, addInterval: id => intervals.push(id) } };
   title();
 })();
 </script>
@@ -7347,6 +7365,123 @@ Symin`,
   }
 
   window.House = { show };
+})();
+</script>
+<script>
+// Move progress between devices, browsers or sign-ins. Progress lives in each browser's storage, so it travels as a
+// small save file (or a code to paste). The save is compressed, and data the game can rebuild (recent-question history,
+// the full text of old mistakes) is left out to keep it short. Before an import replaces anything, the current save is
+// backed up so it can be restored.
+(function () {
+  const $ = (s, el = document) => el.querySelector(s);
+  const S = () => State.s;
+  const UI = () => Game.ui;
+  const BACKUP = 'botk-save-v1-backup';
+
+  /* ---------------- packing ---------------- */
+  const b64u = bytes => { let s = ''; for (let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000)); return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); };
+  const unb64u = str => { str = str.replace(/-/g, '+').replace(/_/g, '/'); while (str.length % 4) str += '='; const bin = atob(str); const out = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i); return out; };
+  async function gzip(text) { if (!window.CompressionStream) return null; const st = new Blob([text]).stream().pipeThrough(new CompressionStream('gzip')); return new Uint8Array(await new Response(st).arrayBuffer()); }
+  async function gunzip(bytes) { const st = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip')); return new Response(st).text(); }
+  function slim(s) {
+    const c = JSON.parse(JSON.stringify(s));
+    c.recentQs = []; c.recentPassages = [];
+    c.mistakes = (c.mistakes || []).map(m => ({ ...m, q: null })); // Blood Moon makes a fresh question of the same kind
+    return c;
+  }
+  async function pack() {
+    const json = JSON.stringify(slim(S()));
+    const z = await gzip(json).catch(() => null);
+    return z ? 'BOTK2:' + b64u(z) : 'BOTK1:' + b64u(new TextEncoder().encode(json));
+  }
+  async function unpack(text) {
+    text = String(text || '').trim();
+    let json;
+    if (text.startsWith('{')) json = text;
+    else {
+      text = text.replace(/\s+/g, '');
+      if (text.startsWith('BOTK2:')) json = await gunzip(unb64u(text.slice(6)));
+      else if (text.startsWith('BOTK1:')) json = new TextDecoder().decode(unb64u(text.slice(6)));
+      else json = decodeURIComponent(escape(atob(text))); // save codes from older versions of the game
+    }
+    const obj = JSON.parse(json);
+    if (!obj || obj.v !== 1 || typeof obj.hero !== 'string') throw new Error('Not a save');
+    return obj;
+  }
+
+  /* ---------------- summaries ---------------- */
+  function summary(o) {
+    const stars = Object.values(o.stars || {}).reduce((a, b) => a + b, 0);
+    const max = State.SUBJECTS.reduce((a, x) => a + CONTENT[x].length * 3, 0);
+    const bosses = Object.keys(o.bosses || {}).filter(k => o.bosses[k]).length;
+    const hrs = Math.round(((o.stats && o.stats.playSeconds) || 0) / 360) / 10;
+    const when = o.savedAt ? new Date(o.savedAt).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : 'unknown';
+    return `<div class="xfer-card slate"><div class="xfer-hero">${ART.hero({ armour: o.armour, shield: o.shield, weapon: o.weapon })}</div>
+      <div><b>${U.esc(o.hero)}</b><small>Last saved: ${when}</small>
+        <ul><li>⭐ ${stars}/${max} shrine stars</li><li>❤️ ${o.hearts || 3} hearts · 🐉 ${bosses}/4 Divine Beasts</li><li>${ART.icons.rupee('green')} ${(o.rupees || 0).toLocaleString('en-GB')} rupees · ⏱ ${hrs} h played</li></ul></div></div>`;
+  }
+  const fileName = () => `${(S().hero || 'hero').replace(/[^a-z0-9]+/gi, '-')}-breath-of-knowledge-save.txt`;
+
+  /* ---------------- importing ---------------- */
+  function confirmImport(obj, back) {
+    const { modal } = UI(); const cur = S();
+    modal(`<h3>Load this adventure?</h3>${summary(obj)}
+      ${cur ? `<p class="muted">This replaces <b>${U.esc(cur.hero)}</b>'s progress on this device. Don't worry: it's backed up, and you can undo this from the Transfer screen.</p>` : ''}`,
+    [{ label: 'Cancel', fn: back }, { label: 'Load it! ✔', cls: 'primary', fn: () => {
+      try { if (cur) localStorage.setItem(BACKUP, JSON.stringify({ at: Date.now(), save: cur })); } catch (e) { /* storage full: carry on */ }
+      State.s = State.migrate(obj); State.save(); U.soundOn = State.s.settings.sound;
+      FX.flash('#bff8ff', 0.8); U.sfx.fanfare();
+      FX.itemGet(ART.icons.orb(), `Welcome back, ${U.esc(State.s.hero)}!`, 'Your adventure has been loaded on this device.', () => Game.map());
+    } }]);
+  }
+  async function tryText(text, back) {
+    try { confirmImport(await unpack(text), back); }
+    catch (e) { UI().toast('That save didn\'t work. Check you copied all of it.', 'bad'); }
+  }
+  function backupInfo() { try { const b = JSON.parse(localStorage.getItem(BACKUP) || 'null'); return b && b.save ? b : null; } catch (e) { return null; } }
+
+  /* ---------------- the screen ---------------- */
+  function show(from = 'settings') {
+    const s = S(); const { screen, hud, on, toast, modal } = UI();
+    const back = () => (from === 'title' || !s ? Game.title() : Game.settings());
+    const canShareFiles = (() => { try { return !!(navigator.canShare && navigator.canShare({ files: [new File(['x'], 'x.txt', { type: 'text/plain' })] })); } catch (e) { return false; } })();
+    const bk = backupInfo();
+    screen(`${s ? hud() : ''}<div class="page xfer-page">
+      <div class="page-head"><button class="btn ghost" id="back">◀ Back</button><h2>Transfer Progress</h2></div>
+      <p class="intro slate">Each device, browser or sign-in keeps its own save. To carry on somewhere else, <b>send</b> a save from here and <b>load</b> it there.</p>
+      ${s ? `<h3>📤 Send this adventure</h3>${summary(s)}
+        <div class="xfer-btns">
+          ${canShareFiles ? '<button class="btn primary" id="share">📤 Share save file</button>' : ''}
+          <button class="btn ${canShareFiles ? '' : 'primary'}" id="dl">💾 Download save file</button>
+          <button class="btn" id="copy">📋 Copy save code</button>
+        </div>
+        <textarea id="outcode" rows="3" readonly placeholder="Your save code will appear here"></textarea>
+        <p class="muted small">Send the file (or code) to the other device by AirDrop, Messages, email, WhatsApp or Google Drive.</p>` : ''}
+      <h3>📥 Load an adventure on this device</h3>
+      <div class="xfer-btns"><label class="btn primary" for="file">📂 Open save file</label><input type="file" id="file" accept=".txt,.botk,.json,text/plain" hidden></div>
+      <textarea id="incode" rows="3" placeholder="…or paste a save code here"></textarea>
+      <div class="xfer-btns"><button class="btn" id="load">✔ Load pasted code</button></div>
+      ${bk ? `<div class="xfer-undo slate"><span>↩️</span><div><b>Undo the last load</b><small>Restore ${U.esc(bk.save.hero)}'s adventure as it was on ${new Date(bk.at).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</small></div><button class="btn small" id="undo">Restore</button></div>` : ''}
+      <details class="xfer-help slate"><summary>👪 Step-by-step for grown-ups</summary><ol>
+        <li>On the device with the progress: <b>Settings → Transfer progress → Share</b> (or Download) the save file.</li>
+        <li>Send it to the other device, for example by AirDrop, Messages or email, and save it there.</li>
+        <li>On the other device, open the game and tap <b>Continue from another device</b> on the title screen (or Settings → Transfer progress), then <b>Open save file</b>.</li>
+        <li>Check the hero card, then tap <b>Load it!</b> Done!</li>
+      </ol><p class="muted">Tip: progress doesn't sync on its own, so always continue on the device you loaded it on. Send a fresh save whenever you switch.</p></details>
+    </div>`, 'map', 'field');
+    on('#back', back);
+    const out = $('#outcode');
+    const withCode = async fn => { try { const code = await pack(); if (out) out.value = code; fn(code); } catch (e) { toast('Sorry, the save couldn\'t be made.', 'bad'); } };
+    on('#copy', () => withCode(code => { out.focus(); out.select(); const ok = () => toast(`Save code copied! (${code.length.toLocaleString('en-GB')} characters)`, 'good'); try { navigator.clipboard.writeText(code).then(ok, () => toast('Select the code above and copy it.')); } catch (e) { toast('Select the code above and copy it.'); } }));
+    on('#dl', () => withCode(code => { try { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([code], { type: 'text/plain' })); a.download = fileName(); document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000); toast('Save file downloaded 💾', 'good'); } catch (e) { toast('Download isn\'t allowed here. Use Copy save code instead.', 'bad'); } }));
+    on('#share', () => withCode(async code => { try { await navigator.share({ files: [new File([code], fileName(), { type: 'text/plain' })], title: `${s.hero}'s adventure`, text: 'Breath of Knowledge save file' }); } catch (e) { if (e && e.name !== 'AbortError') toast('Sharing isn\'t available. Try Download or Copy instead.', 'bad'); } }));
+    const fileIn = $('#file');
+    fileIn.addEventListener('change', () => { const f = fileIn.files && fileIn.files[0]; if (!f) return; const r = new FileReader(); r.onload = () => tryText(r.result, () => show(from)); r.onerror = () => toast('That file couldn\'t be read.', 'bad'); r.readAsText(f); fileIn.value = ''; });
+    on('#load', () => tryText($('#incode').value, () => show(from)));
+    on('#undo', () => { const b = backupInfo(); if (!b) return; modal(`<h3>Restore the previous adventure?</h3>${summary(b.save)}<p class="muted">The adventure on this device now will be replaced.</p>`, [{ label: 'Cancel' }, { label: 'Restore', cls: 'primary', fn: () => { State.s = State.migrate(b.save); State.save(); try { localStorage.removeItem(BACKUP); } catch (e) { /* ignore */ } toast('Restored!', 'good'); Game.map(); } }]); });
+  }
+
+  window.Transfer = { show, pack, unpack };
 })();
 </script>
 <script>

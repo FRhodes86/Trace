@@ -125,6 +125,12 @@ The hero (named by the player, default "Link") wakes on the Great Plateau and ha
 
 ## For parents
 
+- **Moving to another device, browser or sign-in:** progress is saved on each device separately.
+  - On the old device, go to **Settings → Transfer progress** and share, download or copy the save.
+  - On the new device, tap **Continue from another device** on the title screen and open the file (or paste the code).
+  - A preview card shows the hero before anything is replaced, and the previous save is kept so the load can be undone.
+  - Save files are small: a few thousand characters.
+
 - **Adventure Log → 11+ Readiness** shows mastery per topic, based on recent accuracy and weighted towards the harder levels.
 - **Hateno Lab practice papers** work like the real exam: 20 questions, 15 minutes, no hints, then a marked review.
 - Timers can be turned off in Settings, and questions can be read aloud.
@@ -153,6 +159,7 @@ quest11/
   js/items.js           game-style SVG icons for every item (weapons, shields, armour, elixirs, ingredients, monster parts, meals, saddles, furniture)
   js/game.js            screens, battle engine, story
   js/house.js           the Hateno house room scene and Hall of Fame
+  js/transfer.js        Transfer Progress: compressed save files/codes, preview, backup and undo
   js/world.js           side content: shop, bag, cooking, horses, mini-games, house, side quests, Great Fairy
   js/regions.js         regional mini-games unlocked by freeing each Divine Beast, and the Master Cycle Run (canvas)
   tools/test-content.js stress-tests every generator: node tools/test-content.js 1000

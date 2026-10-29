@@ -125,11 +125,13 @@
       <div class="menu">
         ${has ? `<button class="btn big primary glow" id="cont">▶ Continue: ${U.esc(S().hero)} <small>Rank ${State.rank().level}</small></button>` : ''}
         <button class="btn big ${has ? '' : 'primary glow'}" id="new">✦ New Adventure</button>
+        <button class="btn ghost xfer-title" id="xfer">📲 Continue from another device</button>
       </div>
       <p class="fine">A fan-made learning game for the GL Assessment 11+: English · Maths · Verbal Reasoning · Non-Verbal Reasoning.<br>Not affiliated with or endorsed by Nintendo.</p>
     </div>`, 'title');
     const start = () => { FX.Music.unlock(); if (S()) FX.Music.set(S().settings.music !== false); FX.Music.play('field'); };
     on('#cont', () => { start(); State.touchDay(); U.soundOn = S().settings.sound; FX.flash('#fff', 0.7); map(); });
+    on('#xfer', () => { start(); Transfer.show('title'); });
     on('#new', () => {
       start();
       if (has) modal('<h3>Start a new adventure?</h3><p>This will replace your current save.</p>', [{ label: 'Cancel' }, { label: 'Start over', cls: 'danger', fn: newGame }]);
@@ -1115,9 +1117,8 @@
         <label>Hero name <input id="nm" maxlength="14" value="${U.esc(s.hero)}"></label>
       </div>
       <h3>👪 Grown-ups' corner</h3>
-      <p class="muted">Progress is saved in this browser. To move to another device, copy the save code and paste it there.</p>
-      <div class="row"><button class="btn" id="exp">Copy save code</button><button class="btn" id="imp">Load save code</button><button class="btn danger" id="wipe">Delete save</button></div>
-      <textarea id="code" rows="3" placeholder="Save code appears / paste here"></textarea>
+      <p class="muted">Progress is saved on this device, in this browser. To carry on with another device, browser or sign-in, use <b>Transfer progress</b>.</p>
+      <div class="row"><button class="btn primary" id="xfer">📲 Transfer progress</button><button class="btn danger" id="wipe">Delete save</button></div>
       <p class="muted">Content follows the GL Assessment 11+ format (English, Maths, Verbal Reasoning, Non-Verbal Reasoning). Free official familiarisation papers: <a href="https://11plus.gl-assessment.co.uk/pages/free-materials" target="_blank" rel="noopener">11plus.gl-assessment.co.uk</a>.</p>
       <p class="muted">Fan-made educational game. Not affiliated with or endorsed by Nintendo.</p>
     </div>`, 'map', 'field');
@@ -1127,8 +1128,7 @@
     $('#tmr').addEventListener('change', e => { st.timers = e.target.checked; State.save(); });
     $('#auto').addEventListener('change', e => { st.autoRead = e.target.checked; State.save(); });
     $('#nm').addEventListener('change', e => { s.hero = e.target.value.trim() || s.hero; State.save(); });
-    on('#exp', () => { const c = State.exportCode(); $('#code').value = c; $('#code').select(); const fallback = () => toast('Select the code above and copy it.'); try { navigator.clipboard.writeText(c).then(() => toast('Save code copied!'), fallback); } catch (e) { fallback(); } });
-    on('#imp', () => { try { State.importCode($('#code').value); toast('Save loaded!', 'good'); map(); } catch (e) { toast('That code didn\'t work.', 'bad'); } });
+    on('#xfer', () => Transfer.show('settings'));
     on('#wipe', () => modal('<h3>Delete this save?</h3><p>All progress will be lost forever.</p>', [{ label: 'Cancel' }, { label: 'Delete', cls: 'danger', fn: () => { State.wipe(); title(); } }]));
   }
 
@@ -1137,6 +1137,6 @@
 
   // free static hosts like Netlify can overlay a badge in the bottom corner
   if (/netlify\.app$|netlify\.com$/.test(location.hostname)) document.documentElement.classList.add('host-badge');
-  window.Game = { title, map, statue, regionScreen, monkCeremony, ui: { screen, on, onKey, hud, toast, confetti, dialogue, modal, sequence, gainXp, heartsHtml, heroArt, speak, addInterval: id => intervals.push(id) } };
+  window.Game = { title, map, settings, statue, regionScreen, monkCeremony, ui: { screen, on, onKey, hud, toast, confetti, dialogue, modal, sequence, gainXp, heartsHtml, heroArt, speak, addInterval: id => intervals.push(id) } };
   title();
 })();
