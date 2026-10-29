@@ -76,7 +76,7 @@
   }
 
   /* ---------------- Dialogue (BotW-style box with portrait) ---------------- */
-  const PORTRAIT = { Yunobo: ART.yunobo, Sidon: ART.sidon, 'Prince Sidon': ART.sidon, Teba: ART.teba, Riju: ART.riju, Zelda: ART.zelda, 'Old Man': ART.oldMan, Monk: ART.monk, Hestu: ART.hestu, Beedle: ART.beedle, Korok: ART.korok };
+  const PORTRAIT = { 'Elder Kiyo': ART.elder, Yunobo: ART.yunobo, Sidon: ART.sidon, 'Prince Sidon': ART.sidon, Teba: ART.teba, Riju: ART.riju, Zelda: ART.zelda, 'Old Man': ART.oldMan, Monk: ART.monk, Hestu: ART.hestu, Beedle: ART.beedle, Korok: ART.korok };
   function dialogue(lines, done) {
     const ov = $('#overlay'); ov.className = 'dlg-wrap'; let i = 0; let typing = null; let full = '';
     const show = () => {
@@ -161,7 +161,7 @@
   }
 
   /* =========================================================== MAP */
-  const PINS = { maths: [77, 21], english: [86, 52], verbal: [20, 26], nonverbal: [20, 80], castle: [50, 44], woods: [49, 17], plateau: [50, 79], hateno: [76, 79], blood: [33, 62], stable: [38, 53], house: [89, 70], range: [27, 41], kass: [63, 30], cycle: [66, 63] };
+  const PINS = { maths: [77, 21], english: [86, 52], verbal: [20, 26], nonverbal: [20, 80], castle: [50, 44], woods: [49, 17], plateau: [50, 79], hateno: [76, 79], blood: [33, 62], stable: [38, 53], house: [89, 70], range: [27, 41], kass: [63, 30], cycle: [66, 63], hinox: [41, 32], molduga: [11, 70] };
   function map() {
     const s = S();
     if (!s.flags.introSeen) return intro();
@@ -180,7 +180,7 @@
     const beams = R().filter(r => freed(r.id)).map(r => `<line x1="${PINS[r.id][0]}" y1="${PINS[r.id][1]}" x2="50" y2="44" class="beam"/>`).join('');
     const daily = s.daily; const goal = State.DAILY_GOAL;
     const bloodMoon = s.mistakes.length >= 6;
-    const here = PINS[s.lastRegion] || PINS.plateau;
+    const here = PINS[s.lastRegion] || PINS.plateau; let storyBeat = null;
     screen(`${hud()}
       <div class="slate-frame">
         <div class="map-scroll" id="mapscroll"><div class="map-wrap">
@@ -195,12 +195,14 @@
           <button class="pin small side" style="left:${PINS.house[0]}%;top:${PINS.house[1]}%" id="house"><span class="pin-art sm">${IC.house()}</span><span class="pin-lbl"><b>Hateno House</b></span></button>
           <button class="pin small side" style="left:${PINS.range[0]}%;top:${PINS.range[1]}%" id="range"><span class="pin-art sm">${IC.range()}</span><span class="pin-lbl"><b>Flight Range</b></span></button>
           <button class="pin small side" style="left:${PINS.kass[0]}%;top:${PINS.kass[1]}%" id="kass"><span class="pin-art sm">${IC.kass()}</span><span class="pin-lbl"><b>Kass's Song</b></span></button>
+          ${Hunts.pins()}
           ${s.mastered.all ? `<button class="pin small side cycle-pin" style="left:${PINS.cycle[0]}%;top:${PINS.cycle[1]}%" id="cycle"><span class="pin-art sm">${ART.masterCycle(false)}</span><span class="pin-lbl"><b>Master Cycle Run</b></span></button>` : ''}
           ${bloodMoon ? `<button class="pin bloodmoon" style="left:${PINS.blood[0]}%;top:${PINS.blood[1]}%" id="blood"><span class="pin-art sm">🌕</span><span class="pin-lbl"><b>Blood Moon!</b><small>${s.mistakes.length} mistakes return</small></span></button>` : ''}
           <div class="me" id="me" style="left:${here[0]}%;top:${here[1]}%">${ART.hero({ armour: s.armour, shield: s.shield, weapon: s.weapon })}</div>
         </div></div>
       </div>
       <p class="map-hint">👆 Drag the map to explore Hyrule</p>
+      ${Storyline.banner()}
       <div class="daily slate">
         <div class="dq">${IC.chest()}<div><b>Daily Quest:</b> answer ${goal} questions correctly today <span class="muted">(${Math.min(daily.correct, goal)}/${goal})</span><div class="bar"><i style="width:${Math.min(100, (daily.correct / goal) * 100)}%"></i></div></div></div>
         ${daily.correct >= goal && !daily.claimed ? '<button class="btn primary glow" id="claim">Claim reward!</button>' : daily.claimed ? '<span class="tag ok">Complete ✓</span>' : ''}
@@ -230,7 +232,8 @@
     on('#blood', bloodMoonIntro);
     on('#stable', () => travel('stable', World.stable)); on('#house', () => travel('house', World.house));
     on('#range', () => travel('range', World.archeryIntro)); on('#kass', () => travel('kass', World.kassIntro));
-    on('#quests', World.quests); on('#cycle', () => travel('cycle', Regions.cycleIntro)); on('#bag', () => World.bag());
+    on('#quests', World.quests); on('#mainquest', () => adventureLog('story'));
+    on('[data-hunt]', (e, el) => travel(el.dataset.hunt, () => Hunts.intro(el.dataset.hunt))); on('#cycle', () => travel('cycle', Regions.cycleIntro)); on('#bag', () => World.bag());
     on('#claim', () => {
       const bonus = 50 + Math.min(50, s.streak.days * 5);
       s.rupees += bonus; s.seeds++; s.seedsTotal++; s.tickets += 2; s.daily.claimed = true; State.save();
@@ -240,6 +243,8 @@
     if (!s.flags.mapSeen) {
       s.flags.mapSeen = true; State.save();
       dialogue([['Old Man', 'This is Hyrule. Each region holds shrines for one subject, and a Divine Beast controlled by a Blight.'], ['Old Man', 'Clouds hide the regions you haven\'t explored yet. Travel there to reveal them!'], ['Old Man', 'Clear shrines to earn stars. Earn enough stars and you can challenge the Blight. Free all four Champions and you can face Calamity Ganon himself!']]);
+    } else if ((storyBeat = Storyline.beat('map'))) {
+      setTimeout(storyBeat, 500);
     } else if (s.dailyChest !== today) {
       s.dailyChest = today; const r = U.pick([['rupee', 30], ['rupee', 50], ['seed', 1], ['item', 'hearty'], ['item', 'hasty'], ['rupee', 80]]);
       let label, icon;
@@ -352,6 +357,7 @@
     } else {
       // award any Champion's reward already earned (e.g. stars from before this feature existed)
       const ms = World.checkMastery(); if (ms.length) setTimeout(() => sequence(ms, () => regionScreen(id)), 700);
+      else { const rb = Storyline.beat('region', r); if (rb) setTimeout(rb, 700); }
     }
   }
 
@@ -529,7 +535,7 @@
       ${arena}
       <section class="qcard" id="qcard"></section>
       <footer class="runebar" id="runebar"></footer>
-    </div>`, theme, isBoss ? (theme === 'castle' ? 'castle' : 'boss') : exam ? 'shrine' : 'battle');
+    </div>`, theme, cfg.music || (isBoss ? (theme === 'castle' ? 'castle' : 'boss') : exam ? 'shrine' : 'battle'));
 
     const elHearts = $('#hearts'), elProg = $('#prog'), qcard = $('#qcard');
     let prevHearts = B.hearts;
@@ -1074,7 +1080,7 @@
     on('#back', map);
     on('#up', () => { s.seeds -= cost; s.hestuLevel++; s.runeLevel++; State.save(); U.sfx.korok(); FX.itemGet('<span class="emo big">🎒</span>', 'Your pouch grew!', `Each rune can now be used ${s.runeLevel} times per battle.`, hestu); });
   }
-  function adventureLog(tab = 'mastery') {
+  function adventureLog(tab = 'story') {
     const s = S(); const st = s.stats; const rk = State.rank();
     let body = '';
     if (tab === 'mastery') {
@@ -1082,6 +1088,7 @@
         ${topicsOf(x).map(t => { const m = State.mastery(t.id); return `<div class="mrow"><span>${t.icon} ${t.name}</span><div class="mbar big"><i style="width:${m}%" class="${m >= 75 ? 'hi' : m >= 45 ? 'mid' : 'lo'}"></i></div><span class="pct">${m}%</span><span class="stars">${'★'.repeat(s.stars[t.id] || 0)}</span></div>`; }).join('')}</div>`).join('')
         + '<p class="muted">Readiness grows as you answer questions correctly. Harder trials count for more. 75%+ means that topic is in great shape for the 11+.</p>';
     }
+    if (tab === 'story') body = Storyline.journal();
     if (tab === 'memories') body = STORY.memories.map(m => State.hasMemory(m.id) ? `<div class="memory"><h3>📷 ${m.title}</h3><p>${fillName(m.text)}</p></div>` : '<div class="memory locked"><h3>📷 ???</h3><p class="muted">A memory not yet recovered…</p></div>').join('');
     if (tab === 'stats') body = `<div class="rank-card slate">${heroArt()}<div><h3>${U.esc(s.hero)}</h3><p>Hero Rank <b>${rk.level}</b> · ${rk.title}</p><div class="bar"><i style="width:${Math.round((rk.into / rk.need) * 100)}%"></i></div><small class="muted">${rk.into}/${rk.need} XP to next rank</small></div></div>
         <div class="res-stats">
@@ -1094,7 +1101,7 @@
         ${Object.entries(STORY.champions).map(([k, r]) => `<div class="slate ${s.champions[k] ? '' : 'locked'}">${r.emoji} <b>${r.name}</b>: ${s.champions[k] ? r.desc : '???'}</div>`).join('')}</div>`;
     screen(`${hud()}<div class="page">
       <div class="page-head"><button class="btn ghost" id="back">◀ Map</button><h2>Adventure Log</h2></div>
-      <div class="tabs">${[['mastery', '🧠 11+ Readiness'], ['memories', '📷 Memories'], ['stats', '🏅 Hero & Stats']].map(([k, l]) => `<button class="tab ${k === tab ? 'on' : ''}" data-tab="${k}">${l}</button>`).join('')}</div>
+      <div class="tabs">${[['story', '📜 Main Quest'], ['mastery', '🧠 11+ Readiness'], ['memories', '📷 Memories'], ['stats', '🏅 Hero & Stats']].map(([k, l]) => `<button class="tab ${k === tab ? 'on' : ''}" data-tab="${k}">${l}</button>`).join('')}</div>
       ${body}</div>`, 'map', 'field');
     on('#back', map); on('[data-tab]', (e, el) => adventureLog(el.dataset.tab));
   }
@@ -1137,6 +1144,6 @@
 
   // free static hosts like Netlify can overlay a badge in the bottom corner
   if (/netlify\.app$|netlify\.com$/.test(location.hostname)) document.documentElement.classList.add('host-badge');
-  window.Game = { title, map, settings, statue, regionScreen, monkCeremony, ui: { screen, on, onKey, hud, toast, confetti, dialogue, modal, sequence, gainXp, heartsHtml, heroArt, speak, addInterval: id => intervals.push(id) } };
+  window.Game = { battle, results, itemPrep, weakWeighted, title, map, settings, statue, regionScreen, monkCeremony, ui: { screen, on, onKey, hud, toast, confetti, dialogue, modal, sequence, gainXp, heartsHtml, heroArt, speak, addInterval: id => intervals.push(id) } };
   title();
 })();

@@ -59,7 +59,33 @@ The hero (named by the player, default "Link") wakes on the Great Plateau and ha
   - Clouds cover unexplored regions until you visit, which activates a Sheikah Tower.
   - Divine Beasts glow red while corrupted and blue once freed, and freed beasts fire beams at the castle.
   - Link paraglides between locations.
-- Music is generated live. Each region has its own calm, piano-like ambient track. Battles get a driving drum-and-bass theme, the Blights get a heavier boss theme, and Hyrule Castle gets its own. Battle music builds as the combo grows (3 and 5 in a row). It can be switched off in Settings.
+- Music is composed live by an original music engine. Every area has its own key, tempo, instruments and chord progressions, and melodies are built from motifs that develop through sections, so it never loops the same way. Exploration is sparse piano, harp, strings and flute. Battles add drums, string ostinatos and brass, the Blights and Hyrule Castle have heavier themes, and the Monster Hunts have a taiko theme. Battle music builds as the combo grows. Music can be switched off in Settings.
+
+## Story
+
+The game now has a main quest in six chapters:
+1. The Great Plateau
+2. The Elder's Tale
+3. The Four Divine Beasts
+4. The Blade of Evil's Bane
+5. Hyrule Castle
+6. A Legend Remembered
+
+How the story works:
+- The guide is **Elder Kiyo**, an original Sheikah elder. She explains the Calamity and the *Fog of Forgetting*, which steals knowledge, so only a hero who keeps learning can push it back.
+- Chapter title cards and story scenes play at key moments:
+  - each Champion's spirit speaks halfway through their region;
+  - the Divine Beast stirs when it can be boarded;
+  - Zelda sends a message after each Blight falls;
+  - Elder Kiyo calls the hero to the Master Sword.
+- The map always shows the next main-quest task, and the Adventure Log has a Main Quest journal with a recap of every finished chapter.
+
+## Monster Hunts
+
+Giant bonus battles appear on the map as the story moves on. Each can be beaten once a day, and comes back stronger: red, then blue, then black.
+- **Hinox** (after the first Divine Beast): it starts asleep, so the first three correct answers are double-damage sneak attacks. Every 3-answer combo then hits its eye. It drops rare parts, often a weapon from its hoard, and a house trophy.
+- **Molduga** (after the second Divine Beast): every wrong answer lets it dive and heal. The next correct answer lures it out with a bomb for double damage. It drops rare parts, gold and a house trophy.
+- Both have quests for 3 kills. The creature designs are original.
 
 ## What keeps them coming back
 
@@ -159,6 +185,8 @@ quest11/
   js/items.js           game-style SVG icons for every item (weapons, shields, armour, elixirs, ingredients, monster parts, meals, saddles, furniture)
   js/game.js            screens, battle engine, story
   js/house.js           the Hateno house room scene and Hall of Fame
+  js/storyline.js       main-quest chapters, chapter cards, story scenes and the journal
+  js/hunts.js           Hinox and Molduga Monster Hunts
   js/transfer.js        Transfer Progress: compressed save files/codes, preview, backup and undo
   js/world.js           side content: shop, bag, cooking, horses, mini-games, house, side quests, Great Fairy
   js/regions.js         regional mini-games unlocked by freeing each Divine Beast, and the Master Cycle Run (canvas)

@@ -73,9 +73,11 @@
     'm-triforce': () => `<ellipse cx="200" cy="140" rx="22" ry="22" fill="#fff6a0" opacity=".25" class="tri-glow"/>${place(icon('m-triforce'), 188, 124, 24, 24, 'class="tri-float"')}`,
     sealfigure: () => place(icon('sealfigure'), 326, 36, 16, 16),
     cycletrophy: () => place(icon('cycletrophy'), 342, 36, 16, 16),
+    hinoxtrophy: () => place(icon('hinoxtrophy'), 8, 44, 26, 30),
+    moldugatrophy: () => place(icon('moldugatrophy'), 364, 92, 28, 30),
   };
   // the order things are drawn in (back to front)
-  const LAYERS = ['lamp', 'ritochime', 'painting', 'fire', 'm-rudania', 'm-ruta', 'm-medoh', 'm-naboris', 'rack', 'trophies', 'books', 'sealfigure', 'cycletrophy', 'aquarium',
+  const LAYERS = ['hinoxtrophy', 'moldugatrophy', 'lamp', 'ritochime', 'painting', 'fire', 'm-rudania', 'm-ruta', 'm-medoh', 'm-naboris', 'rack', 'trophies', 'books', 'sealfigure', 'cycletrophy', 'aquarium',
     'goronruby', 'korokstatue', 'table', 'm-triforce', 'goldstatue', 'plant', 'rug', 'bed', 'zorafountain', 'pot'];
 
   function windowView() {
@@ -205,8 +207,8 @@
     on('[data-decor]', (e, el) => buy(el.dataset.decor));
     $$('.room-svg .spot').forEach(g => g.addEventListener('click', () => {
       const id = g.dataset.spot; const d = K.DECOR.find(x => x.id === id); if (!d) return; U.sfx.click();
-      const earned = d.mastery ? `Your reward for mastering ${d.mastery === 'all' ? 'every region in Hyrule' : STORY.regions.find(r => r.id === d.mastery).name}. Nobody else has one!` : d.price === null ? 'Your reward for completing a side quest.' : 'Part of your collection.';
-      const how = has(id) ? (d.desc || earned) : d.price !== null ? `Bolson can build this for <b>${fmt(d.price)} rupees</b>.` : d.mastery ? `A trophy for mastering ${d.mastery === 'all' ? 'every region' : STORY.regions.find(r => r.id === d.mastery).name} (★★★ in every shrine).` : 'A reward from a side quest. Check the Quests board!';
+      const earned = d.hunt ? `Your trophy from defeating the ${d.hunt === 'hinox' ? 'Hinox' : 'Molduga'}.` : d.mastery ? `Your reward for mastering ${d.mastery === 'all' ? 'every region in Hyrule' : STORY.regions.find(r => r.id === d.mastery).name}. Nobody else has one!` : d.price === null ? 'Your reward for completing a side quest.' : 'Part of your collection.';
+      const how = has(id) ? (d.desc || earned) : d.price !== null ? `Bolson can build this for <b>${fmt(d.price)} rupees</b>.` : d.hunt ? `Defeat the ${d.hunt === 'hinox' ? 'Hinox in Hyrule Field' : 'Molduga in the Gerudo Desert'} to win this trophy.` : d.mastery ? `A trophy for mastering ${d.mastery === 'all' ? 'every region' : STORY.regions.find(r => r.id === d.mastery).name} (★★★ in every shrine).` : 'A reward from a side quest. Check the Quests board!';
       modal(`<div class="decor-pop">${d.emoji}</div><h3>${d.name}</h3><p>${how}</p>`, has(id) || d.price === null ? [{ label: 'Nice!', cls: 'primary' }] : [{ label: 'Not now' }, { label: `Build it (${fmt(d.price)})`, cls: 'primary', fn: () => buy(id) }]);
     }));
   }

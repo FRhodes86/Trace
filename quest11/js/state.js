@@ -25,7 +25,7 @@
       house: { owned: false, decor: [] }, rested: '',
       theme: 'sheikah', glider: 'hylian', pet: 'none', ownedThemes: ['sheikah'], ownedGliders: ['hylian'], ownedPets: ['none'], ownedSaddles: ['stable'],
       fairy: { open: false, levels: {} },
-      quests: {}, counters: {}, mastered: {}, orbShrines: {}, // shrines whose Spirit Orb has been given
+      quests: {}, counters: {}, mastered: {}, orbShrines: {}, hunts: {}, // shrines whose Spirit Orb has been given
       plateau: {}, // subject -> true
       stars: {}, // topicId -> 0..3 (highest trial cleared)
       bosses: {}, // regionId -> true
@@ -101,7 +101,7 @@
         default: return c[key] || 0;
       }
     },
-    questOpen(q) { return !q.region || (q.region === 'all' ? !!this.s.mastered.all : !!this.s.bosses[q.region]); },
+    questOpen(q) { if (!q.region) return true; if (q.region === 'all') return !!this.s.mastered.all; if (q.region.startsWith('hunt-')) return !!(window.Hunts && Hunts.unlocked(q.region.slice(5))); return !!this.s.bosses[q.region]; },
     questsReady() { return CATALOG.QUESTS.filter(q => this.questOpen(q) && !this.s.quests[q.id] && this.questValue(q.goal[0]) >= q.goal[1]).length; },
     timerBonus() { return this.s.stamina * 6; },
 

@@ -308,88 +308,161 @@
   }
 
   /* ---------- ambient music: sparse piano-like notes, BotW style ---------- */
+  // Original music engine. Every area has its own key, tempo, instruments and chord progressions; melodies are composed
+  // on the fly from short motifs that develop across A/B sections, so the music never loops exactly the same way.
+  // Exploration themes are sparse and gentle (piano, harp, strings, flute); battle themes add drums, ostinato and brass.
   const Music = (() => {
-    let ctx, master, comp, noiseBuf, timer = null, mode = null, on = true, step = 0, nextT = 0, intensity = 0, ambientTimer = null;
-    const ambientScales = {
-      field: [0, 2, 4, 7, 9, 12, 14, 16, 19], shrine: [0, 3, 5, 7, 10, 12, 15], plateau: [0, 2, 4, 7, 9, 12],
-      maths: [0, 3, 5, 6, 7, 10, 12], english: [0, 2, 4, 7, 9, 11, 12, 14], verbal: [0, 2, 5, 7, 9, 12, 14], nonverbal: [0, 1, 4, 5, 7, 8, 11, 12], stable: [0, 2, 4, 5, 7, 9, 12], home: [0, 4, 7, 9, 12, 16],
-    };
-    const ambientRoots = { field: 60, shrine: 57, plateau: 62, maths: 50, english: 62, verbal: 64, nonverbal: 55, stable: 60, home: 65 };
-    // Driving battle themes: 16 steps per bar, 4 bars per loop
-    const SONGS = {
-      battle: { bpm: 136, roots: [45, 41, 48, 43], chords: [[69, 72, 76], [65, 69, 72], [64, 67, 72], [67, 71, 74]], bassWave: 'sawtooth', leadWave: 'square',
-        kick: [0, 8, 10], snare: [4, 12], lead: [[0, 76], [3, 74], [4, 72], [6, 71], [8, 69], [12, 72], [14, 76], [16, 81], [20, 79], [22, 77], [24, 76], [28, 74], [30, 72], [32, 71], [36, 72], [38, 74], [40, 76], [44, 79], [48, 81], [52, 79], [54, 76], [56, 74], [60, 76]] },
-      boss: { bpm: 152, roots: [38, 34, 36, 33], chords: [[62, 65, 69], [58, 62, 65], [60, 64, 67], [57, 61, 64]], bassWave: 'sawtooth', leadWave: 'sawtooth', dist: true,
-        kick: [0, 4, 8, 11, 12], snare: [4, 12], roll: true, lead: [[0, 74], [2, 77], [4, 81], [8, 79], [10, 77], [12, 76], [16, 74], [18, 70], [20, 74], [24, 72], [28, 69], [32, 74], [34, 77], [36, 81], [40, 84], [44, 82], [46, 81], [48, 79], [52, 76], [56, 73], [60, 69]] },
-      castle: { bpm: 124, roots: [40, 36, 33, 35], chords: [[64, 67, 71], [60, 64, 67], [57, 60, 64], [59, 63, 66]], bassWave: 'sawtooth', leadWave: 'sawtooth', dist: true, pad: true,
-        kick: [0, 6, 8, 14], snare: [4, 12], roll: true, lead: [[0, 76], [4, 79], [8, 83], [12, 81], [16, 79], [20, 76], [24, 72], [28, 71], [32, 76], [36, 79], [40, 84], [44, 83], [48, 81], [52, 79], [56, 78], [60, 75]] },
+    let ctx, master, comp, verb, verbIn, noiseBuf, timer = null, mode = null, on = true, step = 0, nextT = 0, intensity = 0, plan = null;
+    const SC = { major: [0, 2, 4, 5, 7, 9, 11], minor: [0, 2, 3, 5, 7, 8, 10], dorian: [0, 2, 3, 5, 7, 9, 10], mixo: [0, 2, 4, 5, 7, 9, 10], lydian: [0, 2, 4, 6, 7, 9, 11], phryg: [0, 1, 3, 5, 7, 8, 10], hijaz: [0, 1, 4, 5, 7, 8, 10], harm: [0, 2, 3, 5, 7, 8, 11] };
+    // progs: chord roots as scale degrees (0 = tonic). inst: which voices play. sparse: chance a phrase rests (gentle themes breathe).
+    const STYLES = {
+      field: { bpm: 84, key: 60, scale: 'major', progs: [[0, 4, 5, 3], [3, 0, 1, 4], [5, 3, 0, 4]], inst: ['pad', 'piano', 'harp'], lead: 'flute', sparse: 0.35, drums: null },
+      plateau: { bpm: 74, key: 62, scale: 'mixo', progs: [[0, 6, 3, 0], [3, 4, 0, 0], [5, 6, 0, 4]], inst: ['pad', 'piano'], lead: 'piano', sparse: 0.45, drums: null },
+      shrine: { bpm: 66, key: 57, scale: 'dorian', progs: [[0, 3, 0, 6], [5, 3, 4, 0]], inst: ['pad', 'bell'], lead: 'bell', sparse: 0.5, drums: null },
+      maths: { bpm: 92, key: 50, scale: 'phryg', progs: [[0, 1, 0, 6], [0, 5, 6, 1]], inst: ['pad', 'pluck'], lead: 'brass', sparse: 0.3, drums: 'taiko' },
+      english: { bpm: 78, key: 63, scale: 'lydian', progs: [[0, 1, 0, 4], [5, 3, 1, 4], [0, 2, 3, 1]], inst: ['pad', 'harp', 'bell'], lead: 'flute', sparse: 0.35, drums: null },
+      verbal: { bpm: 98, key: 64, scale: 'mixo', progs: [[0, 6, 3, 0], [0, 3, 4, 6], [5, 6, 0, 0]], inst: ['pad', 'harp'], lead: 'flute', sparse: 0.25, drums: 'light' },
+      nonverbal: { bpm: 102, key: 55, scale: 'hijaz', progs: [[0, 1, 0, 6], [3, 1, 0, 0], [5, 6, 1, 0]], inst: ['pad', 'pluck'], lead: 'pluck', sparse: 0.25, drums: 'hand' },
+      stable: { bpm: 108, key: 60, scale: 'major', progs: [[0, 3, 4, 0], [0, 5, 3, 4], [3, 4, 0, 5]], inst: ['strum', 'piano'], lead: 'flute', sparse: 0.2, drums: 'light' },
+      home: { bpm: 70, key: 65, scale: 'major', progs: [[0, 5, 3, 4], [3, 0, 3, 4], [0, 2, 3, 4]], inst: ['piano', 'pad'], lead: 'piano', sparse: 0.3, drums: null },
+      battle: { bpm: 140, key: 57, scale: 'minor', progs: [[0, 5, 2, 6], [0, 3, 4, 4], [5, 6, 0, 0]], inst: ['pad', 'ostinato', 'brass'], lead: 'lead', sparse: 0, drums: 'battle' },
+      boss: { bpm: 154, key: 50, scale: 'harm', progs: [[0, 5, 3, 4], [0, 1, 0, 4], [5, 3, 6, 4]], inst: ['choir', 'ostinato', 'brass'], lead: 'lead', sparse: 0, drums: 'heavy', dist: true },
+      castle: { bpm: 126, key: 52, scale: 'phryg', progs: [[0, 1, 0, 6], [5, 1, 3, 0], [0, 6, 5, 1]], inst: ['organ', 'choir', 'ostinato'], lead: 'brass', sparse: 0, drums: 'heavy', dist: true },
+      hunt: { bpm: 146, key: 55, scale: 'dorian', progs: [[0, 6, 3, 4], [0, 3, 6, 0], [5, 6, 0, 4]], inst: ['pad', 'ostinato', 'brass'], lead: 'lead', sparse: 0, drums: 'taikoFast' },
     };
     const mtof = m => 440 * Math.pow(2, (m - 69) / 12);
-    function osc(type, freq, t, dur, vol, dest, opt = {}) {
-      const o = ctx.createOscillator(), g = ctx.createGain(); o.type = type; o.frequency.setValueAtTime(freq, t);
-      if (opt.slideTo) o.frequency.exponentialRampToValueAtTime(opt.slideTo, t + dur);
-      if (opt.detune) o.detune.value = opt.detune;
-      let node = o;
-      if (opt.lp) { const f = ctx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = opt.lp; f.Q.value = opt.q || 1; o.connect(f); node = f; }
-      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + (opt.attack || 0.008)); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-      node.connect(g); g.connect(dest || master); o.start(t); o.stop(t + dur + 0.05);
+    const rnd = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+    const pick = a => a[Math.floor(Math.random() * a.length)];
+    const deg = (st, d, oct = 0) => { const s = SC[st.scale]; const n = ((d % 7) + 7) % 7; return st.key + s[n] + 12 * (Math.floor(d / 7) + oct); };
+
+    /* ---------- composition ---------- */
+    const RHYTHMS = [[0, 4, 6, 8, 12], [0, 2, 4, 8, 10, 12], [0, 6, 8, 14], [0, 3, 4, 8, 11, 12], [0, 4, 8, 10, 12, 14], [0, 8, 12], [0, 2, 3, 4, 8]];
+    function motif(st) { // one bar of melody: positions + scale degrees, walking mostly by step
+      const r = pick(RHYTHMS); let d = pick([2, 4, 7, 4]); const notes = [];
+      r.forEach((p, i) => { notes.push([p, d, i === r.length - 1 ? 6 : Math.max(2, (r[i + 1] || 16) - p)]); d += pick([-2, -1, -1, 1, 1, 2, 0, 3]); d = Math.max(0, Math.min(11, d)); });
+      return notes;
     }
-    function noise(t, dur, vol, hp) {
+    function section(st) { // 4 bars: motif, varied motif, contrasting bar, cadence
+      const m = motif(st), c = motif(st);
+      const vary = (x, shift) => x.map(([p, d, l]) => [p, d + shift, l]);
+      const cad = [[0, pick([4, 2, 1]), 4], [4, pick([2, 1]), 4], [8, 0, 8]];
+      return { prog: pick(st.progs), bars: [m, vary(m, pick([1, 2, -1])), c, cad], rest: [0, 1, 2, 3].map(() => Math.random() < st.sparse) };
+    }
+    function newPlan(st) { const A = section(st), B = section(st); return { st, form: Math.random() < 0.5 ? [A, A, B, A] : [A, B, A, B], idx: 0 }; }
+
+    /* ---------- instruments ---------- */
+    function voice(type, freq, t, dur, vol, o = {}) {
+      const os = ctx.createOscillator(), g = ctx.createGain(); os.type = type; os.frequency.setValueAtTime(freq, t);
+      if (o.detune) os.detune.value = o.detune;
+      if (o.slideTo) os.frequency.exponentialRampToValueAtTime(o.slideTo, t + dur);
+      if (o.vib) { const l = ctx.createOscillator(), lg = ctx.createGain(); l.frequency.value = 5.2; lg.gain.value = freq * 0.006; l.connect(lg); lg.connect(os.frequency); l.start(t + 0.15); l.stop(t + dur + 0.1); }
+      let node = os;
+      if (o.lp || o.bp) { const f = ctx.createBiquadFilter(); f.type = o.bp ? 'bandpass' : 'lowpass'; f.frequency.value = o.bp || o.lp; f.Q.value = o.q || 0.8; os.connect(f); node = f; }
+      const a = o.attack || 0.01;
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + a);
+      if (o.sustain) { g.gain.setValueAtTime(vol, t + Math.max(a, dur - (o.release || 0.3))); }
+      g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      node.connect(g); g.connect(master); if (o.wet) { const w = ctx.createGain(); w.gain.value = o.wet; g.connect(w); w.connect(verbIn); }
+      os.start(t); os.stop(t + dur + 0.1);
+    }
+    function noiseHit(t, dur, vol, hp, lp) {
       const src = ctx.createBufferSource(); src.buffer = noiseBuf; const f = ctx.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = hp; const g = ctx.createGain();
-      g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.0001, t + dur); src.connect(f); f.connect(g); g.connect(master); src.start(t); src.stop(t + dur + 0.02);
+      g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.0001, t + dur); src.connect(f);
+      if (lp) { const f2 = ctx.createBiquadFilter(); f2.type = 'lowpass'; f2.frequency.value = lp; f.connect(f2); f2.connect(g); } else f.connect(g);
+      g.connect(master); src.start(t); src.stop(t + dur + 0.02);
     }
-    const kick = (t, heavy) => osc('sine', heavy ? 120 : 150, t, heavy ? 0.28 : 0.2, heavy ? 0.9 : 0.75, master, { slideTo: 38 });
-    const snare = t => { noise(t, 0.16, 0.32, 1400); osc('triangle', 190, t, 0.09, 0.18); };
-    const hat = (t, open) => noise(t, open ? 0.12 : 0.035, open ? 0.08 : 0.06, 7000);
-    function scheduleStep(song, st, t) {
-      const sp = 60 / song.bpm / 4; const bar = Math.floor(st / 16) % 4; const s16 = st % 16; const loopStep = st % 64;
-      const heavy = !!song.dist;
-      if (song.kick.includes(s16)) kick(t, heavy);
-      if (song.snare.includes(s16)) snare(t);
-      if (song.roll && bar === 3 && s16 >= 12) snare(t + sp / 2);
-      if (s16 % 2 === 0 || intensity >= 2) hat(t, s16 % 4 === 2 && intensity >= 1);
-      // bass: driving eighths with octave pops
-      if (s16 % 2 === 0) { const r = song.roots[bar] + (s16 % 8 === 6 ? 12 : 0); osc(song.bassWave, mtof(r), t, sp * 1.8, 0.16, master, { lp: heavy ? 900 : 700, q: 4 }); }
-      // arpeggio sparkle
-      const ch = song.chords[bar]; osc('square', mtof(ch[s16 % 3] + (s16 % 6 > 2 ? 12 : 0)), t, sp * 0.9, intensity >= 1 ? 0.045 : 0.03, master, { lp: 3000 });
-      // chord stab / pad at bar start
-      if (s16 === 0) ch.forEach(n => song.pad ? osc('sawtooth', mtof(n - 12), t, sp * 15, 0.035, master, { lp: 1400, attack: 0.3, detune: 7 }) : osc('sawtooth', mtof(n), t, sp * 3, 0.05, master, { lp: 2200, detune: 9 }));
-      // lead melody
-      const L = song.lead.find(x => x[0] === loopStep);
-      if (L) { osc(song.leadWave, mtof(L[1]), t, sp * 3.6, 0.07, master, { lp: heavy ? 2600 : 3200, detune: heavy ? 5 : 0 }); if (intensity >= 2) osc(song.leadWave, mtof(L[1] - 12), t, sp * 3.6, 0.04, master, { lp: 2000 }); }
+    const INST = {
+      piano: (m, t, d, v = 0.07) => { voice('triangle', mtof(m), t, Math.min(2.2, d * 2.5), v, { wet: 0.35 }); voice('sine', mtof(m) * 2, t, 0.6, v * 0.25); },
+      harp: (m, t, d, v = 0.05) => voice('triangle', mtof(m), t, 1.1, v, { lp: 3200, wet: 0.45 }),
+      bell: (m, t, d, v = 0.035) => { voice('sine', mtof(m), t, 2.4, v, { wet: 0.6 }); voice('sine', mtof(m) * 2.76, t, 1.2, v * 0.3, { wet: 0.6 }); },
+      flute: (m, t, d, v = 0.06) => voice('sine', mtof(m), t, d * 1.05, v, { attack: 0.06, vib: true, sustain: true, release: 0.12, wet: 0.4 }),
+      pluck: (m, t, d, v = 0.06) => voice('sawtooth', mtof(m), t, 0.45, v, { lp: 1800, q: 2, wet: 0.25 }),
+      strum: (ch, t) => ch.forEach((m, i) => voice('triangle', mtof(m), t + i * 0.025, 0.8, 0.04, { lp: 2600, wet: 0.2 })),
+      brass: (m, t, d, v = 0.06) => { voice('sawtooth', mtof(m), t, d, v, { lp: 1500, attack: 0.04, sustain: true, release: 0.1, detune: -6 }); voice('sawtooth', mtof(m), t, d, v * 0.7, { lp: 1500, attack: 0.04, sustain: true, release: 0.1, detune: 6 }); },
+      lead: (m, t, d, v = 0.06) => voice('square', mtof(m), t, d, v, { lp: 2800, attack: 0.01, sustain: true, release: 0.08, vib: true }),
+      pad: (ch, t, d) => ch.forEach(m => [-8, 8].forEach(dt => voice('sawtooth', mtof(m - 12), t, d, 0.016, { lp: 1100, attack: 0.5, sustain: true, release: 0.6, detune: dt, wet: 0.5 }))),
+      choir: (ch, t, d) => ch.forEach(m => [-6, 0, 6].forEach(dt => voice('triangle', mtof(m), t, d, 0.016, { bp: 900, q: 1.2, attack: 0.4, sustain: true, release: 0.5, detune: dt, wet: 0.6 }))),
+      organ: (ch, t, d) => ch.forEach(m => [1, 2, 3].forEach((h, i) => voice('sine', mtof(m - 12) * h, t, d, 0.022 / (i + 1), { attack: 0.05, sustain: true, release: 0.2, wet: 0.5 }))),
+    };
+    const DRUM = {
+      kick: (t, heavy) => voice('sine', heavy ? 115 : 140, t, heavy ? 0.3 : 0.22, heavy ? 0.85 : 0.7, { slideTo: 40 }),
+      snare: t => { noiseHit(t, 0.16, 0.26, 1500); voice('triangle', 190, t, 0.08, 0.14); },
+      hat: (t, open) => noiseHit(t, open ? 0.12 : 0.03, open ? 0.06 : 0.045, 7500),
+      taiko: (t, v = 0.6) => { voice('sine', 90, t, 0.45, v, { slideTo: 48 }); noiseHit(t, 0.06, 0.12, 300, 1200); },
+      hand: (t, hi) => voice('sine', hi ? 330 : 210, t, 0.18, 0.28, { slideTo: hi ? 260 : 150 }),
+      shaker: t => noiseHit(t, 0.05, 0.035, 6000),
+    };
+    function drums(kind, s16, bar, t, sp) {
+      if (!kind) return;
+      const fill = bar === 3 && s16 >= 12;
+      if (kind === 'light') { if (s16 % 4 === 0) DRUM.shaker(t); if (s16 === 0 || s16 === 10) DRUM.hand(t, false); if (s16 === 6) DRUM.hand(t, true); return; }
+      if (kind === 'hand') { if ([0, 3, 6, 10].includes(s16)) DRUM.hand(t, s16 === 6 || s16 === 10); if (s16 % 2 === 0) DRUM.shaker(t); return; }
+      if (kind === 'taiko') { if (s16 === 0 || s16 === 10) DRUM.taiko(t, 0.5); if (fill && s16 % 2 === 0) DRUM.taiko(t, 0.35); return; }
+      if (kind === 'taikoFast') { if ([0, 3, 6, 8, 11, 14].includes(s16)) DRUM.taiko(t, s16 % 8 === 0 ? 0.7 : 0.45); if (s16 % 4 === 2 || intensity >= 1) DRUM.hat(t, false); if (fill) DRUM.snare(t + sp / 2); return; }
+      const heavy = kind === 'heavy';
+      if ((heavy ? [0, 4, 8, 11] : [0, 8, 10]).includes(s16)) DRUM.kick(t, heavy);
+      if (s16 === 4 || s16 === 12) DRUM.snare(t);
+      if (fill) DRUM.snare(t + sp / 2);
+      if (s16 % 2 === 0 || intensity >= 2) DRUM.hat(t, s16 % 4 === 2 && intensity >= 1);
+      if (s16 === 0 && bar === 0) noiseHit(t, 1.2, 0.08, 4000); // crash at each phrase
+    }
+    function triad(st, rootDeg, oct = 0) { return [deg(st, rootDeg, oct), deg(st, rootDeg + 2, oct), deg(st, rootDeg + 4, oct)]; }
+    function scheduleStep(t) {
+      const st = plan.st; const sp = 60 / st.bpm / 4;
+      const s16 = step % 16, bar = Math.floor(step / 16) % 4, cyc = Math.floor(step / 64);
+      if (s16 === 0 && bar === 0 && step > 0) { plan.idx++; if (plan.idx >= plan.form.length) plan = newPlan(st); } // next section
+      const sec = plan.form[plan.idx % plan.form.length];
+      const rootDeg = sec.prog[bar]; const ch = triad(st, rootDeg);
+      const battleish = !!st.drums && st.sparse === 0;
+      // harmony
+      for (const ins of st.inst) {
+        if ((ins === 'pad' || ins === 'choir' || ins === 'organ') && s16 === 0) INST[ins](ch, t, sp * 16);
+        if (ins === 'piano' && !battleish && (s16 === 0 || s16 === 8)) { INST.piano(deg(st, rootDeg, -1), t, sp * 8, 0.05); if (s16 === 8) ch.forEach((m, i) => INST.piano(m, t + i * 0.04, sp * 6, 0.025)); }
+        if (ins === 'harp' && s16 % 2 === 0) { const arp = [ch[0], ch[1], ch[2], ch[0] + 12, ch[2], ch[1], ch[0] + 12, ch[1] + 12]; INST.harp(arp[(s16 / 2) % 8], t, sp * 2); }
+        if (ins === 'bell' && s16 === 12 && Math.random() < 0.5) INST.bell(ch[2] + 12, t, sp * 4);
+        if (ins === 'pluck' && !battleish && [0, 3, 6, 10, 12].includes(s16)) INST.pluck(s16 === 0 ? ch[0] - 12 : pick(ch), t, sp);
+        if (ins === 'strum' && [0, 6, 8, 12].includes(s16)) INST.strum(ch, t);
+        if (ins === 'ostinato' && s16 % 2 === 0) { const r = deg(st, rootDeg, -1); voice('sawtooth', mtof(r + (s16 % 8 === 6 ? 12 : 0)), t, sp * 1.7, 0.11, { lp: st.dist ? 900 : 750, q: 3 }); if (intensity >= 1) voice('square', mtof(ch[(s16 / 2) % 3] + 12), t, sp * 0.9, 0.025, { lp: 3000 }); }
+        if (ins === 'brass' && battleish && (s16 === 0 || (s16 === 10 && bar % 2 === 1))) INST.brass(ch[1], t, sp * (s16 === 0 ? 3 : 2), 0.045);
+      }
+      // bass for gentle themes
+      if (!battleish && s16 === 0) voice('triangle', mtof(deg(st, rootDeg, -2)), t, sp * 14, 0.07, { sustain: true, release: 0.4, lp: 600 });
+      drums(st.drums, s16, bar, t, sp);
+      // melody (rests in sparse themes so phrases breathe)
+      if (!sec.rest[bar]) {
+        const n = sec.bars[bar].find(x => x[0] === s16);
+        if (n) { const m = deg(st, n[1] + rootDeg * 0, battleish ? 1 : 1) ; const L = INST[st.lead]; L(m, t, sp * n[2], st.lead === 'lead' ? (intensity >= 2 ? 0.07 : 0.055) : undefined); if (battleish && intensity >= 2) INST.brass(m - 12, t, sp * n[2], 0.03); }
+      }
     }
     function sequencer() {
-      if (!ctx || !on || !SONGS[mode]) return;
-      const song = SONGS[mode]; const sp = 60 / song.bpm / 4;
-      while (nextT < ctx.currentTime + 0.15) { scheduleStep(song, step, nextT); step++; nextT += sp; }
+      if (!ctx || !on || !plan) return;
+      const sp = 60 / plan.st.bpm / 4;
+      while (nextT < ctx.currentTime + 0.15) { scheduleStep(nextT); step++; nextT += sp; }
     }
-    function ambientTick() {
-      if (!ctx || !mode || !on || SONGS[mode]) return;
-      const sc = ambientScales[mode] || ambientScales.field, root = ambientRoots[mode] || 60, now = ctx.currentTime;
-      const k = Math.random() < 0.35 ? 2 : 1;
-      for (let i = 0; i < k; i++) { const m = root + U.pick(sc) + (Math.random() < 0.3 ? 12 : 0); osc('sine', mtof(m), now + i * 0.18, 2.4, 0.05); osc('sine', mtof(m) * 2, now + i * 0.18, 1.2, 0.012); }
-      if (Math.random() < 0.25) osc('sine', mtof(root - 12 + sc[0]), now, 3.5, 0.035);
-      ambientTimer = setTimeout(ambientTick, 900 + Math.random() * 1600);
-    }
-    function stopAll() { clearInterval(timer); timer = null; clearTimeout(ambientTimer); ambientTimer = null; }
+    function stopAll() { clearInterval(timer); timer = null; }
     function start() {
       stopAll(); if (!ctx || !on || !mode) return;
-      if (SONGS[mode]) { step = 0; nextT = ctx.currentTime + 0.05; timer = setInterval(sequencer, 25); }
-      else ambientTimer = setTimeout(ambientTick, 300);
+      const st = STYLES[mode] || STYLES.field; plan = newPlan(st); step = 0; nextT = ctx.currentTime + 0.08; timer = setInterval(sequencer, 25);
+    }
+    function buildVerb() { // a simple feedback-delay "hall" so instruments sit in a space
+      verbIn = ctx.createGain(); verbIn.gain.value = 0.5; const d1 = ctx.createDelay(1), d2 = ctx.createDelay(1), fb = ctx.createGain(), lp = ctx.createBiquadFilter();
+      d1.delayTime.value = 0.13; d2.delayTime.value = 0.21; fb.gain.value = 0.42; lp.type = 'lowpass'; lp.frequency.value = 2400;
+      verbIn.connect(d1); d1.connect(d2); d2.connect(lp); lp.connect(fb); fb.connect(d1); const out = ctx.createGain(); out.gain.value = 0.55; lp.connect(out); out.connect(master);
     }
     return {
       unlock() {
         try {
           ctx = ctx || new (window.AudioContext || window.webkitAudioContext)();
-          if (!master) { comp = ctx.createDynamicsCompressor(); comp.connect(ctx.destination); master = ctx.createGain(); master.gain.value = 0.55; master.connect(comp);
-            noiseBuf = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate); const d = noiseBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; }
+          if (!master) { comp = ctx.createDynamicsCompressor(); comp.connect(ctx.destination); master = ctx.createGain(); master.gain.value = 0.6; master.connect(comp);
+            noiseBuf = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate); const d = noiseBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; buildVerb(); }
           if (ctx.state === 'suspended') ctx.resume();
-          if (mode && !timer && !ambientTimer) start();
+          if (mode && !timer) start();
         } catch (e) { /* no audio */ }
       },
       play(m) { if (m === mode) return; mode = m; intensity = 0; start(); },
       set(v) { on = v; if (on) start(); else stopAll(); },
       intensity(n) { intensity = n; },
+      modes: Object.keys(STYLES),
     };
   })();
 

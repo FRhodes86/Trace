@@ -110,6 +110,10 @@
     { id: 'moblinhorn', name: 'Moblin Horn', emoji: '📯', value: 12 },
     { id: 'screw', name: 'Ancient Screw', emoji: '⚙️', value: 20 },
     { id: 'lynelhoof', name: 'Lynel Hoof', emoji: '🐾', value: 40 },
+    { id: 'hinoxtoe', name: 'Hinox Toenail', emoji: '🦶', value: 60 },
+    { id: 'hinoxguts', name: 'Hinox Guts', emoji: '🫀', value: 150 },
+    { id: 'moldugafin', name: 'Molduga Fin', emoji: '🦈', value: 90 },
+    { id: 'moldugaguts', name: 'Molduga Guts', emoji: '💗', value: 250 },
   ];
   // What each region's shrines tend to drop
   C.REGION_DROPS = {
@@ -222,6 +226,8 @@
     { id: 'zorafountain', name: 'Zora Fountain', emoji: '⛲', price: null, x: 86, y: 86 },
     { id: 'ritochime', name: 'Rito Wind Chime', emoji: '🎐', price: null, x: 64, y: 8 },
     { id: 'sealfigure', name: 'Sand Seal Figurine', emoji: '🦭', price: null, x: 30, y: 86 },
+    { id: 'hinoxtrophy', name: 'Hinox Hunter Plaque', emoji: '🗿', price: null, hunt: 'hinox', x: 10, y: 30 },
+    { id: 'moldugatrophy', name: 'Molduga Fin Trophy', emoji: '🦈', price: null, hunt: 'molduga', x: 92, y: 46 },
     { id: 'cycletrophy', name: 'Master Cycle Trophy', emoji: '🏍️', price: null, x: 40, y: 64 },
     { id: 'goldstatue', name: 'Golden Hero Statue', emoji: '🏅', price: 6000, x: 50, y: 46, desc: 'A shining statue of you. Only true heroes can afford it!' },
   ];
@@ -291,6 +297,8 @@
     { id: 'q-sealrally', region: 'nonverbal', npc: 'Riju', icon: '🦭', title: 'Sand Seal Rally', text: 'Ride through 25 flag gates in a single Sand Seal Rally!', goal: ['sealBest', 25], reward: { rupees: 300, tickets: 3, decor: 'sealfigure' } },
     { id: 'q-buliara', region: 'nonverbal', npc: 'Buliara', icon: '🗡️', title: 'Guard Training', text: 'A Gerudo guard spots every pattern. Answer 40 Non-Verbal questions correctly in Master (★★★) trials.', goal: ['m_nonverbal', 40], reward: { rupees: 600, ingredient: { melon: 5, voltfruit: 3 } } },
     { id: 'q-cycle', region: 'all', npc: 'Zelda', icon: '🏍️', title: 'The Final Divine Beast', text: 'Ride the Master Cycle Zero 2,000 metres in a single run!', goal: ['cycleBest', 2000], reward: { rupees: 2000, tickets: 10, decor: 'cycletrophy' } },
+    { id: 'q-hinox', region: 'hunt-hinox', npc: 'Elder Kiyo', icon: '👁️', title: 'Giant Slayer', text: 'The Hinox grows stronger every time it falls. Defeat it 3 times to prove you are a true hunter.', goal: ['hinoxKills', 3], reward: { rupees: 800, tickets: 5, item: { luckycharm: 1 } } },
+    { id: 'q-molduga', region: 'hunt-molduga', npc: 'Riju', icon: '🏜️', title: 'Terror of the Sands', text: 'The Molduga keeps eating our sand seals! Defeat it 3 times and the desert will sing your name.', goal: ['moldugaKills', 3], reward: { rupees: 900, tickets: 5, item: { goldnugget: 2 } } },
     { id: 'q-blights', npc: 'Zelda', icon: '👑', title: 'The Four Champions', text: 'Free all four Divine Beasts.', goal: ['bosses', 4], reward: { rupees: 1000, pet: 'fairy' } },
   ];
 

@@ -915,3 +915,43 @@ html { overflow-x: hidden; overflow-x: clip; }
 .xfer-help ol { padding-left: 20px; } .xfer-help li { margin: 6px 0; }
 .title-screen .xfer-title { font-size: 0.95rem; background: rgba(9, 20, 31, 0.72); color: #eef7fd; border: 1px solid var(--edge); }
 .modal .xfer-card { margin: 8px 0 12px; }
+
+/* ---------- main story ---------- */
+.mainquest { width: 100%; max-width: 980px; margin: 10px auto 0; display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center; padding: 10px 14px; border-radius: var(--r); color: var(--text); text-align: left; cursor: pointer; border-color: #ffd23d; box-shadow: 0 0 14px rgba(255, 210, 61, 0.22); }
+.mainquest .mq-ico { font-size: 1.6rem; }
+.mainquest small { display: block; color: #ffe680; font-family: var(--font-display); letter-spacing: 0.04em; font-size: 0.8rem; }
+.mainquest b { font-weight: 600; font-size: 0.95rem; line-height: 1.3; display: block; }
+.mainquest .mq-go { font-size: 1.6rem; color: var(--rune); }
+.chapter-card { position: fixed; inset: 0; z-index: 90; display: grid; place-items: center; background: radial-gradient(ellipse at center, rgba(10, 24, 40, 0.92), rgba(2, 6, 12, 0.98)); opacity: 0; transition: opacity 0.5s; cursor: pointer; padding: 20px; }
+.chapter-card.in { opacity: 1; }
+.cc-inner { text-align: center; max-width: 640px; }
+.cc-inner small { display: block; font-family: var(--font-display); letter-spacing: 0.3em; text-transform: uppercase; color: var(--rune); font-size: 0.9rem; animation: ccIn 0.9s ease-out; }
+.cc-inner h1 { font-family: var(--font-display); font-size: clamp(1.9rem, 7vw, 3.2rem); margin: 10px 0; color: #fff6c8; text-shadow: 0 0 24px rgba(255, 210, 61, 0.55); animation: ccIn 1.2s ease-out; }
+.cc-inner p { color: var(--muted); animation: ccIn 1.6s ease-out; }
+.cc-inner h1::after { content: ''; display: block; height: 2px; margin: 12px auto 0; width: 60%; background: linear-gradient(90deg, transparent, #ffd23d, transparent); }
+.cc-tap { display: block; margin-top: 18px; color: var(--muted); font-size: 0.75rem; animation: blinkTxt 1.6s infinite; }
+@keyframes ccIn { from { opacity: 0; transform: translateY(12px); letter-spacing: 0.5em; } }
+.journal { display: grid; gap: 10px; }
+.chapter { display: grid; grid-template-columns: auto 1fr; gap: 12px; padding: 12px 14px; border-radius: var(--r); }
+.chapter h3 { margin: 0 0 4px; }
+.chapter p { margin: 0; }
+.chapter .ch-num { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-weight: 800; background: #24384b; }
+.chapter.done .ch-num { background: var(--good); color: #04202b; }
+.chapter.current { border-color: #ffd23d; box-shadow: 0 0 14px rgba(255, 210, 61, 0.3); }
+.chapter.current .ch-num { background: #ffd23d; color: #3a2a10; }
+.chapter.locked { opacity: 0.55; }
+
+/* ---------- monster hunts ---------- */
+.hunt-page .hunt-art { width: min(80vw, 300px); height: min(68vw, 260px); margin: 0 auto; filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.5)); }
+.hunt-page .hunt-art.beaten { filter: grayscale(0.7) brightness(0.7); }
+.hunt-loot { display: flex; flex-wrap: wrap; gap: 6px 14px; justify-content: center; padding: 10px 14px; border-radius: var(--r); margin: 10px auto; max-width: 560px; border-color: #ffd23d; }
+.hunt-loot b { width: 100%; color: #ffe680; }
+.hunt-loot .ic.rupee { width: 10px; height: 16px; vertical-align: -3px; }
+.hunt-pin .pin-art.sm { width: 54px; height: 46px; }
+.hunt-pin.ready .pin-art { animation: bump 1.6s ease-in-out infinite; filter: drop-shadow(0 0 8px #ff6a3d); }
+.hunt-pin.resting { opacity: 0.6; }
+.art .hx-lid { transition: opacity 0.3s; }
+.foe-f.awake .art .hx-lid { opacity: 0; }
+.foe-f:not(.awake) .hinox .hx-eye { opacity: 0; }
+.foe-f .molduga { transition: transform 0.5s ease-in, opacity 0.5s; }
+.foe-f.dive .molduga { transform: translateY(42%) scaleY(0.6); opacity: 0.55; }

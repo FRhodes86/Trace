@@ -915,5 +915,71 @@
       ${hero}`, 'mastercycle');
   }
 
-  window.ART = { kass, yunobo, goronBall, sidon, teba, riju, sandSeal, masterCycle, glider, pet, horse, hero, zelda, oldMan, monk, korok, hestu, beedle, goddess, chuchu, keese, bokoblin, moblin, lizalfos, guardianScout, lynel, blight, calamity, darkBeast, icons, beast, worldMap, EL };
+
+  /* ======================= MONSTER HUNTS (original designs) ======================= */
+  function hinox(level = 0) {
+    // a hulking one-eyed hill giant with mossy shoulders, tusks and a log club; tougher ones are darker
+    const skin = [['#d8845a', '#a85a38'], ['#6a8ad0', '#3f5a9a'], ['#5a4a5e', '#2e2434']][level] || ['#d8845a', '#a85a38'];
+    const g = id('hx');
+    return svg('0 0 200 200', `<defs>${lg(g, skin[0], skin[1])}</defs>${shadow(100, 194, 64)}
+      <g class="m-body bob">
+        <path d="M66,160 l-8,30 h24 l6,-28 M134,160 l8,30 h-24 l-6,-28" fill="url(#${g})" stroke="${INK}" stroke-width="2.6" stroke-linejoin="round"/>
+        <path d="M40,104 Q40,58 100,52 Q160,58 160,104 Q164,152 130,166 Q100,176 70,166 Q36,152 40,104Z" fill="url(#${g})" stroke="${INK}" stroke-width="3"/>
+        <ellipse cx="100" cy="128" rx="38" ry="32" fill="#f0c8a0" opacity=".55"/><path d="M84,128 q16,8 32,0" stroke="${skin[1]}" stroke-width="2.4" fill="none"/>
+        <path d="M54,150 Q100,170 146,150 L142,170 L128,164 L116,174 L100,166 L84,174 L72,164 L58,170Z" fill="#6b4a2e" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/>
+        <path d="M42,76 Q58,58 78,64 Q70,72 74,80 Q60,74 52,84Z M158,76 Q142,58 122,64 Q130,72 126,80 Q140,74 148,84Z" fill="#4f9a34" stroke="${INK}" stroke-width="2"/>
+        <circle cx="54" cy="70" r="3" fill="#7ed957"/><circle cx="146" cy="70" r="3" fill="#7ed957"/>
+        <path d="M156,96 Q184,112 178,142" stroke="${INK}" stroke-width="20" stroke-linecap="round" fill="none"/><path d="M156,96 Q184,112 178,142" stroke="${skin[0]}" stroke-width="15" stroke-linecap="round" fill="none"/>
+        <g class="m-arm"><path d="M44,96 Q16,114 22,146" stroke="${INK}" stroke-width="20" stroke-linecap="round" fill="none"/><path d="M44,96 Q16,114 22,146" stroke="${skin[0]}" stroke-width="15" stroke-linecap="round" fill="none"/>
+          <path d="M30,150 L4,44 Q2,30 14,28 Q26,30 24,44 L40,146Z" fill="#9c6b3d" stroke="${INK}" stroke-width="2.6" stroke-linejoin="round"/><path d="M10,54 l-6,-3 M18,80 l6,-2 M16,104 l-6,1 M10,40 h10" stroke="#5a3a22" stroke-width="2.6" stroke-linecap="round"/>
+          <circle cx="24" cy="146" r="11" fill="${skin[0]}" stroke="${INK}" stroke-width="2.4"/></g>
+        <path d="M60,40 Q62,8 100,6 Q138,8 140,40 Q144,70 120,82 Q100,90 80,82 Q56,70 60,40Z" fill="url(#${g})" stroke="${INK}" stroke-width="3"/>
+        <path d="M70,24 Q80,14 92,20 M108,20 Q120,14 130,24" stroke="${skin[1]}" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <ellipse cx="100" cy="40" rx="20" ry="17" fill="#fff6dc" stroke="${INK}" stroke-width="2.6"/>
+        <circle class="hx-eye" cx="100" cy="41" r="10" fill="#e8b830"/><circle cx="100" cy="41" r="5.4" fill="${INK}"/><circle cx="96" cy="37" r="2.4" fill="#fff"/>
+        <path class="hx-lid" d="M80,40 Q100,22 120,40 Q100,46 80,40Z" fill="${skin[0]}" stroke="${INK}" stroke-width="2.2"/>
+        <path d="M78,66 Q100,78 122,66" stroke="${INK}" stroke-width="2.4" fill="none"/>
+        <path d="M82,68 L84,56 L90,68 M118,68 L116,56 L110,68" fill="#fffdf0" stroke="${INK}" stroke-width="1.8" stroke-linejoin="round"/>
+        <path d="M92,58 q8,4 16,0" stroke="${skin[1]}" stroke-width="2.4" fill="none"/>
+      </g>`, 'monster hinox lv' + level);
+  }
+  function molduga(level = 0) {
+    // a vast armour-plated sand leviathan bursting from the dunes, all jaws and fins
+    const c = [['#c9a26a', '#8a6a3a'], ['#a8786a', '#6a4a3e'], ['#6a5a6e', '#3a2e44']][level] || ['#c9a26a', '#8a6a3a'];
+    const g = id('md');
+    return svg('0 0 220 180', `<defs>${lg(g, c[0], c[1])}</defs>
+      <ellipse cx="110" cy="166" rx="104" ry="12" fill="#e2b468" stroke="#b07a3a" stroke-width="2"/>
+      <g class="m-body bob">
+        <path d="M34,160 Q20,110 46,74 Q78,30 134,30 Q186,34 200,82 Q212,126 188,160Z" fill="url(#${g})" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>
+        ${[0, 1, 2, 3].map(i => `<path d="M${120 + i * 18},${36 + i * 10} q12,-6 22,6 q-10,8 -22,4z" fill="${c[1]}" stroke="${INK}" stroke-width="1.8"/>`).join('')}
+        <path d="M128,26 L150,2 L160,30 Z M168,40 L194,22 L194,52 Z" fill="${c[1]}" stroke="${INK}" stroke-width="2.4" stroke-linejoin="round"/>
+        <path d="M40,104 Q70,84 118,96 Q90,118 52,124 Z" fill="#5a1a2a" stroke="${INK}" stroke-width="2.6"/>
+        <path d="M42,108 L50,100 L56,112 L64,98 L70,112 L80,96 L86,110 L96,96 L100,108 L110,98 M50,122 L56,114 L62,124 L70,114 L76,124 L86,114 L92,122" fill="#fffdf0" stroke="${INK}" stroke-width="1.4" stroke-linejoin="round"/>
+        <path d="M30,96 Q36,66 70,60 Q104,58 120,74 Q86,70 60,84 Q44,92 40,104Z" fill="url(#${g})" stroke="${INK}" stroke-width="2.6"/>
+        <circle cx="74" cy="72" r="7" fill="#ffd23d" stroke="${INK}" stroke-width="2"/><ellipse cx="74" cy="72" rx="2.2" ry="5.6" fill="${INK}"/>
+        <path d="M52,128 Q36,146 18,140 Q30,132 36,118Z M160,120 Q186,124 198,104 Q190,130 168,138Z" fill="${c[1]}" stroke="${INK}" stroke-width="2.2"/>
+        <path d="M34,160 Q60,150 90,158 Q120,150 150,158 Q176,150 188,160" stroke="#f0d090" stroke-width="5" fill="none" stroke-linecap="round"/>
+        ${[[30, 150], [60, 146], [180, 148], [200, 156]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="4" fill="#f0d090" opacity=".85"/>`).join('')}
+      </g>`, 'monster molduga lv' + level);
+  }
+  function elder() {
+    // Elder Kiyo, the wise old Sheikah who guides the hero's journey (an original character)
+    return svg('0 0 120 150', `${shadow(60, 145, 32)}
+      <g class="h-body">
+        <path d="M86,72 L94,142" stroke="#5a3a22" stroke-width="4" stroke-linecap="round"/><circle cx="86" cy="70" r="4" fill="#c9a227" stroke="${INK}" stroke-width="1"/>
+        <path d="M30,142 Q32,92 60,80 Q88,92 90,142 Z" fill="#3a3a6e" stroke="${INK}" stroke-width="2.4"/>
+        <path d="M44,142 Q48,104 60,94 Q72,104 76,142 Z" fill="#c63b4f" opacity=".9"/>
+        <path d="M50,108 q10,-8 20,0 q-10,8 -20,0z" fill="none" stroke="#f4f2ea" stroke-width="1.6"/><circle cx="60" cy="108" r="2.4" fill="#f4f2ea"/><path d="M60,112 l-2,6 h4z" fill="#f4f2ea"/>
+        <path d="M40,90 Q60,84 80,90 L78,98 Q60,92 42,98Z" fill="#f4f2ea" stroke="${INK}" stroke-width="1.4"/>
+        <ellipse cx="60" cy="62" rx="15" ry="16" fill="#e9c39e" stroke="${INK}" stroke-width="2"/>
+        <path d="M44,58 Q42,40 60,38 Q78,40 76,58 Q70,48 60,48 Q50,48 44,58Z" fill="#f4f2ea" stroke="${INK}" stroke-width="1.8"/>
+        <ellipse cx="60" cy="34" rx="10" ry="7" fill="#f4f2ea" stroke="${INK}" stroke-width="1.6"/><path d="M52,34 h16" stroke="#c63b4f" stroke-width="2.4"/>
+        <path d="M52,62 q3,2 6,0 M62,62 q3,2 6,0" stroke="${INK}" stroke-width="1.6" fill="none"/>
+        <path d="M55,70 q5,3 10,0" stroke="#a5604a" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+        <path d="M50,57 q4,-3 8,0 M62,57 q4,-3 8,0" stroke="#f4f2ea" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+        <circle cx="60" cy="50" r="2" fill="#c63b4f"/>
+      </g>`, 'npc elder');
+  }
+
+  window.ART = { hinox, molduga, elder, kass, yunobo, goronBall, sidon, teba, riju, sandSeal, masterCycle, glider, pet, horse, hero, zelda, oldMan, monk, korok, hestu, beedle, goddess, chuchu, keese, bokoblin, moblin, lizalfos, guardianScout, lynel, blight, calamity, darkBeast, icons, beast, worldMap, EL };
 })();

@@ -933,6 +933,46 @@ html { overflow-x: hidden; overflow-x: clip; }
 .xfer-help ol { padding-left: 20px; } .xfer-help li { margin: 6px 0; }
 .title-screen .xfer-title { font-size: 0.95rem; background: rgba(9, 20, 31, 0.72); color: #eef7fd; border: 1px solid var(--edge); }
 .modal .xfer-card { margin: 8px 0 12px; }
+
+/* ---------- main story ---------- */
+.mainquest { width: 100%; max-width: 980px; margin: 10px auto 0; display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center; padding: 10px 14px; border-radius: var(--r); color: var(--text); text-align: left; cursor: pointer; border-color: #ffd23d; box-shadow: 0 0 14px rgba(255, 210, 61, 0.22); }
+.mainquest .mq-ico { font-size: 1.6rem; }
+.mainquest small { display: block; color: #ffe680; font-family: var(--font-display); letter-spacing: 0.04em; font-size: 0.8rem; }
+.mainquest b { font-weight: 600; font-size: 0.95rem; line-height: 1.3; display: block; }
+.mainquest .mq-go { font-size: 1.6rem; color: var(--rune); }
+.chapter-card { position: fixed; inset: 0; z-index: 90; display: grid; place-items: center; background: radial-gradient(ellipse at center, rgba(10, 24, 40, 0.92), rgba(2, 6, 12, 0.98)); opacity: 0; transition: opacity 0.5s; cursor: pointer; padding: 20px; }
+.chapter-card.in { opacity: 1; }
+.cc-inner { text-align: center; max-width: 640px; }
+.cc-inner small { display: block; font-family: var(--font-display); letter-spacing: 0.3em; text-transform: uppercase; color: var(--rune); font-size: 0.9rem; animation: ccIn 0.9s ease-out; }
+.cc-inner h1 { font-family: var(--font-display); font-size: clamp(1.9rem, 7vw, 3.2rem); margin: 10px 0; color: #fff6c8; text-shadow: 0 0 24px rgba(255, 210, 61, 0.55); animation: ccIn 1.2s ease-out; }
+.cc-inner p { color: var(--muted); animation: ccIn 1.6s ease-out; }
+.cc-inner h1::after { content: ''; display: block; height: 2px; margin: 12px auto 0; width: 60%; background: linear-gradient(90deg, transparent, #ffd23d, transparent); }
+.cc-tap { display: block; margin-top: 18px; color: var(--muted); font-size: 0.75rem; animation: blinkTxt 1.6s infinite; }
+@keyframes ccIn { from { opacity: 0; transform: translateY(12px); letter-spacing: 0.5em; } }
+.journal { display: grid; gap: 10px; }
+.chapter { display: grid; grid-template-columns: auto 1fr; gap: 12px; padding: 12px 14px; border-radius: var(--r); }
+.chapter h3 { margin: 0 0 4px; }
+.chapter p { margin: 0; }
+.chapter .ch-num { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-weight: 800; background: #24384b; }
+.chapter.done .ch-num { background: var(--good); color: #04202b; }
+.chapter.current { border-color: #ffd23d; box-shadow: 0 0 14px rgba(255, 210, 61, 0.3); }
+.chapter.current .ch-num { background: #ffd23d; color: #3a2a10; }
+.chapter.locked { opacity: 0.55; }
+
+/* ---------- monster hunts ---------- */
+.hunt-page .hunt-art { width: min(80vw, 300px); height: min(68vw, 260px); margin: 0 auto; filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.5)); }
+.hunt-page .hunt-art.beaten { filter: grayscale(0.7) brightness(0.7); }
+.hunt-loot { display: flex; flex-wrap: wrap; gap: 6px 14px; justify-content: center; padding: 10px 14px; border-radius: var(--r); margin: 10px auto; max-width: 560px; border-color: #ffd23d; }
+.hunt-loot b { width: 100%; color: #ffe680; }
+.hunt-loot .ic.rupee { width: 10px; height: 16px; vertical-align: -3px; }
+.hunt-pin .pin-art.sm { width: 54px; height: 46px; }
+.hunt-pin.ready .pin-art { animation: bump 1.6s ease-in-out infinite; filter: drop-shadow(0 0 8px #ff6a3d); }
+.hunt-pin.resting { opacity: 0.6; }
+.art .hx-lid { transition: opacity 0.3s; }
+.foe-f.awake .art .hx-lid { opacity: 0; }
+.foe-f:not(.awake) .hinox .hx-eye { opacity: 0; }
+.foe-f .molduga { transition: transform 0.5s ease-in, opacity 0.5s; }
+.foe-f.dive .molduga { transform: translateY(42%) scaleY(0.6); opacity: 0.55; }
 </style>
 </head>
 <body>
@@ -4325,7 +4365,73 @@ Symin`,
       ${hero}`, 'mastercycle');
   }
 
-  window.ART = { kass, yunobo, goronBall, sidon, teba, riju, sandSeal, masterCycle, glider, pet, horse, hero, zelda, oldMan, monk, korok, hestu, beedle, goddess, chuchu, keese, bokoblin, moblin, lizalfos, guardianScout, lynel, blight, calamity, darkBeast, icons, beast, worldMap, EL };
+
+  /* ======================= MONSTER HUNTS (original designs) ======================= */
+  function hinox(level = 0) {
+    // a hulking one-eyed hill giant with mossy shoulders, tusks and a log club; tougher ones are darker
+    const skin = [['#d8845a', '#a85a38'], ['#6a8ad0', '#3f5a9a'], ['#5a4a5e', '#2e2434']][level] || ['#d8845a', '#a85a38'];
+    const g = id('hx');
+    return svg('0 0 200 200', `<defs>${lg(g, skin[0], skin[1])}</defs>${shadow(100, 194, 64)}
+      <g class="m-body bob">
+        <path d="M66,160 l-8,30 h24 l6,-28 M134,160 l8,30 h-24 l-6,-28" fill="url(#${g})" stroke="${INK}" stroke-width="2.6" stroke-linejoin="round"/>
+        <path d="M40,104 Q40,58 100,52 Q160,58 160,104 Q164,152 130,166 Q100,176 70,166 Q36,152 40,104Z" fill="url(#${g})" stroke="${INK}" stroke-width="3"/>
+        <ellipse cx="100" cy="128" rx="38" ry="32" fill="#f0c8a0" opacity=".55"/><path d="M84,128 q16,8 32,0" stroke="${skin[1]}" stroke-width="2.4" fill="none"/>
+        <path d="M54,150 Q100,170 146,150 L142,170 L128,164 L116,174 L100,166 L84,174 L72,164 L58,170Z" fill="#6b4a2e" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/>
+        <path d="M42,76 Q58,58 78,64 Q70,72 74,80 Q60,74 52,84Z M158,76 Q142,58 122,64 Q130,72 126,80 Q140,74 148,84Z" fill="#4f9a34" stroke="${INK}" stroke-width="2"/>
+        <circle cx="54" cy="70" r="3" fill="#7ed957"/><circle cx="146" cy="70" r="3" fill="#7ed957"/>
+        <path d="M156,96 Q184,112 178,142" stroke="${INK}" stroke-width="20" stroke-linecap="round" fill="none"/><path d="M156,96 Q184,112 178,142" stroke="${skin[0]}" stroke-width="15" stroke-linecap="round" fill="none"/>
+        <g class="m-arm"><path d="M44,96 Q16,114 22,146" stroke="${INK}" stroke-width="20" stroke-linecap="round" fill="none"/><path d="M44,96 Q16,114 22,146" stroke="${skin[0]}" stroke-width="15" stroke-linecap="round" fill="none"/>
+          <path d="M30,150 L4,44 Q2,30 14,28 Q26,30 24,44 L40,146Z" fill="#9c6b3d" stroke="${INK}" stroke-width="2.6" stroke-linejoin="round"/><path d="M10,54 l-6,-3 M18,80 l6,-2 M16,104 l-6,1 M10,40 h10" stroke="#5a3a22" stroke-width="2.6" stroke-linecap="round"/>
+          <circle cx="24" cy="146" r="11" fill="${skin[0]}" stroke="${INK}" stroke-width="2.4"/></g>
+        <path d="M60,40 Q62,8 100,6 Q138,8 140,40 Q144,70 120,82 Q100,90 80,82 Q56,70 60,40Z" fill="url(#${g})" stroke="${INK}" stroke-width="3"/>
+        <path d="M70,24 Q80,14 92,20 M108,20 Q120,14 130,24" stroke="${skin[1]}" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <ellipse cx="100" cy="40" rx="20" ry="17" fill="#fff6dc" stroke="${INK}" stroke-width="2.6"/>
+        <circle class="hx-eye" cx="100" cy="41" r="10" fill="#e8b830"/><circle cx="100" cy="41" r="5.4" fill="${INK}"/><circle cx="96" cy="37" r="2.4" fill="#fff"/>
+        <path class="hx-lid" d="M80,40 Q100,22 120,40 Q100,46 80,40Z" fill="${skin[0]}" stroke="${INK}" stroke-width="2.2"/>
+        <path d="M78,66 Q100,78 122,66" stroke="${INK}" stroke-width="2.4" fill="none"/>
+        <path d="M82,68 L84,56 L90,68 M118,68 L116,56 L110,68" fill="#fffdf0" stroke="${INK}" stroke-width="1.8" stroke-linejoin="round"/>
+        <path d="M92,58 q8,4 16,0" stroke="${skin[1]}" stroke-width="2.4" fill="none"/>
+      </g>`, 'monster hinox lv' + level);
+  }
+  function molduga(level = 0) {
+    // a vast armour-plated sand leviathan bursting from the dunes, all jaws and fins
+    const c = [['#c9a26a', '#8a6a3a'], ['#a8786a', '#6a4a3e'], ['#6a5a6e', '#3a2e44']][level] || ['#c9a26a', '#8a6a3a'];
+    const g = id('md');
+    return svg('0 0 220 180', `<defs>${lg(g, c[0], c[1])}</defs>
+      <ellipse cx="110" cy="166" rx="104" ry="12" fill="#e2b468" stroke="#b07a3a" stroke-width="2"/>
+      <g class="m-body bob">
+        <path d="M34,160 Q20,110 46,74 Q78,30 134,30 Q186,34 200,82 Q212,126 188,160Z" fill="url(#${g})" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>
+        ${[0, 1, 2, 3].map(i => `<path d="M${120 + i * 18},${36 + i * 10} q12,-6 22,6 q-10,8 -22,4z" fill="${c[1]}" stroke="${INK}" stroke-width="1.8"/>`).join('')}
+        <path d="M128,26 L150,2 L160,30 Z M168,40 L194,22 L194,52 Z" fill="${c[1]}" stroke="${INK}" stroke-width="2.4" stroke-linejoin="round"/>
+        <path d="M40,104 Q70,84 118,96 Q90,118 52,124 Z" fill="#5a1a2a" stroke="${INK}" stroke-width="2.6"/>
+        <path d="M42,108 L50,100 L56,112 L64,98 L70,112 L80,96 L86,110 L96,96 L100,108 L110,98 M50,122 L56,114 L62,124 L70,114 L76,124 L86,114 L92,122" fill="#fffdf0" stroke="${INK}" stroke-width="1.4" stroke-linejoin="round"/>
+        <path d="M30,96 Q36,66 70,60 Q104,58 120,74 Q86,70 60,84 Q44,92 40,104Z" fill="url(#${g})" stroke="${INK}" stroke-width="2.6"/>
+        <circle cx="74" cy="72" r="7" fill="#ffd23d" stroke="${INK}" stroke-width="2"/><ellipse cx="74" cy="72" rx="2.2" ry="5.6" fill="${INK}"/>
+        <path d="M52,128 Q36,146 18,140 Q30,132 36,118Z M160,120 Q186,124 198,104 Q190,130 168,138Z" fill="${c[1]}" stroke="${INK}" stroke-width="2.2"/>
+        <path d="M34,160 Q60,150 90,158 Q120,150 150,158 Q176,150 188,160" stroke="#f0d090" stroke-width="5" fill="none" stroke-linecap="round"/>
+        ${[[30, 150], [60, 146], [180, 148], [200, 156]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="4" fill="#f0d090" opacity=".85"/>`).join('')}
+      </g>`, 'monster molduga lv' + level);
+  }
+  function elder() {
+    // Elder Kiyo, the wise old Sheikah who guides the hero's journey (an original character)
+    return svg('0 0 120 150', `${shadow(60, 145, 32)}
+      <g class="h-body">
+        <path d="M86,72 L94,142" stroke="#5a3a22" stroke-width="4" stroke-linecap="round"/><circle cx="86" cy="70" r="4" fill="#c9a227" stroke="${INK}" stroke-width="1"/>
+        <path d="M30,142 Q32,92 60,80 Q88,92 90,142 Z" fill="#3a3a6e" stroke="${INK}" stroke-width="2.4"/>
+        <path d="M44,142 Q48,104 60,94 Q72,104 76,142 Z" fill="#c63b4f" opacity=".9"/>
+        <path d="M50,108 q10,-8 20,0 q-10,8 -20,0z" fill="none" stroke="#f4f2ea" stroke-width="1.6"/><circle cx="60" cy="108" r="2.4" fill="#f4f2ea"/><path d="M60,112 l-2,6 h4z" fill="#f4f2ea"/>
+        <path d="M40,90 Q60,84 80,90 L78,98 Q60,92 42,98Z" fill="#f4f2ea" stroke="${INK}" stroke-width="1.4"/>
+        <ellipse cx="60" cy="62" rx="15" ry="16" fill="#e9c39e" stroke="${INK}" stroke-width="2"/>
+        <path d="M44,58 Q42,40 60,38 Q78,40 76,58 Q70,48 60,48 Q50,48 44,58Z" fill="#f4f2ea" stroke="${INK}" stroke-width="1.8"/>
+        <ellipse cx="60" cy="34" rx="10" ry="7" fill="#f4f2ea" stroke="${INK}" stroke-width="1.6"/><path d="M52,34 h16" stroke="#c63b4f" stroke-width="2.4"/>
+        <path d="M52,62 q3,2 6,0 M62,62 q3,2 6,0" stroke="${INK}" stroke-width="1.6" fill="none"/>
+        <path d="M55,70 q5,3 10,0" stroke="#a5604a" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+        <path d="M50,57 q4,-3 8,0 M62,57 q4,-3 8,0" stroke="#f4f2ea" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+        <circle cx="60" cy="50" r="2" fill="#c63b4f"/>
+      </g>`, 'npc elder');
+  }
+
+  window.ART = { hinox, molduga, elder, kass, yunobo, goronBall, sidon, teba, riju, sandSeal, masterCycle, glider, pet, horse, hero, zelda, oldMan, monk, korok, hestu, beedle, goddess, chuchu, keese, bokoblin, moblin, lizalfos, guardianScout, lynel, blight, calamity, darkBeast, icons, beast, worldMap, EL };
 })();
 </script>
 <script>
@@ -4639,88 +4745,161 @@ Symin`,
   }
 
   /* ---------- ambient music: sparse piano-like notes, BotW style ---------- */
+  // Original music engine. Every area has its own key, tempo, instruments and chord progressions; melodies are composed
+  // on the fly from short motifs that develop across A/B sections, so the music never loops exactly the same way.
+  // Exploration themes are sparse and gentle (piano, harp, strings, flute); battle themes add drums, ostinato and brass.
   const Music = (() => {
-    let ctx, master, comp, noiseBuf, timer = null, mode = null, on = true, step = 0, nextT = 0, intensity = 0, ambientTimer = null;
-    const ambientScales = {
-      field: [0, 2, 4, 7, 9, 12, 14, 16, 19], shrine: [0, 3, 5, 7, 10, 12, 15], plateau: [0, 2, 4, 7, 9, 12],
-      maths: [0, 3, 5, 6, 7, 10, 12], english: [0, 2, 4, 7, 9, 11, 12, 14], verbal: [0, 2, 5, 7, 9, 12, 14], nonverbal: [0, 1, 4, 5, 7, 8, 11, 12], stable: [0, 2, 4, 5, 7, 9, 12], home: [0, 4, 7, 9, 12, 16],
-    };
-    const ambientRoots = { field: 60, shrine: 57, plateau: 62, maths: 50, english: 62, verbal: 64, nonverbal: 55, stable: 60, home: 65 };
-    // Driving battle themes: 16 steps per bar, 4 bars per loop
-    const SONGS = {
-      battle: { bpm: 136, roots: [45, 41, 48, 43], chords: [[69, 72, 76], [65, 69, 72], [64, 67, 72], [67, 71, 74]], bassWave: 'sawtooth', leadWave: 'square',
-        kick: [0, 8, 10], snare: [4, 12], lead: [[0, 76], [3, 74], [4, 72], [6, 71], [8, 69], [12, 72], [14, 76], [16, 81], [20, 79], [22, 77], [24, 76], [28, 74], [30, 72], [32, 71], [36, 72], [38, 74], [40, 76], [44, 79], [48, 81], [52, 79], [54, 76], [56, 74], [60, 76]] },
-      boss: { bpm: 152, roots: [38, 34, 36, 33], chords: [[62, 65, 69], [58, 62, 65], [60, 64, 67], [57, 61, 64]], bassWave: 'sawtooth', leadWave: 'sawtooth', dist: true,
-        kick: [0, 4, 8, 11, 12], snare: [4, 12], roll: true, lead: [[0, 74], [2, 77], [4, 81], [8, 79], [10, 77], [12, 76], [16, 74], [18, 70], [20, 74], [24, 72], [28, 69], [32, 74], [34, 77], [36, 81], [40, 84], [44, 82], [46, 81], [48, 79], [52, 76], [56, 73], [60, 69]] },
-      castle: { bpm: 124, roots: [40, 36, 33, 35], chords: [[64, 67, 71], [60, 64, 67], [57, 60, 64], [59, 63, 66]], bassWave: 'sawtooth', leadWave: 'sawtooth', dist: true, pad: true,
-        kick: [0, 6, 8, 14], snare: [4, 12], roll: true, lead: [[0, 76], [4, 79], [8, 83], [12, 81], [16, 79], [20, 76], [24, 72], [28, 71], [32, 76], [36, 79], [40, 84], [44, 83], [48, 81], [52, 79], [56, 78], [60, 75]] },
+    let ctx, master, comp, verb, verbIn, noiseBuf, timer = null, mode = null, on = true, step = 0, nextT = 0, intensity = 0, plan = null;
+    const SC = { major: [0, 2, 4, 5, 7, 9, 11], minor: [0, 2, 3, 5, 7, 8, 10], dorian: [0, 2, 3, 5, 7, 9, 10], mixo: [0, 2, 4, 5, 7, 9, 10], lydian: [0, 2, 4, 6, 7, 9, 11], phryg: [0, 1, 3, 5, 7, 8, 10], hijaz: [0, 1, 4, 5, 7, 8, 10], harm: [0, 2, 3, 5, 7, 8, 11] };
+    // progs: chord roots as scale degrees (0 = tonic). inst: which voices play. sparse: chance a phrase rests (gentle themes breathe).
+    const STYLES = {
+      field: { bpm: 84, key: 60, scale: 'major', progs: [[0, 4, 5, 3], [3, 0, 1, 4], [5, 3, 0, 4]], inst: ['pad', 'piano', 'harp'], lead: 'flute', sparse: 0.35, drums: null },
+      plateau: { bpm: 74, key: 62, scale: 'mixo', progs: [[0, 6, 3, 0], [3, 4, 0, 0], [5, 6, 0, 4]], inst: ['pad', 'piano'], lead: 'piano', sparse: 0.45, drums: null },
+      shrine: { bpm: 66, key: 57, scale: 'dorian', progs: [[0, 3, 0, 6], [5, 3, 4, 0]], inst: ['pad', 'bell'], lead: 'bell', sparse: 0.5, drums: null },
+      maths: { bpm: 92, key: 50, scale: 'phryg', progs: [[0, 1, 0, 6], [0, 5, 6, 1]], inst: ['pad', 'pluck'], lead: 'brass', sparse: 0.3, drums: 'taiko' },
+      english: { bpm: 78, key: 63, scale: 'lydian', progs: [[0, 1, 0, 4], [5, 3, 1, 4], [0, 2, 3, 1]], inst: ['pad', 'harp', 'bell'], lead: 'flute', sparse: 0.35, drums: null },
+      verbal: { bpm: 98, key: 64, scale: 'mixo', progs: [[0, 6, 3, 0], [0, 3, 4, 6], [5, 6, 0, 0]], inst: ['pad', 'harp'], lead: 'flute', sparse: 0.25, drums: 'light' },
+      nonverbal: { bpm: 102, key: 55, scale: 'hijaz', progs: [[0, 1, 0, 6], [3, 1, 0, 0], [5, 6, 1, 0]], inst: ['pad', 'pluck'], lead: 'pluck', sparse: 0.25, drums: 'hand' },
+      stable: { bpm: 108, key: 60, scale: 'major', progs: [[0, 3, 4, 0], [0, 5, 3, 4], [3, 4, 0, 5]], inst: ['strum', 'piano'], lead: 'flute', sparse: 0.2, drums: 'light' },
+      home: { bpm: 70, key: 65, scale: 'major', progs: [[0, 5, 3, 4], [3, 0, 3, 4], [0, 2, 3, 4]], inst: ['piano', 'pad'], lead: 'piano', sparse: 0.3, drums: null },
+      battle: { bpm: 140, key: 57, scale: 'minor', progs: [[0, 5, 2, 6], [0, 3, 4, 4], [5, 6, 0, 0]], inst: ['pad', 'ostinato', 'brass'], lead: 'lead', sparse: 0, drums: 'battle' },
+      boss: { bpm: 154, key: 50, scale: 'harm', progs: [[0, 5, 3, 4], [0, 1, 0, 4], [5, 3, 6, 4]], inst: ['choir', 'ostinato', 'brass'], lead: 'lead', sparse: 0, drums: 'heavy', dist: true },
+      castle: { bpm: 126, key: 52, scale: 'phryg', progs: [[0, 1, 0, 6], [5, 1, 3, 0], [0, 6, 5, 1]], inst: ['organ', 'choir', 'ostinato'], lead: 'brass', sparse: 0, drums: 'heavy', dist: true },
+      hunt: { bpm: 146, key: 55, scale: 'dorian', progs: [[0, 6, 3, 4], [0, 3, 6, 0], [5, 6, 0, 4]], inst: ['pad', 'ostinato', 'brass'], lead: 'lead', sparse: 0, drums: 'taikoFast' },
     };
     const mtof = m => 440 * Math.pow(2, (m - 69) / 12);
-    function osc(type, freq, t, dur, vol, dest, opt = {}) {
-      const o = ctx.createOscillator(), g = ctx.createGain(); o.type = type; o.frequency.setValueAtTime(freq, t);
-      if (opt.slideTo) o.frequency.exponentialRampToValueAtTime(opt.slideTo, t + dur);
-      if (opt.detune) o.detune.value = opt.detune;
-      let node = o;
-      if (opt.lp) { const f = ctx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = opt.lp; f.Q.value = opt.q || 1; o.connect(f); node = f; }
-      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + (opt.attack || 0.008)); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-      node.connect(g); g.connect(dest || master); o.start(t); o.stop(t + dur + 0.05);
+    const rnd = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+    const pick = a => a[Math.floor(Math.random() * a.length)];
+    const deg = (st, d, oct = 0) => { const s = SC[st.scale]; const n = ((d % 7) + 7) % 7; return st.key + s[n] + 12 * (Math.floor(d / 7) + oct); };
+
+    /* ---------- composition ---------- */
+    const RHYTHMS = [[0, 4, 6, 8, 12], [0, 2, 4, 8, 10, 12], [0, 6, 8, 14], [0, 3, 4, 8, 11, 12], [0, 4, 8, 10, 12, 14], [0, 8, 12], [0, 2, 3, 4, 8]];
+    function motif(st) { // one bar of melody: positions + scale degrees, walking mostly by step
+      const r = pick(RHYTHMS); let d = pick([2, 4, 7, 4]); const notes = [];
+      r.forEach((p, i) => { notes.push([p, d, i === r.length - 1 ? 6 : Math.max(2, (r[i + 1] || 16) - p)]); d += pick([-2, -1, -1, 1, 1, 2, 0, 3]); d = Math.max(0, Math.min(11, d)); });
+      return notes;
     }
-    function noise(t, dur, vol, hp) {
+    function section(st) { // 4 bars: motif, varied motif, contrasting bar, cadence
+      const m = motif(st), c = motif(st);
+      const vary = (x, shift) => x.map(([p, d, l]) => [p, d + shift, l]);
+      const cad = [[0, pick([4, 2, 1]), 4], [4, pick([2, 1]), 4], [8, 0, 8]];
+      return { prog: pick(st.progs), bars: [m, vary(m, pick([1, 2, -1])), c, cad], rest: [0, 1, 2, 3].map(() => Math.random() < st.sparse) };
+    }
+    function newPlan(st) { const A = section(st), B = section(st); return { st, form: Math.random() < 0.5 ? [A, A, B, A] : [A, B, A, B], idx: 0 }; }
+
+    /* ---------- instruments ---------- */
+    function voice(type, freq, t, dur, vol, o = {}) {
+      const os = ctx.createOscillator(), g = ctx.createGain(); os.type = type; os.frequency.setValueAtTime(freq, t);
+      if (o.detune) os.detune.value = o.detune;
+      if (o.slideTo) os.frequency.exponentialRampToValueAtTime(o.slideTo, t + dur);
+      if (o.vib) { const l = ctx.createOscillator(), lg = ctx.createGain(); l.frequency.value = 5.2; lg.gain.value = freq * 0.006; l.connect(lg); lg.connect(os.frequency); l.start(t + 0.15); l.stop(t + dur + 0.1); }
+      let node = os;
+      if (o.lp || o.bp) { const f = ctx.createBiquadFilter(); f.type = o.bp ? 'bandpass' : 'lowpass'; f.frequency.value = o.bp || o.lp; f.Q.value = o.q || 0.8; os.connect(f); node = f; }
+      const a = o.attack || 0.01;
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + a);
+      if (o.sustain) { g.gain.setValueAtTime(vol, t + Math.max(a, dur - (o.release || 0.3))); }
+      g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      node.connect(g); g.connect(master); if (o.wet) { const w = ctx.createGain(); w.gain.value = o.wet; g.connect(w); w.connect(verbIn); }
+      os.start(t); os.stop(t + dur + 0.1);
+    }
+    function noiseHit(t, dur, vol, hp, lp) {
       const src = ctx.createBufferSource(); src.buffer = noiseBuf; const f = ctx.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = hp; const g = ctx.createGain();
-      g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.0001, t + dur); src.connect(f); f.connect(g); g.connect(master); src.start(t); src.stop(t + dur + 0.02);
+      g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.0001, t + dur); src.connect(f);
+      if (lp) { const f2 = ctx.createBiquadFilter(); f2.type = 'lowpass'; f2.frequency.value = lp; f.connect(f2); f2.connect(g); } else f.connect(g);
+      g.connect(master); src.start(t); src.stop(t + dur + 0.02);
     }
-    const kick = (t, heavy) => osc('sine', heavy ? 120 : 150, t, heavy ? 0.28 : 0.2, heavy ? 0.9 : 0.75, master, { slideTo: 38 });
-    const snare = t => { noise(t, 0.16, 0.32, 1400); osc('triangle', 190, t, 0.09, 0.18); };
-    const hat = (t, open) => noise(t, open ? 0.12 : 0.035, open ? 0.08 : 0.06, 7000);
-    function scheduleStep(song, st, t) {
-      const sp = 60 / song.bpm / 4; const bar = Math.floor(st / 16) % 4; const s16 = st % 16; const loopStep = st % 64;
-      const heavy = !!song.dist;
-      if (song.kick.includes(s16)) kick(t, heavy);
-      if (song.snare.includes(s16)) snare(t);
-      if (song.roll && bar === 3 && s16 >= 12) snare(t + sp / 2);
-      if (s16 % 2 === 0 || intensity >= 2) hat(t, s16 % 4 === 2 && intensity >= 1);
-      // bass: driving eighths with octave pops
-      if (s16 % 2 === 0) { const r = song.roots[bar] + (s16 % 8 === 6 ? 12 : 0); osc(song.bassWave, mtof(r), t, sp * 1.8, 0.16, master, { lp: heavy ? 900 : 700, q: 4 }); }
-      // arpeggio sparkle
-      const ch = song.chords[bar]; osc('square', mtof(ch[s16 % 3] + (s16 % 6 > 2 ? 12 : 0)), t, sp * 0.9, intensity >= 1 ? 0.045 : 0.03, master, { lp: 3000 });
-      // chord stab / pad at bar start
-      if (s16 === 0) ch.forEach(n => song.pad ? osc('sawtooth', mtof(n - 12), t, sp * 15, 0.035, master, { lp: 1400, attack: 0.3, detune: 7 }) : osc('sawtooth', mtof(n), t, sp * 3, 0.05, master, { lp: 2200, detune: 9 }));
-      // lead melody
-      const L = song.lead.find(x => x[0] === loopStep);
-      if (L) { osc(song.leadWave, mtof(L[1]), t, sp * 3.6, 0.07, master, { lp: heavy ? 2600 : 3200, detune: heavy ? 5 : 0 }); if (intensity >= 2) osc(song.leadWave, mtof(L[1] - 12), t, sp * 3.6, 0.04, master, { lp: 2000 }); }
+    const INST = {
+      piano: (m, t, d, v = 0.07) => { voice('triangle', mtof(m), t, Math.min(2.2, d * 2.5), v, { wet: 0.35 }); voice('sine', mtof(m) * 2, t, 0.6, v * 0.25); },
+      harp: (m, t, d, v = 0.05) => voice('triangle', mtof(m), t, 1.1, v, { lp: 3200, wet: 0.45 }),
+      bell: (m, t, d, v = 0.035) => { voice('sine', mtof(m), t, 2.4, v, { wet: 0.6 }); voice('sine', mtof(m) * 2.76, t, 1.2, v * 0.3, { wet: 0.6 }); },
+      flute: (m, t, d, v = 0.06) => voice('sine', mtof(m), t, d * 1.05, v, { attack: 0.06, vib: true, sustain: true, release: 0.12, wet: 0.4 }),
+      pluck: (m, t, d, v = 0.06) => voice('sawtooth', mtof(m), t, 0.45, v, { lp: 1800, q: 2, wet: 0.25 }),
+      strum: (ch, t) => ch.forEach((m, i) => voice('triangle', mtof(m), t + i * 0.025, 0.8, 0.04, { lp: 2600, wet: 0.2 })),
+      brass: (m, t, d, v = 0.06) => { voice('sawtooth', mtof(m), t, d, v, { lp: 1500, attack: 0.04, sustain: true, release: 0.1, detune: -6 }); voice('sawtooth', mtof(m), t, d, v * 0.7, { lp: 1500, attack: 0.04, sustain: true, release: 0.1, detune: 6 }); },
+      lead: (m, t, d, v = 0.06) => voice('square', mtof(m), t, d, v, { lp: 2800, attack: 0.01, sustain: true, release: 0.08, vib: true }),
+      pad: (ch, t, d) => ch.forEach(m => [-8, 8].forEach(dt => voice('sawtooth', mtof(m - 12), t, d, 0.016, { lp: 1100, attack: 0.5, sustain: true, release: 0.6, detune: dt, wet: 0.5 }))),
+      choir: (ch, t, d) => ch.forEach(m => [-6, 0, 6].forEach(dt => voice('triangle', mtof(m), t, d, 0.016, { bp: 900, q: 1.2, attack: 0.4, sustain: true, release: 0.5, detune: dt, wet: 0.6 }))),
+      organ: (ch, t, d) => ch.forEach(m => [1, 2, 3].forEach((h, i) => voice('sine', mtof(m - 12) * h, t, d, 0.022 / (i + 1), { attack: 0.05, sustain: true, release: 0.2, wet: 0.5 }))),
+    };
+    const DRUM = {
+      kick: (t, heavy) => voice('sine', heavy ? 115 : 140, t, heavy ? 0.3 : 0.22, heavy ? 0.85 : 0.7, { slideTo: 40 }),
+      snare: t => { noiseHit(t, 0.16, 0.26, 1500); voice('triangle', 190, t, 0.08, 0.14); },
+      hat: (t, open) => noiseHit(t, open ? 0.12 : 0.03, open ? 0.06 : 0.045, 7500),
+      taiko: (t, v = 0.6) => { voice('sine', 90, t, 0.45, v, { slideTo: 48 }); noiseHit(t, 0.06, 0.12, 300, 1200); },
+      hand: (t, hi) => voice('sine', hi ? 330 : 210, t, 0.18, 0.28, { slideTo: hi ? 260 : 150 }),
+      shaker: t => noiseHit(t, 0.05, 0.035, 6000),
+    };
+    function drums(kind, s16, bar, t, sp) {
+      if (!kind) return;
+      const fill = bar === 3 && s16 >= 12;
+      if (kind === 'light') { if (s16 % 4 === 0) DRUM.shaker(t); if (s16 === 0 || s16 === 10) DRUM.hand(t, false); if (s16 === 6) DRUM.hand(t, true); return; }
+      if (kind === 'hand') { if ([0, 3, 6, 10].includes(s16)) DRUM.hand(t, s16 === 6 || s16 === 10); if (s16 % 2 === 0) DRUM.shaker(t); return; }
+      if (kind === 'taiko') { if (s16 === 0 || s16 === 10) DRUM.taiko(t, 0.5); if (fill && s16 % 2 === 0) DRUM.taiko(t, 0.35); return; }
+      if (kind === 'taikoFast') { if ([0, 3, 6, 8, 11, 14].includes(s16)) DRUM.taiko(t, s16 % 8 === 0 ? 0.7 : 0.45); if (s16 % 4 === 2 || intensity >= 1) DRUM.hat(t, false); if (fill) DRUM.snare(t + sp / 2); return; }
+      const heavy = kind === 'heavy';
+      if ((heavy ? [0, 4, 8, 11] : [0, 8, 10]).includes(s16)) DRUM.kick(t, heavy);
+      if (s16 === 4 || s16 === 12) DRUM.snare(t);
+      if (fill) DRUM.snare(t + sp / 2);
+      if (s16 % 2 === 0 || intensity >= 2) DRUM.hat(t, s16 % 4 === 2 && intensity >= 1);
+      if (s16 === 0 && bar === 0) noiseHit(t, 1.2, 0.08, 4000); // crash at each phrase
+    }
+    function triad(st, rootDeg, oct = 0) { return [deg(st, rootDeg, oct), deg(st, rootDeg + 2, oct), deg(st, rootDeg + 4, oct)]; }
+    function scheduleStep(t) {
+      const st = plan.st; const sp = 60 / st.bpm / 4;
+      const s16 = step % 16, bar = Math.floor(step / 16) % 4, cyc = Math.floor(step / 64);
+      if (s16 === 0 && bar === 0 && step > 0) { plan.idx++; if (plan.idx >= plan.form.length) plan = newPlan(st); } // next section
+      const sec = plan.form[plan.idx % plan.form.length];
+      const rootDeg = sec.prog[bar]; const ch = triad(st, rootDeg);
+      const battleish = !!st.drums && st.sparse === 0;
+      // harmony
+      for (const ins of st.inst) {
+        if ((ins === 'pad' || ins === 'choir' || ins === 'organ') && s16 === 0) INST[ins](ch, t, sp * 16);
+        if (ins === 'piano' && !battleish && (s16 === 0 || s16 === 8)) { INST.piano(deg(st, rootDeg, -1), t, sp * 8, 0.05); if (s16 === 8) ch.forEach((m, i) => INST.piano(m, t + i * 0.04, sp * 6, 0.025)); }
+        if (ins === 'harp' && s16 % 2 === 0) { const arp = [ch[0], ch[1], ch[2], ch[0] + 12, ch[2], ch[1], ch[0] + 12, ch[1] + 12]; INST.harp(arp[(s16 / 2) % 8], t, sp * 2); }
+        if (ins === 'bell' && s16 === 12 && Math.random() < 0.5) INST.bell(ch[2] + 12, t, sp * 4);
+        if (ins === 'pluck' && !battleish && [0, 3, 6, 10, 12].includes(s16)) INST.pluck(s16 === 0 ? ch[0] - 12 : pick(ch), t, sp);
+        if (ins === 'strum' && [0, 6, 8, 12].includes(s16)) INST.strum(ch, t);
+        if (ins === 'ostinato' && s16 % 2 === 0) { const r = deg(st, rootDeg, -1); voice('sawtooth', mtof(r + (s16 % 8 === 6 ? 12 : 0)), t, sp * 1.7, 0.11, { lp: st.dist ? 900 : 750, q: 3 }); if (intensity >= 1) voice('square', mtof(ch[(s16 / 2) % 3] + 12), t, sp * 0.9, 0.025, { lp: 3000 }); }
+        if (ins === 'brass' && battleish && (s16 === 0 || (s16 === 10 && bar % 2 === 1))) INST.brass(ch[1], t, sp * (s16 === 0 ? 3 : 2), 0.045);
+      }
+      // bass for gentle themes
+      if (!battleish && s16 === 0) voice('triangle', mtof(deg(st, rootDeg, -2)), t, sp * 14, 0.07, { sustain: true, release: 0.4, lp: 600 });
+      drums(st.drums, s16, bar, t, sp);
+      // melody (rests in sparse themes so phrases breathe)
+      if (!sec.rest[bar]) {
+        const n = sec.bars[bar].find(x => x[0] === s16);
+        if (n) { const m = deg(st, n[1] + rootDeg * 0, battleish ? 1 : 1) ; const L = INST[st.lead]; L(m, t, sp * n[2], st.lead === 'lead' ? (intensity >= 2 ? 0.07 : 0.055) : undefined); if (battleish && intensity >= 2) INST.brass(m - 12, t, sp * n[2], 0.03); }
+      }
     }
     function sequencer() {
-      if (!ctx || !on || !SONGS[mode]) return;
-      const song = SONGS[mode]; const sp = 60 / song.bpm / 4;
-      while (nextT < ctx.currentTime + 0.15) { scheduleStep(song, step, nextT); step++; nextT += sp; }
+      if (!ctx || !on || !plan) return;
+      const sp = 60 / plan.st.bpm / 4;
+      while (nextT < ctx.currentTime + 0.15) { scheduleStep(nextT); step++; nextT += sp; }
     }
-    function ambientTick() {
-      if (!ctx || !mode || !on || SONGS[mode]) return;
-      const sc = ambientScales[mode] || ambientScales.field, root = ambientRoots[mode] || 60, now = ctx.currentTime;
-      const k = Math.random() < 0.35 ? 2 : 1;
-      for (let i = 0; i < k; i++) { const m = root + U.pick(sc) + (Math.random() < 0.3 ? 12 : 0); osc('sine', mtof(m), now + i * 0.18, 2.4, 0.05); osc('sine', mtof(m) * 2, now + i * 0.18, 1.2, 0.012); }
-      if (Math.random() < 0.25) osc('sine', mtof(root - 12 + sc[0]), now, 3.5, 0.035);
-      ambientTimer = setTimeout(ambientTick, 900 + Math.random() * 1600);
-    }
-    function stopAll() { clearInterval(timer); timer = null; clearTimeout(ambientTimer); ambientTimer = null; }
+    function stopAll() { clearInterval(timer); timer = null; }
     function start() {
       stopAll(); if (!ctx || !on || !mode) return;
-      if (SONGS[mode]) { step = 0; nextT = ctx.currentTime + 0.05; timer = setInterval(sequencer, 25); }
-      else ambientTimer = setTimeout(ambientTick, 300);
+      const st = STYLES[mode] || STYLES.field; plan = newPlan(st); step = 0; nextT = ctx.currentTime + 0.08; timer = setInterval(sequencer, 25);
+    }
+    function buildVerb() { // a simple feedback-delay "hall" so instruments sit in a space
+      verbIn = ctx.createGain(); verbIn.gain.value = 0.5; const d1 = ctx.createDelay(1), d2 = ctx.createDelay(1), fb = ctx.createGain(), lp = ctx.createBiquadFilter();
+      d1.delayTime.value = 0.13; d2.delayTime.value = 0.21; fb.gain.value = 0.42; lp.type = 'lowpass'; lp.frequency.value = 2400;
+      verbIn.connect(d1); d1.connect(d2); d2.connect(lp); lp.connect(fb); fb.connect(d1); const out = ctx.createGain(); out.gain.value = 0.55; lp.connect(out); out.connect(master);
     }
     return {
       unlock() {
         try {
           ctx = ctx || new (window.AudioContext || window.webkitAudioContext)();
-          if (!master) { comp = ctx.createDynamicsCompressor(); comp.connect(ctx.destination); master = ctx.createGain(); master.gain.value = 0.55; master.connect(comp);
-            noiseBuf = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate); const d = noiseBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; }
+          if (!master) { comp = ctx.createDynamicsCompressor(); comp.connect(ctx.destination); master = ctx.createGain(); master.gain.value = 0.6; master.connect(comp);
+            noiseBuf = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate); const d = noiseBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; buildVerb(); }
           if (ctx.state === 'suspended') ctx.resume();
-          if (mode && !timer && !ambientTimer) start();
+          if (mode && !timer) start();
         } catch (e) { /* no audio */ }
       },
       play(m) { if (m === mode) return; mode = m; intensity = 0; start(); },
       set(v) { on = v; if (on) start(); else stopAll(); },
       intensity(n) { intensity = n; },
+      modes: Object.keys(STYLES),
     };
   })();
 
@@ -4842,6 +5021,10 @@ Symin`,
     { id: 'moblinhorn', name: 'Moblin Horn', emoji: '📯', value: 12 },
     { id: 'screw', name: 'Ancient Screw', emoji: '⚙️', value: 20 },
     { id: 'lynelhoof', name: 'Lynel Hoof', emoji: '🐾', value: 40 },
+    { id: 'hinoxtoe', name: 'Hinox Toenail', emoji: '🦶', value: 60 },
+    { id: 'hinoxguts', name: 'Hinox Guts', emoji: '🫀', value: 150 },
+    { id: 'moldugafin', name: 'Molduga Fin', emoji: '🦈', value: 90 },
+    { id: 'moldugaguts', name: 'Molduga Guts', emoji: '💗', value: 250 },
   ];
   // What each region's shrines tend to drop
   C.REGION_DROPS = {
@@ -4954,6 +5137,8 @@ Symin`,
     { id: 'zorafountain', name: 'Zora Fountain', emoji: '⛲', price: null, x: 86, y: 86 },
     { id: 'ritochime', name: 'Rito Wind Chime', emoji: '🎐', price: null, x: 64, y: 8 },
     { id: 'sealfigure', name: 'Sand Seal Figurine', emoji: '🦭', price: null, x: 30, y: 86 },
+    { id: 'hinoxtrophy', name: 'Hinox Hunter Plaque', emoji: '🗿', price: null, hunt: 'hinox', x: 10, y: 30 },
+    { id: 'moldugatrophy', name: 'Molduga Fin Trophy', emoji: '🦈', price: null, hunt: 'molduga', x: 92, y: 46 },
     { id: 'cycletrophy', name: 'Master Cycle Trophy', emoji: '🏍️', price: null, x: 40, y: 64 },
     { id: 'goldstatue', name: 'Golden Hero Statue', emoji: '🏅', price: 6000, x: 50, y: 46, desc: 'A shining statue of you. Only true heroes can afford it!' },
   ];
@@ -5023,6 +5208,8 @@ Symin`,
     { id: 'q-sealrally', region: 'nonverbal', npc: 'Riju', icon: '🦭', title: 'Sand Seal Rally', text: 'Ride through 25 flag gates in a single Sand Seal Rally!', goal: ['sealBest', 25], reward: { rupees: 300, tickets: 3, decor: 'sealfigure' } },
     { id: 'q-buliara', region: 'nonverbal', npc: 'Buliara', icon: '🗡️', title: 'Guard Training', text: 'A Gerudo guard spots every pattern. Answer 40 Non-Verbal questions correctly in Master (★★★) trials.', goal: ['m_nonverbal', 40], reward: { rupees: 600, ingredient: { melon: 5, voltfruit: 3 } } },
     { id: 'q-cycle', region: 'all', npc: 'Zelda', icon: '🏍️', title: 'The Final Divine Beast', text: 'Ride the Master Cycle Zero 2,000 metres in a single run!', goal: ['cycleBest', 2000], reward: { rupees: 2000, tickets: 10, decor: 'cycletrophy' } },
+    { id: 'q-hinox', region: 'hunt-hinox', npc: 'Elder Kiyo', icon: '👁️', title: 'Giant Slayer', text: 'The Hinox grows stronger every time it falls. Defeat it 3 times to prove you are a true hunter.', goal: ['hinoxKills', 3], reward: { rupees: 800, tickets: 5, item: { luckycharm: 1 } } },
+    { id: 'q-molduga', region: 'hunt-molduga', npc: 'Riju', icon: '🏜️', title: 'Terror of the Sands', text: 'The Molduga keeps eating our sand seals! Defeat it 3 times and the desert will sing your name.', goal: ['moldugaKills', 3], reward: { rupees: 900, tickets: 5, item: { goldnugget: 2 } } },
     { id: 'q-blights', npc: 'Zelda', icon: '👑', title: 'The Four Champions', text: 'Free all four Divine Beasts.', goal: ['bosses', 4], reward: { rupees: 1000, pet: 'fairy' } },
   ];
 
@@ -5196,6 +5383,10 @@ Symin`,
     lizaltail: sv(`<path d="M27,6 Q20,8 16,14 Q12,22 4,27 Q12,26 17,21 Q22,15 28,12Z" fill="url(#ii-lt)" stroke="${I}" stroke-width="1.1" stroke-linejoin="round"/><path d="M24,8 l1,3 M20,11 l1.4,2.4 M16,16 l1.6,2 M11,21 l1.6,1.6" stroke="#2f7f3a" stroke-width="1"/><path d="M25,7 l4,-2 l-1,5" fill="#6fcf6a" stroke="${I}" stroke-width=".8"/>`, lin('ii-lt', '#8fe08a', '#2f7f3a', false)),
     moblinhorn: sv(`<path d="M7,29 Q4,16 10,8 Q14,3 19,3 Q16,8 15,13 Q20,10 26,10 Q21,14 18,20 Q16,25 16,29Z" fill="url(#ii-mh)" stroke="${I}" stroke-width="1.1" stroke-linejoin="round"/><path d="M8,22 q4,-1 7,0 M9,16 q3,-1 6,0" stroke="#a89878" stroke-width=".9" fill="none"/><path d="M7,29 h9" stroke="#334f96" stroke-width="2.4" stroke-linecap="round"/>`, lin('ii-mh', '#f0e6c8', '#c8b48a')),
     screw: sv(`<path d="M11,4 h10 l2,4 h-14z" fill="#8c8674" stroke="${I}" stroke-width="1"/><rect x="13" y="8" width="6" height="18" fill="url(#ii-sc)" stroke="${I}" stroke-width="1"/>${[10, 13, 16, 19, 22].map(y => `<path d="M12.4,${y + 1} L19.6,${y - 1}" stroke="#5a564c" stroke-width="1"/>`).join('')}<path d="M13,26 l3,4 l3,-4" fill="#8c8674" stroke="${I}" stroke-width="1"/><circle cx="16" cy="6" r="1.4" fill="#3fe0ff"/><path d="M14,9 V25" stroke="#3fe0ff" stroke-width=".7" opacity=".8"/>`, lin('ii-sc', '#b2ab95', '#6f6a5c', false)),
+    hinoxtoe: sv(`<path d="M6,24 Q4,12 14,8 Q24,6 27,14 Q30,22 22,26 Q14,30 6,24Z" fill="#e8dcc0" stroke="${I}" stroke-width="1.2"/><path d="M10,14 Q16,10 22,13 Q18,18 12,18Z" fill="#c8b48a" stroke="${I}" stroke-width=".7"/><path d="M9,22 q6,2 12,-1" stroke="#a89878" stroke-width="1" fill="none"/>`),
+    hinoxguts: sv(`<path d="M16,4 C24,4 28,10 26,16 C30,22 24,30 16,28 C8,30 2,22 6,16 C4,10 8,4 16,4Z" fill="url(#ii-hg)" stroke="${I}" stroke-width="1.2"/><path d="M11,10 q5,4 10,0 M10,18 q6,4 12,0" stroke="#7a1a2a" stroke-width="1.2" fill="none"/>${shine(10, 10, 3)}`, r('ii-hg', '#ff8aa0', '#a8203a')),
+    moldugafin: sv(`<path d="M4,28 Q8,10 26,4 Q20,14 22,28Z" fill="url(#ii-mf)" stroke="${I}" stroke-width="1.2" stroke-linejoin="round"/><path d="M8,26 Q12,16 22,8 M13,27 Q16,18 23,12" stroke="#8a6a3a" stroke-width="1" fill="none"/>`, lin('ii-mf', '#e2c28a', '#a8784a')),
+    moldugaguts: sv(`<path d="M16,4 C25,5 29,12 26,18 C28,25 22,30 15,28 C7,29 3,22 6,16 C3,9 9,4 16,4Z" fill="url(#ii-mg)" stroke="${I}" stroke-width="1.2"/><path d="M10,12 q6,5 12,0 M9,20 q7,4 14,0" stroke="#5a3a6a" stroke-width="1.2" fill="none"/>${shine(10, 10, 3)}`, r('ii-mg', '#d8a8ff', '#6a3a9a')),
     lynelhoof: sv(`<path d="M8,6 Q16,2 24,6 L26,22 Q16,26 6,22Z" fill="url(#ii-lh)" stroke="${I}" stroke-width="1.1"/><path d="M6,22 Q16,26 26,22 L27,27 Q16,31 5,27Z" fill="#3a2a1a" stroke="${I}" stroke-width="1"/><path d="M16,24.6 V29.6" stroke="#6a5a4a" stroke-width="1"/><path d="M9,10 Q16,8 23,10" stroke="#c23b22" stroke-width="2" fill="none"/>`, lin('ii-lh', '#e2b86f', '#9b6f33')),
   };
 
@@ -5261,6 +5452,8 @@ Symin`,
     zorafountain: sv(`<ellipse cx="16" cy="25" rx="13" ry="4" fill="#cfe9f2" stroke="${I}" stroke-width="1"/><ellipse cx="16" cy="24" rx="10" ry="2.6" fill="#7fc8ec"/><path d="M14,24 V12 h4 V24" fill="#cfe9f2" stroke="${I}" stroke-width=".9"/><path d="M16,12 Q10,4 6,14 M16,12 Q22,4 26,14 M16,12 V3" stroke="#7fc8ec" stroke-width="1.6" fill="none"/><circle cx="16" cy="12" r="1.6" fill="#3fe0ff"/>`),
     ritochime: sv(`<path d="M16,1 V6" stroke="#7a5230" stroke-width="1.2"/><path d="M8,12 Q8,6 16,6 Q24,6 24,12Z" fill="#3a7fc9" stroke="${I}" stroke-width="1"/>${[10, 14, 18, 22].map((x, i) => `<path d="M${x},12 V${18 + i % 2 * 3}" stroke="#c9a227" stroke-width="1.6"/>`).join('')}<path d="M16,12 V24" stroke="#7a5230" stroke-width=".8"/><path d="M13,24 Q16,31 19,24Z" fill="#f4f6fa" stroke="${I}" stroke-width=".8"/>`),
     sealfigure: sv(`<path d="M5,30 h22 l-2,-3 h-18z" fill="#8f8a7a" stroke="${I}" stroke-width=".9"/><path d="M4,26 Q4,16 14,14 Q24,12 27,18 Q30,24 24,26Z" fill="#c9a26a" stroke="${I}" stroke-width="1.1"/><path d="M22,15 Q26,9 30,14 Q31,19 27,19" fill="#c9a26a" stroke="${I}" stroke-width="1"/><circle cx="27" cy="14" r="1" fill="${I}"/><path d="M8,24 Q16,21 24,24" stroke="#f0dcb0" stroke-width="1.6" fill="none"/>`),
+    hinoxtrophy: sv(`<path d="M5,4 h22 v24 h-22z" fill="#7a5230" stroke="${I}" stroke-width="1.2"/><path d="M8,7 h16 v18 h-16z" fill="#9c6b3d"/><circle cx="16" cy="14" r="5" fill="#fff6dc" stroke="${I}" stroke-width="1"/><circle cx="16" cy="14" r="2.6" fill="#e8b830"/><circle cx="16" cy="14" r="1.2" fill="${I}"/><path d="M11,21 h10" stroke="#c9a227" stroke-width="2"/>`),
+    moldugatrophy: sv(`<path d="M5,4 h22 v24 h-22z" fill="#7a5230" stroke="${I}" stroke-width="1.2"/><path d="M8,24 Q10,12 22,7 Q18,15 20,24Z" fill="#c9a26a" stroke="${I}" stroke-width="1"/><path d="M10,23 Q13,16 20,11" stroke="#8a6a3a" stroke-width=".8" fill="none"/>`),
     cycletrophy: sv(`<path d="M6,30 h20 l-2,-4 h-16z" fill="#c9a227" stroke="${I}" stroke-width=".9"/><circle cx="9" cy="20" r="4.4" fill="#2b2f38" stroke="#3fe0ff" stroke-width="1"/><circle cx="23" cy="20" r="4.4" fill="#2b2f38" stroke="#3fe0ff" stroke-width="1"/><path d="M8,16 Q12,10 18,11 L24,12 Q27,13 26,17 Q16,18 8,16Z" fill="#b2ab95" stroke="${I}" stroke-width="1"/><path d="M10,15 Q16,13 24,15" stroke="#3fe0ff" stroke-width=".8" fill="none"/>`),
   };
 
@@ -5302,7 +5495,7 @@ Symin`,
       house: { owned: false, decor: [] }, rested: '',
       theme: 'sheikah', glider: 'hylian', pet: 'none', ownedThemes: ['sheikah'], ownedGliders: ['hylian'], ownedPets: ['none'], ownedSaddles: ['stable'],
       fairy: { open: false, levels: {} },
-      quests: {}, counters: {}, mastered: {}, orbShrines: {}, // shrines whose Spirit Orb has been given
+      quests: {}, counters: {}, mastered: {}, orbShrines: {}, hunts: {}, // shrines whose Spirit Orb has been given
       plateau: {}, // subject -> true
       stars: {}, // topicId -> 0..3 (highest trial cleared)
       bosses: {}, // regionId -> true
@@ -5378,7 +5571,7 @@ Symin`,
         default: return c[key] || 0;
       }
     },
-    questOpen(q) { return !q.region || (q.region === 'all' ? !!this.s.mastered.all : !!this.s.bosses[q.region]); },
+    questOpen(q) { if (!q.region) return true; if (q.region === 'all') return !!this.s.mastered.all; if (q.region.startsWith('hunt-')) return !!(window.Hunts && Hunts.unlocked(q.region.slice(5))); return !!this.s.bosses[q.region]; },
     questsReady() { return CATALOG.QUESTS.filter(q => this.questOpen(q) && !this.s.quests[q.id] && this.questValue(q.goal[0]) >= q.goal[1]).length; },
     timerBonus() { return this.s.stamina * 6; },
 
@@ -5520,7 +5713,7 @@ Symin`,
   }
 
   /* ---------------- Dialogue (BotW-style box with portrait) ---------------- */
-  const PORTRAIT = { Yunobo: ART.yunobo, Sidon: ART.sidon, 'Prince Sidon': ART.sidon, Teba: ART.teba, Riju: ART.riju, Zelda: ART.zelda, 'Old Man': ART.oldMan, Monk: ART.monk, Hestu: ART.hestu, Beedle: ART.beedle, Korok: ART.korok };
+  const PORTRAIT = { 'Elder Kiyo': ART.elder, Yunobo: ART.yunobo, Sidon: ART.sidon, 'Prince Sidon': ART.sidon, Teba: ART.teba, Riju: ART.riju, Zelda: ART.zelda, 'Old Man': ART.oldMan, Monk: ART.monk, Hestu: ART.hestu, Beedle: ART.beedle, Korok: ART.korok };
   function dialogue(lines, done) {
     const ov = $('#overlay'); ov.className = 'dlg-wrap'; let i = 0; let typing = null; let full = '';
     const show = () => {
@@ -5605,7 +5798,7 @@ Symin`,
   }
 
   /* =========================================================== MAP */
-  const PINS = { maths: [77, 21], english: [86, 52], verbal: [20, 26], nonverbal: [20, 80], castle: [50, 44], woods: [49, 17], plateau: [50, 79], hateno: [76, 79], blood: [33, 62], stable: [38, 53], house: [89, 70], range: [27, 41], kass: [63, 30], cycle: [66, 63] };
+  const PINS = { maths: [77, 21], english: [86, 52], verbal: [20, 26], nonverbal: [20, 80], castle: [50, 44], woods: [49, 17], plateau: [50, 79], hateno: [76, 79], blood: [33, 62], stable: [38, 53], house: [89, 70], range: [27, 41], kass: [63, 30], cycle: [66, 63], hinox: [41, 32], molduga: [11, 70] };
   function map() {
     const s = S();
     if (!s.flags.introSeen) return intro();
@@ -5624,7 +5817,7 @@ Symin`,
     const beams = R().filter(r => freed(r.id)).map(r => `<line x1="${PINS[r.id][0]}" y1="${PINS[r.id][1]}" x2="50" y2="44" class="beam"/>`).join('');
     const daily = s.daily; const goal = State.DAILY_GOAL;
     const bloodMoon = s.mistakes.length >= 6;
-    const here = PINS[s.lastRegion] || PINS.plateau;
+    const here = PINS[s.lastRegion] || PINS.plateau; let storyBeat = null;
     screen(`${hud()}
       <div class="slate-frame">
         <div class="map-scroll" id="mapscroll"><div class="map-wrap">
@@ -5639,12 +5832,14 @@ Symin`,
           <button class="pin small side" style="left:${PINS.house[0]}%;top:${PINS.house[1]}%" id="house"><span class="pin-art sm">${IC.house()}</span><span class="pin-lbl"><b>Hateno House</b></span></button>
           <button class="pin small side" style="left:${PINS.range[0]}%;top:${PINS.range[1]}%" id="range"><span class="pin-art sm">${IC.range()}</span><span class="pin-lbl"><b>Flight Range</b></span></button>
           <button class="pin small side" style="left:${PINS.kass[0]}%;top:${PINS.kass[1]}%" id="kass"><span class="pin-art sm">${IC.kass()}</span><span class="pin-lbl"><b>Kass's Song</b></span></button>
+          ${Hunts.pins()}
           ${s.mastered.all ? `<button class="pin small side cycle-pin" style="left:${PINS.cycle[0]}%;top:${PINS.cycle[1]}%" id="cycle"><span class="pin-art sm">${ART.masterCycle(false)}</span><span class="pin-lbl"><b>Master Cycle Run</b></span></button>` : ''}
           ${bloodMoon ? `<button class="pin bloodmoon" style="left:${PINS.blood[0]}%;top:${PINS.blood[1]}%" id="blood"><span class="pin-art sm">🌕</span><span class="pin-lbl"><b>Blood Moon!</b><small>${s.mistakes.length} mistakes return</small></span></button>` : ''}
           <div class="me" id="me" style="left:${here[0]}%;top:${here[1]}%">${ART.hero({ armour: s.armour, shield: s.shield, weapon: s.weapon })}</div>
         </div></div>
       </div>
       <p class="map-hint">👆 Drag the map to explore Hyrule</p>
+      ${Storyline.banner()}
       <div class="daily slate">
         <div class="dq">${IC.chest()}<div><b>Daily Quest:</b> answer ${goal} questions correctly today <span class="muted">(${Math.min(daily.correct, goal)}/${goal})</span><div class="bar"><i style="width:${Math.min(100, (daily.correct / goal) * 100)}%"></i></div></div></div>
         ${daily.correct >= goal && !daily.claimed ? '<button class="btn primary glow" id="claim">Claim reward!</button>' : daily.claimed ? '<span class="tag ok">Complete ✓</span>' : ''}
@@ -5674,7 +5869,8 @@ Symin`,
     on('#blood', bloodMoonIntro);
     on('#stable', () => travel('stable', World.stable)); on('#house', () => travel('house', World.house));
     on('#range', () => travel('range', World.archeryIntro)); on('#kass', () => travel('kass', World.kassIntro));
-    on('#quests', World.quests); on('#cycle', () => travel('cycle', Regions.cycleIntro)); on('#bag', () => World.bag());
+    on('#quests', World.quests); on('#mainquest', () => adventureLog('story'));
+    on('[data-hunt]', (e, el) => travel(el.dataset.hunt, () => Hunts.intro(el.dataset.hunt))); on('#cycle', () => travel('cycle', Regions.cycleIntro)); on('#bag', () => World.bag());
     on('#claim', () => {
       const bonus = 50 + Math.min(50, s.streak.days * 5);
       s.rupees += bonus; s.seeds++; s.seedsTotal++; s.tickets += 2; s.daily.claimed = true; State.save();
@@ -5684,6 +5880,8 @@ Symin`,
     if (!s.flags.mapSeen) {
       s.flags.mapSeen = true; State.save();
       dialogue([['Old Man', 'This is Hyrule. Each region holds shrines for one subject, and a Divine Beast controlled by a Blight.'], ['Old Man', 'Clouds hide the regions you haven\'t explored yet. Travel there to reveal them!'], ['Old Man', 'Clear shrines to earn stars. Earn enough stars and you can challenge the Blight. Free all four Champions and you can face Calamity Ganon himself!']]);
+    } else if ((storyBeat = Storyline.beat('map'))) {
+      setTimeout(storyBeat, 500);
     } else if (s.dailyChest !== today) {
       s.dailyChest = today; const r = U.pick([['rupee', 30], ['rupee', 50], ['seed', 1], ['item', 'hearty'], ['item', 'hasty'], ['rupee', 80]]);
       let label, icon;
@@ -5796,6 +5994,7 @@ Symin`,
     } else {
       // award any Champion's reward already earned (e.g. stars from before this feature existed)
       const ms = World.checkMastery(); if (ms.length) setTimeout(() => sequence(ms, () => regionScreen(id)), 700);
+      else { const rb = Storyline.beat('region', r); if (rb) setTimeout(rb, 700); }
     }
   }
 
@@ -5973,7 +6172,7 @@ Symin`,
       ${arena}
       <section class="qcard" id="qcard"></section>
       <footer class="runebar" id="runebar"></footer>
-    </div>`, theme, isBoss ? (theme === 'castle' ? 'castle' : 'boss') : exam ? 'shrine' : 'battle');
+    </div>`, theme, cfg.music || (isBoss ? (theme === 'castle' ? 'castle' : 'boss') : exam ? 'shrine' : 'battle'));
 
     const elHearts = $('#hearts'), elProg = $('#prog'), qcard = $('#qcard');
     let prevHearts = B.hearts;
@@ -6518,7 +6717,7 @@ Symin`,
     on('#back', map);
     on('#up', () => { s.seeds -= cost; s.hestuLevel++; s.runeLevel++; State.save(); U.sfx.korok(); FX.itemGet('<span class="emo big">🎒</span>', 'Your pouch grew!', `Each rune can now be used ${s.runeLevel} times per battle.`, hestu); });
   }
-  function adventureLog(tab = 'mastery') {
+  function adventureLog(tab = 'story') {
     const s = S(); const st = s.stats; const rk = State.rank();
     let body = '';
     if (tab === 'mastery') {
@@ -6526,6 +6725,7 @@ Symin`,
         ${topicsOf(x).map(t => { const m = State.mastery(t.id); return `<div class="mrow"><span>${t.icon} ${t.name}</span><div class="mbar big"><i style="width:${m}%" class="${m >= 75 ? 'hi' : m >= 45 ? 'mid' : 'lo'}"></i></div><span class="pct">${m}%</span><span class="stars">${'★'.repeat(s.stars[t.id] || 0)}</span></div>`; }).join('')}</div>`).join('')
         + '<p class="muted">Readiness grows as you answer questions correctly. Harder trials count for more. 75%+ means that topic is in great shape for the 11+.</p>';
     }
+    if (tab === 'story') body = Storyline.journal();
     if (tab === 'memories') body = STORY.memories.map(m => State.hasMemory(m.id) ? `<div class="memory"><h3>📷 ${m.title}</h3><p>${fillName(m.text)}</p></div>` : '<div class="memory locked"><h3>📷 ???</h3><p class="muted">A memory not yet recovered…</p></div>').join('');
     if (tab === 'stats') body = `<div class="rank-card slate">${heroArt()}<div><h3>${U.esc(s.hero)}</h3><p>Hero Rank <b>${rk.level}</b> · ${rk.title}</p><div class="bar"><i style="width:${Math.round((rk.into / rk.need) * 100)}%"></i></div><small class="muted">${rk.into}/${rk.need} XP to next rank</small></div></div>
         <div class="res-stats">
@@ -6538,7 +6738,7 @@ Symin`,
         ${Object.entries(STORY.champions).map(([k, r]) => `<div class="slate ${s.champions[k] ? '' : 'locked'}">${r.emoji} <b>${r.name}</b>: ${s.champions[k] ? r.desc : '???'}</div>`).join('')}</div>`;
     screen(`${hud()}<div class="page">
       <div class="page-head"><button class="btn ghost" id="back">◀ Map</button><h2>Adventure Log</h2></div>
-      <div class="tabs">${[['mastery', '🧠 11+ Readiness'], ['memories', '📷 Memories'], ['stats', '🏅 Hero & Stats']].map(([k, l]) => `<button class="tab ${k === tab ? 'on' : ''}" data-tab="${k}">${l}</button>`).join('')}</div>
+      <div class="tabs">${[['story', '📜 Main Quest'], ['mastery', '🧠 11+ Readiness'], ['memories', '📷 Memories'], ['stats', '🏅 Hero & Stats']].map(([k, l]) => `<button class="tab ${k === tab ? 'on' : ''}" data-tab="${k}">${l}</button>`).join('')}</div>
       ${body}</div>`, 'map', 'field');
     on('#back', map); on('[data-tab]', (e, el) => adventureLog(el.dataset.tab));
   }
@@ -6581,7 +6781,7 @@ Symin`,
 
   // free static hosts like Netlify can overlay a badge in the bottom corner
   if (/netlify\.app$|netlify\.com$/.test(location.hostname)) document.documentElement.classList.add('host-badge');
-  window.Game = { title, map, settings, statue, regionScreen, monkCeremony, ui: { screen, on, onKey, hud, toast, confetti, dialogue, modal, sequence, gainXp, heartsHtml, heroArt, speak, addInterval: id => intervals.push(id) } };
+  window.Game = { battle, results, itemPrep, weakWeighted, title, map, settings, statue, regionScreen, monkCeremony, ui: { screen, on, onKey, hud, toast, confetti, dialogue, modal, sequence, gainXp, heartsHtml, heroArt, speak, addInterval: id => intervals.push(id) } };
   title();
 })();
 </script>
@@ -7234,9 +7434,11 @@ Symin`,
     'm-triforce': () => `<ellipse cx="200" cy="140" rx="22" ry="22" fill="#fff6a0" opacity=".25" class="tri-glow"/>${place(icon('m-triforce'), 188, 124, 24, 24, 'class="tri-float"')}`,
     sealfigure: () => place(icon('sealfigure'), 326, 36, 16, 16),
     cycletrophy: () => place(icon('cycletrophy'), 342, 36, 16, 16),
+    hinoxtrophy: () => place(icon('hinoxtrophy'), 8, 44, 26, 30),
+    moldugatrophy: () => place(icon('moldugatrophy'), 364, 92, 28, 30),
   };
   // the order things are drawn in (back to front)
-  const LAYERS = ['lamp', 'ritochime', 'painting', 'fire', 'm-rudania', 'm-ruta', 'm-medoh', 'm-naboris', 'rack', 'trophies', 'books', 'sealfigure', 'cycletrophy', 'aquarium',
+  const LAYERS = ['hinoxtrophy', 'moldugatrophy', 'lamp', 'ritochime', 'painting', 'fire', 'm-rudania', 'm-ruta', 'm-medoh', 'm-naboris', 'rack', 'trophies', 'books', 'sealfigure', 'cycletrophy', 'aquarium',
     'goronruby', 'korokstatue', 'table', 'm-triforce', 'goldstatue', 'plant', 'rug', 'bed', 'zorafountain', 'pot'];
 
   function windowView() {
@@ -7366,8 +7568,8 @@ Symin`,
     on('[data-decor]', (e, el) => buy(el.dataset.decor));
     $$('.room-svg .spot').forEach(g => g.addEventListener('click', () => {
       const id = g.dataset.spot; const d = K.DECOR.find(x => x.id === id); if (!d) return; U.sfx.click();
-      const earned = d.mastery ? `Your reward for mastering ${d.mastery === 'all' ? 'every region in Hyrule' : STORY.regions.find(r => r.id === d.mastery).name}. Nobody else has one!` : d.price === null ? 'Your reward for completing a side quest.' : 'Part of your collection.';
-      const how = has(id) ? (d.desc || earned) : d.price !== null ? `Bolson can build this for <b>${fmt(d.price)} rupees</b>.` : d.mastery ? `A trophy for mastering ${d.mastery === 'all' ? 'every region' : STORY.regions.find(r => r.id === d.mastery).name} (★★★ in every shrine).` : 'A reward from a side quest. Check the Quests board!';
+      const earned = d.hunt ? `Your trophy from defeating the ${d.hunt === 'hinox' ? 'Hinox' : 'Molduga'}.` : d.mastery ? `Your reward for mastering ${d.mastery === 'all' ? 'every region in Hyrule' : STORY.regions.find(r => r.id === d.mastery).name}. Nobody else has one!` : d.price === null ? 'Your reward for completing a side quest.' : 'Part of your collection.';
+      const how = has(id) ? (d.desc || earned) : d.price !== null ? `Bolson can build this for <b>${fmt(d.price)} rupees</b>.` : d.hunt ? `Defeat the ${d.hunt === 'hinox' ? 'Hinox in Hyrule Field' : 'Molduga in the Gerudo Desert'} to win this trophy.` : d.mastery ? `A trophy for mastering ${d.mastery === 'all' ? 'every region' : STORY.regions.find(r => r.id === d.mastery).name} (★★★ in every shrine).` : 'A reward from a side quest. Check the Quests board!';
       modal(`<div class="decor-pop">${d.emoji}</div><h3>${d.name}</h3><p>${how}</p>`, has(id) || d.price === null ? [{ label: 'Nice!', cls: 'primary' }] : [{ label: 'Not now' }, { label: `Build it (${fmt(d.price)})`, cls: 'primary', fn: () => buy(id) }]);
     }));
   }
@@ -7498,6 +7700,235 @@ Symin`,
   }
 
   window.Transfer = { show, pack, unpack };
+})();
+</script>
+<script>
+// Monster Hunts: giant mini-bosses that appear on the map as the story moves on. Each can be defeated once a day for big
+// rewards, and returns tougher (three levels). Questions come from every subject, weighted towards weaker topics.
+//  - Hinox: starts asleep, so the first three correct answers are sneak attacks (double damage); combos of 3 hit its eye.
+//  - Molduga: dives into the sand after a wrong answer (healing a little); the next correct answer is a bomb lure for double damage.
+(function () {
+  const $ = (s, el = document) => el.querySelector(s);
+  const S = () => State.s;
+  const UI = () => Game.ui;
+  const K = CATALOG;
+  const today = () => new Date().toISOString().slice(0, 10);
+  const LEVELS = ['', 'Blue ', 'Black '];
+
+  const HUNTS = {
+    hinox: {
+      name: 'Hinox', where: 'Hyrule Field', theme: 'plateau', art: lv => ART.hinox(lv), needBosses: 1,
+      hp: [100, 130, 170], rupees: [250, 400, 650], tickets: [3, 4, 5], mats: [['hinoxtoe', 2], ['hinoxguts', 1]],
+      intro: 'A giant one-eyed Hinox is snoring in Hyrule Field! Creep up while it sleeps: your first three correct answers are sneak attacks for double damage. Once it wakes, build combos of 3 to strike its eye!',
+      tip: '😴 Sneak attack: first 3 hits deal double damage · 👁️ Every 3-answer combo hits its eye',
+    },
+    molduga: {
+      name: 'Molduga', where: 'the Gerudo Desert', theme: 'nonverbal', art: lv => ART.molduga(lv), needBosses: 2,
+      hp: [110, 140, 180], rupees: [300, 450, 700], tickets: [3, 4, 5], mats: [['moldugafin', 2], ['moldugaguts', 1]],
+      intro: 'The sand is shaking… a Molduga is hunting in the Gerudo Desert! Each wrong answer lets it dive under the sand and heal. Answer correctly to lure it out with a bomb for a huge hit!',
+      tip: '🏜️ It dives (and heals) after a wrong answer · 💣 The next right answer lures it out for double damage',
+    },
+  };
+
+  const rec = id => { const s = S(); s.hunts = s.hunts || {}; return s.hunts[id] || (s.hunts[id] = { level: 0, beatenOn: '', kills: 0 }); };
+  function unlocked(id) { const H = HUNTS[id]; return !!S() && State.bossesBeaten() >= H.needBosses; }
+  function available(id) { return unlocked(id) && rec(id).beatenOn !== today(); }
+
+  /* ---------- the hunt screen ---------- */
+  function intro(id) {
+    const s = S(); const H = HUNTS[id]; const r = rec(id); const { screen, hud, on } = UI();
+    const lvName = LEVELS[r.level] + H.name;
+    const beaten = r.beatenOn === today();
+    screen(`${hud()}<div class="page center hunt-page">
+      <div class="page-head"><button class="btn ghost" id="back">◀ Map</button><h2>Monster Hunt: ${lvName}</h2></div>
+      <div class="hunt-art ${beaten ? 'beaten' : ''} ${id}">${H.art(r.level)}</div>
+      <p class="intro slate"><b>Elder Kiyo:</b> "${H.intro}"</p>
+      <p class="muted">${H.tip}</p>
+      <div class="hunt-loot slate"><b>Rewards</b><span>${ART.icons.rupee('gold')} ${H.rupees[r.level]} rupees</span><span>🎫 ${H.tickets[r.level]} tickets</span><span>${H.mats.map(([m]) => K.MATERIALS.find(x => x.id === m).emoji).join(' ')} rare monster parts</span>${id === 'hinox' ? '<span>⚔️ a chance at a weapon from its hoard</span>' : '<span>🪙 desert treasure</span>'}</div>
+      <p class="muted">Defeated ${r.kills} time${r.kills === 1 ? '' : 's'}. ${r.level < 2 ? `Each victory makes it come back stronger: next is the <b>${LEVELS[Math.min(2, r.level + 1)]}${H.name}</b>.` : 'This is the mightiest of its kind.'}</p>
+      ${beaten ? `<p class="ok-note">You defeated it today! It will be back tomorrow… ${r.level ? `as the <b>${lvName}</b>` : ''}</p>` : '<button class="btn big danger glow" id="fight">⚔️ Hunt it!</button>'}
+    </div>`, H.theme, 'hunt');
+    on('#back', Game.map);
+    on('#fight', () => Game.itemPrep(lvName, H.intro, items => fight(id, items), H.art(r.level)));
+  }
+
+  function fight(id, items) {
+    const s = S(); const H = HUNTS[id]; const r = rec(id); const lv = r.level; const lvName = LEVELS[lv] + H.name;
+    const all = State.SUBJECTS.flatMap(x => CONTENT[x]);
+    let hits = 0, lure = false;
+    const foeEl = () => $('#foe');
+    Game.battle({
+      kind: 'hunt', title: `Monster Hunt`, subtitle: lvName, total: null, hearts: s.hearts, timer: 60, items, theme: H.theme, music: 'hunt',
+      boss: {
+        name: lvName, art: H.art(lv), hp: H.hp[lv], element: 'none', theme: H.theme,
+        dmg: B => {
+          let base = State.weapon().dmg; hits++;
+          if (id === 'hinox') {
+            if (hits <= 3) { base *= 2; setTimeout(() => FX.banner(hits === 1 ? 'Sneak attack! ×2' : `Sneak attack ${hits}/3! ×2`, 'flurry'), 300); }
+            if (hits === 3) setTimeout(() => { const f = foeEl(); if (f) f.classList.add('awake'); FX.shake(1.4); U.sfx.boss(); FX.banner('The Hinox wakes up!', 'danger'); }, 1100);
+            if (hits > 3 && B.streak > 0 && B.streak % 3 === 0) { base = Math.round(base * 1.6); setTimeout(() => FX.banner('Eye shot! It staggers!', 'flurry hot'), 300); }
+          } else if (lure) {
+            base *= 2; lure = false; const f = foeEl(); if (f) f.classList.remove('dive');
+            setTimeout(() => { FX.banner('💣 Bomb lure! Direct hit!', 'flurry hot'); FX.shake(1.6); }, 300);
+          }
+          return base;
+        },
+      },
+      wrongDamage: B => {
+        if (id === 'molduga') {
+          lure = true; B.hp = Math.min(B.maxHp, B.hp + 6); const f = foeEl(); if (f) f.classList.add('dive');
+          setTimeout(() => FX.banner('It dives under the sand!', 'danger'), 600);
+        } else if (hits < 3) { hits = 3; setTimeout(() => { const f = foeEl(); if (f) f.classList.add('awake'); FX.banner('You woke the Hinox!', 'danger'); }, 600); }
+        return 1;
+      },
+      next: B => ({ topic: Game.weakWeighted(all), lv: B.hp < B.maxHp / 2 || lv >= 1 ? 3 : 2 }),
+      intro: [['Elder Kiyo', id === 'hinox' ? 'Shhh… it\'s asleep. Strike while you can!' : 'Here it comes! Stay sharp. Every mistake gives it a chance to dive.', 'Elder Kiyo']],
+      onEnd: res => {
+        if (!res.won) return Game.results(res, { heading: `The ${lvName} was too strong…`, retry: () => intro(id), next: Game.map, nextLabel: 'Retreat' });
+        r.beatenOn = today(); r.kills++; r.level = Math.min(2, lv + 1); State.count(id + 'Kills');
+        const loot = []; s.rupees += H.rupees[lv]; loot.push({ icon: ART.icons.rupee('gold'), label: `${H.rupees[lv]} rupees` });
+        s.tickets += H.tickets[lv]; loot.push({ icon: `<span class="emo">${ITEM_ICONS.ticket}</span>`, label: `${H.tickets[lv]} Adventure Tickets` });
+        H.mats.forEach(([m, n]) => { const c = n + (lv >= 1 && Math.random() < 0.5 ? 1 : 0); s.materials[m] = (s.materials[m] || 0) + c; const M = K.MATERIALS.find(x => x.id === m); loot.push({ icon: `<span class="emo">${M.emoji}</span>`, label: `${M.name}${c > 1 ? ' ×' + c : ''}` }); });
+        const extra = {};
+        if (id === 'hinox') { // its hoard: a weapon you don't own yet
+          const cap = [1100, 2200, 4000][lv]; const pool = K.WEAPONS.filter(w => w.price && w.price <= cap && !s.ownedWeapons.includes(w.id));
+          if (pool.length && Math.random() < 0.7) extra.weapon = U.pick(pool).id;
+        } else { s.items.goldnugget = (s.items.goldnugget || 0) + 1 + lv; loot.push({ icon: `<span class="emo">${K.ITEMS.find(i => i.id === 'goldnugget').emoji}</span>`, label: `Gold Nugget ×${1 + lv}` }); }
+        const trophy = id === 'hinox' ? 'hinoxtrophy' : 'moldugatrophy'; if (!s.house.decor.includes(trophy)) extra.decor = trophy;
+        State.save();
+        const rewards = [n => FX.chest(loot, n, `${lvName} defeated!`)];
+        if (extra.weapon) { const w = K.WEAPONS.find(x => x.id === extra.weapon); s.ownedWeapons.push(w.id); State.save(); rewards.push(n => FX.itemGet(`<span class="emo big">${w.emoji}</span>`, `From the Hinox's hoard: ${w.name}!`, `Boss damage ${w.dmg}. Equip it in Beedle's shop.`, n)); }
+        if (extra.decor) rewards.push(...World.grant({ decor: extra.decor }));
+        Game.results(res, { heading: `You defeated the ${lvName}!`, extra: `<div class="reward">It will return tomorrow${r.level > lv ? ` as the <b>${LEVELS[r.level]}${H.name}</b>` : ''}.</div>`, rewards, next: Game.map });
+      },
+    });
+  }
+
+  // map pins for available hunts
+  function pins() {
+    return Object.keys(HUNTS).filter(unlocked).map(id => {
+      const H = HUNTS[id]; const r = rec(id); const up = available(id);
+      return `<button class="pin small hunt-pin ${up ? 'ready' : 'resting'}" style="left:${id === 'hinox' ? 41 : 11}%;top:${id === 'hinox' ? 32 : 70}%" data-hunt="${id}"><span class="pin-art sm">${H.art(r.level)}</span><span class="pin-lbl"><b>${LEVELS[r.level]}${H.name}</b><small>${up ? (id === 'hinox' ? 'Sleeping… sneak up!' : 'The sand is shaking!') : 'Back tomorrow'}</small></span></button>`;
+    }).join('');
+  }
+
+  window.Hunts = { intro, pins, unlocked, available, HUNTS };
+})();
+</script>
+<script>
+// The main story: chapters with objectives, chapter title cards, and story scenes that play at key moments
+// (after the Great Plateau, halfway through each region, when a Divine Beast can be boarded, after each Blight falls,
+// when the Master Sword is within reach, and before and after the final battle). The guide is Elder Kiyo, an original
+// Sheikah elder; Zelda speaks to the hero across Hyrule. Scenes play once each and are remembered in the save.
+(function () {
+  const S = () => State.s;
+  const UI = () => Game.ui;
+  const name = () => U.esc(S().hero);
+  const R = id => STORY.regions.find(r => r.id === id);
+  const beastShort = r => r.beast.replace('Divine Beast ', '');
+
+  /* ---------------- chapters ---------------- */
+  const CHAPTERS = [
+    { id: 'plateau', title: 'The Great Plateau', done: () => State.plateauDone(),
+      goal: () => 'Clear the four shrines of the Great Plateau to earn the Sheikah runes.',
+      recap: () => `${name()} woke in a silent shrine with no memories. An old man on the Great Plateau taught the four runes, and gave the hero a paraglider to leave the plateau behind.` },
+    { id: 'kiyo', title: 'The Elder\'s Tale', done: () => !!S().flags['story-kiyo'],
+      goal: () => 'Return to the map to hear Elder Kiyo\'s tale.',
+      recap: () => 'Elder Kiyo told the story of the Calamity and the Fog of Forgetting, which steals knowledge from the people of Hyrule. Only a hero who keeps learning can push it back.' },
+    { id: 'beasts', title: 'The Four Divine Beasts', done: () => State.bossesBeaten() >= 4,
+      goal: () => nextBeastGoal(),
+      recap: () => 'One by one, the Blights fell and the Champions\' spirits were set free. Each Divine Beast turned its beam towards Hyrule Castle.' },
+    { id: 'sword', title: 'The Blade of Evil\'s Bane', done: () => S().ownedWeapons.includes('master') || !!S().calamity,
+      goal: () => S().hearts >= State.MASTER_SWORD_HEARTS ? 'Your heart is strong enough. Draw the Master Sword in the Lost Woods.' : `Grow to ${State.MASTER_SWORD_HEARTS} hearts (you have ${S().hearts}). Free Divine Beasts, and trade Spirit Orbs at a Goddess Statue.`,
+      recap: () => 'Deep in the misty Lost Woods, the legendary sword recognised a hero who never stopped learning.' },
+    { id: 'castle', title: 'Hyrule Castle', done: () => !!S().calamity,
+      goal: () => State.calamityUnlocked() ? 'Storm Hyrule Castle and defeat Calamity Ganon.' : 'Free all four Divine Beasts to break the castle\'s defences.',
+      recap: () => 'At Hyrule Castle, Zelda and the hero faced Calamity Ganon together, and sealed it away.' },
+    { id: 'legend', title: 'A Legend Remembered', done: () => !!S().mastered.all,
+      goal: () => 'Earn ★★★ in every shrine in Hyrule to complete the legend.',
+      recap: () => 'Every shrine in Hyrule, mastered. The Fog of Forgetting is gone for good, and Hyrule will remember this hero forever.' },
+  ];
+  function current() { const i = CHAPTERS.findIndex(c => !c.done()); return i < 0 ? { i: CHAPTERS.length - 1, c: CHAPTERS[CHAPTERS.length - 1], all: true } : { i, c: CHAPTERS[i] }; }
+  function nextBeastGoal() {
+    const s = S(); const left = STORY.regions.filter(r => !s.bosses[r.id]);
+    if (!left.length) return 'All four Divine Beasts are free!';
+    const ready = left.find(r => State.bossUnlocked(r)); if (ready) return `${beastShort(ready)} is ready! Board it in ${ready.name} and defeat ${ready.boss}.`;
+    const best = left.slice().sort((a, b) => State.regionStars(b) - State.regionStars(a))[0];
+    if (!s.fog[best.id]) return `Travel to ${best.name} and activate its Sheikah Tower.`;
+    const need = State.bossNeed(best) - State.regionStars(best);
+    return need > 0 ? `Earn ${need} more ★ in ${best.name} to board ${beastShort(best)} (${State.bossesBeaten()}/4 freed).` : `Clear the first trial in every shrine of ${best.name} to board ${beastShort(best)}.`;
+  }
+  function banner() {
+    const { i, c, all } = current();
+    return `<button class="mainquest slate" id="mainquest"><span class="mq-ico">📜</span><div><small>${all && c.done() ? 'Main quest complete!' : `Chapter ${i + 1} · ${c.title}`}</small><b>${all && c.done() ? 'You are a legend of Hyrule. Keep training to stay sharp!' : c.goal()}</b></div><span class="mq-go">›</span></button>`;
+  }
+
+  /* ---------------- chapter title card ---------------- */
+  function card(num, title, sub, done) {
+    const el = document.createElement('div'); el.className = 'chapter-card';
+    el.innerHTML = `<div class="cc-inner"><small>${num}</small><h1>${title}</h1>${sub ? `<p>${sub}</p>` : ''}<span class="cc-tap">tap to continue</span></div>`;
+    document.body.appendChild(el); U.sfx.orb();
+    requestAnimationFrame(() => el.classList.add('in'));
+    let gone = false; const close = () => { if (gone) return; gone = true; el.classList.remove('in'); setTimeout(() => { el.remove(); done && done(); }, 500); };
+    setTimeout(() => el.addEventListener('click', close), 700); setTimeout(close, FX.reduce ? 200 : 4200);
+  }
+
+  /* ---------------- story scenes ---------------- */
+  const seen = id => !!S().flags['story-' + id];
+  const mark = id => { S().flags['story-' + id] = true; State.save(); };
+  const say = (lines, done) => UI().dialogue(lines, done);
+  const SPIRIT = {
+    maths: ['Daruk', 'Hey, little guy… can you hear me? It\'s me, Daruk. I\'m stuck inside Vah Rudania with that nasty Fireblight. Keep crunching those numbers. Every shrine you clear cracks its armour!'],
+    english: ['Mipha', 'Is someone there? It\'s Mipha. The Waterblight is using Ruta to flood the land with muddled words. Every sentence you untangle washes a little of its power away. Please… keep going.'],
+    verbal: ['Revali', 'Well, well. So you\'re the one everyone\'s talking about. Revali here, stuck in Medoh, of all the indignities. The Windblight twists words into riddles. Solve enough of them and I might, just might, be impressed.'],
+    nonverbal: ['Urbosa', 'Little one, it\'s Urbosa. The Thunderblight hides its tricks in shapes and patterns. Learn to see the pattern before it strikes, and you\'ll beat it every time.'],
+  };
+  const ZELDA = [
+    'Can you hear me? It\'s Zelda. I felt it: one of the Divine Beasts is free! I\'m holding the Calamity back inside the castle, but I can feel my strength returning. Keep going!',
+    'Two Champions are free! Each time you master something new, the Fog of Forgetting grows thinner. I can see a little light through the windows of the castle now.',
+    'Three Divine Beasts! Calamity Ganon is furious. It\'s trying to make everyone forget how to think. One more, and its defences will fall!',
+    'All four Champions are free, and their beams are aimed at the castle! Gather your courage. Train in the shrines if you need to, and come to me when you are ready.',
+  ];
+  // returns a function that plays the next pending scene for this place, or null
+  function beat(where, region) {
+    const s = S(); if (!s) return null;
+    if (where === 'map') {
+      if (State.plateauDone() && !seen('kiyo')) return () => { mark('kiyo'); card('Chapter 2', 'The Elder\'s Tale', 'An old friend has been waiting for you…', () => say([
+        ['Elder Kiyo', `So, the hero wakes at last. I am Kiyo, eldest of the Sheikah. I have waited a hundred years to meet you, ${name()}.`, 'Elder Kiyo'],
+        ['Elder Kiyo', 'Long ago, Calamity Ganon rose and wrapped Hyrule in the Fog of Forgetting. It steals what people know: numbers, words, patterns, all slipping away like sand.', 'Elder Kiyo'],
+        ['Elder Kiyo', 'It took control of the four Divine Beasts, and trapped the Champions inside with its Blights. Princess Zelda is still holding the Calamity back inside Hyrule Castle, alone.', 'Elder Kiyo'],
+        ['Elder Kiyo', 'The Fog cannot touch a mind that keeps learning. Clear the shrines in each region, grow wiser and stronger, and free the Divine Beasts one by one.', 'Elder Kiyo'],
+        ['Elder Kiyo', 'Your Sheikah Slate will show your next task at the top of the map. Now go! Hyrule is counting on you.', 'Elder Kiyo'],
+      ], () => card('Chapter 3', 'The Four Divine Beasts', 'Death Mountain · Zora\'s Domain · Rito Village · Gerudo Desert'))); };
+      const freed = State.bossesBeaten();
+      for (let n = 1; n <= freed; n++) if (!seen('zelda' + n)) return () => { mark('zelda' + n); say([['Zelda', ZELDA[n - 1]]], () => n === 4 && !seen('ch5') ? (mark('ch5'), card('Chapter 5', 'Hyrule Castle', 'The final battle awaits')) : null); };
+      if (freed >= 1 && s.hearts >= State.MASTER_SWORD_HEARTS && !s.ownedWeapons.includes('master') && !seen('swordcall')) return () => { mark('swordcall'); card('Chapter 4', 'The Blade of Evil\'s Bane', '', () => say([['Elder Kiyo', 'Your heart has grown strong. Deep in the Lost Woods rests a blade that only a true hero can draw. I think it has been waiting for you.', 'Elder Kiyo']])); };
+      if (Hunts.unlocked('hinox') && !seen('hinox')) return () => { mark('hinox'); say([['Elder Kiyo', 'Be careful out there. A giant Hinox has been seen sleeping in Hyrule Field. Strike it while it sleeps and it will drop rare treasures. It comes back every day, stronger each time!', 'Elder Kiyo']]); };
+      if (Hunts.unlocked('molduga') && !seen('molduga')) return () => { mark('molduga'); say([['Riju', 'Hero! A Molduga is swimming through the sand near Gerudo Town. It\'s huge! If you\'re brave enough to hunt it, the reward will be worth it.']]); };
+      if (s.calamity && !seen('epilogue')) return () => { mark('epilogue'); card('Epilogue', 'A Legend Remembered', 'Master every shrine in Hyrule to complete the legend', () => say([['Zelda', 'The Calamity is sealed, but the Fog of Forgetting still lingers in quiet places. If every shrine in Hyrule is mastered, it will be gone forever. Shall we finish what we started?']])); };
+      return null;
+    }
+    if (where === 'region' && region) {
+      const r = region; const stars = State.regionStars(r), need = State.bossNeed(r);
+      if (s.bosses[r.id]) return null;
+      if (State.bossUnlocked(r) && !seen('ready-' + r.id)) return () => { mark('ready-' + r.id); FX.shake(1.2); U.sfx.boss(); say([[r.champion, `${beastShort(r)} is shaking… the ${r.boss} knows you're coming. You've trained hard enough. Board the Divine Beast and set me free!`]]); };
+      if (stars >= Math.ceil(need / 2) && !seen('half-' + r.id)) return () => { mark('half-' + r.id); FX.flash('#bff8ff', 0.4); say([SPIRIT[r.id]]); };
+    }
+    return null;
+  }
+
+  /* ---------------- journal (Adventure Log tab) ---------------- */
+  function journal() {
+    const { i } = current();
+    return `<div class="journal">${CHAPTERS.map((c, k) => {
+      const done = c.done(); const cur = k === i && !done;
+      return `<div class="chapter slate ${done ? 'done' : cur ? 'current' : 'locked'}"><span class="ch-num">${done ? '✓' : k + 1}</span><div>
+        <h3>Chapter ${k + 1}: ${k <= i || done ? c.title : '???'}</h3>
+        <p>${done ? c.recap() : cur ? `<b>Current task:</b> ${c.goal()}` : 'This part of the story is still to come…'}</p></div></div>`;
+    }).join('')}</div>`;
+  }
+
+  window.Storyline = { beat, banner, journal, current, CHAPTERS };
 })();
 </script>
 <script>
